@@ -1,6 +1,5 @@
 # R
 *.qsave
-data/
 archive/
 docs/
 pdf/
