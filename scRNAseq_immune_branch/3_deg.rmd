@@ -42,7 +42,7 @@ dbs <-
     "KEGG_2019_Human"
   )
 
-source("functions.R")
+source("../common/functions.R")
 
 
 # Select the RNA counts slot to be the default assay
@@ -167,7 +167,7 @@ for (i in seq_along(this_clusters)) {
 ```{r}
 DefaultAssay(combined) <- "RNA"
 dir.create(paste0("./result/deg"))
-dir.create(paste0("./result/deg/cel_type_specific_genes"))
+dir.create(paste0("./result/deg/cell_type_specific_genes"))
 
 Idents(combined) <- combined$cell_type
 
@@ -175,15 +175,15 @@ Idents(combined) <- combined$cell_type
 cts_markers <- FindAllMarkers(combined)
 
 cts_markers %>%
-  write_csv("../result/deg/cel_type_specific_genes/cluster_specific_genes_combined.csv")
+  write.csv("./result/deg/cell_type_specific_genes/cluster_specific_genes_combined.csv")
 
 i = 1
 for (i in seq_along(levels(cts_markers$cluster))) {
   this_cluster <- levels(cts_markers$cluster)[i]
-  dir.create(paste0("../result/deg/cel_type_specific_genes/",this_cluster))
+  dir.create(paste0("./result/deg/cell_type_specific_genes/",this_cluster))
   cts_markers %>%
     filter(cluster == this_cluster) %>%
-    write_csv(paste0("../result/deg/cel_type_specific_genes/",this_cluster,"/cel_type_specific_genes.csv"))
+    write_csv(paste0("./result/deg/cell_type_specific_genes/",this_cluster,"/cell_type_specific_genes.csv"))
 }
 
 ```
