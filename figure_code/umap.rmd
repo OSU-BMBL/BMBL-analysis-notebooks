@@ -1,0 +1,142 @@
+---
+title: "UMAP plot"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: hide
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(qs)
+library(tidyverse)
+library(Seurat)
+library(SeuratDisk)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("umap.rmd")
+print(paste("Current working directory:", here::here()))
+source("../common/functions.R")
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+combined <- qs::qread("../scRNAseq_standard_preprocess/combined.qsave")
+
+```
+
+# One group UMAP 
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=6, fig.width=8}
+
+DimPlot(combined,
+        reduction = "umap",
+        group.by = "seurat_clusters",
+        cols = cell_type_color,
+        label = T,
+        pt.size = 0.8)
+
+```
+
+## Save to PNG 
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=4, fig.width=8}
+
+Idents(combined) <- combined$seurat_clusters
+p0 <- DimPlot(
+  combined,
+  reduction = "umap",
+  cols = cell_type_color,
+  label = F,
+  pt.size = 0.4,
+  repel = T,
+  label.box = F
+) + theme(
+  axis.line = element_blank(),
+  axis.text.x = element_blank(),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  panel.background = element_blank(),
+  panel.border = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  plot.background = element_blank()
+)
+
+png(
+  paste0('cluster_umap.png'),
+  width = 2500,
+  height = 1600,
+  res = 300
+)
+print(p0)
+dev.off()
+
+```
+
+# UMAP split by samples
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=5, fig.width=10}
+
+DimPlot(combined,
+        reduction = "umap",
+        group.by = "seurat_clusters",
+        split.by = "orig.ident",
+        cols = cell_type_color,
+        label = T,
+        pt.size = 0.8)
+
+```
+
+## Save to PNG 
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=4, fig.width=8}
+
+Idents(combined) <- combined$seurat_clusters
+
+p1 <- DimPlot(
+  combined,
+  reduction = "umap",
+  split.by = "orig.ident",
+  cols = cell_type_color,
+  label = F,
+  pt.size = 0.4,
+  repel = T,
+  label.box = F
+) + theme(
+  axis.line = element_blank(),
+  axis.text.x = element_blank(),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  panel.background = element_blank(),
+  panel.border = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  plot.background = element_blank()
+)
+
+png(
+  paste0('cluster_split_by_sample_umap.png'),
+  width = 4000,
+  height = 1600,
+  res = 300
+)
+print(p1)
+dev.off()
+
+```
