@@ -29,7 +29,12 @@ tmp/
 *.h5
 sample_obj/
 deg/
+
+## Whitelist
 !figure_code/example_combined.qsave
+!figure_code/img/*
+
+
 ### Node
 # Logs
 logs
