@@ -21,14 +21,16 @@ The repository is for anyone who wants to:
 The repository is NOT an introduction to data analysis. There are many courses and resources available, such as [Bioinformatics Training at the Harvard Chan Bioinformatics Core](https://hbctraining.github.io/main/), and [Single-cell best practices from Theis lab](https://www.sc-best-practices.org/preamble.html). Therefore, this repository shies away from these concepts to focus on practical aspects of analysis. To be specific, the repository assumes that users have a basic understanding of the following topics:
 
 1. R, Python, and Unix programming.
-2. Assays such as RNA-seq, single-cell RNA-seq, and Spatial transcriptomics.
+2. R markdown settings.
+3. Assays such as RNA-seq, single-cell RNA-seq, and Spatial transcriptomics.
 
 ## Table of contents
 
-1. Single-cell RNA seq general workflow
-2. Figure generating
+1. Single-cell RNA seq general preprocessing workflow: `/scRNAseq_preprocess_main`
+2. A branch of scRNAseq on Immune data analysis: `/scRNAseq_immune_branch`
+3. Code Snippets to generate publication level figure: `/figure_code`
 
-In case of questions or problems, please get in touch by posting an issue in this repository.
+In case of questions or problems, please get in touch by posting an issue in this repository or contact me via cankun.wang@osumc.edu
 
 ## Acknowledgements
 

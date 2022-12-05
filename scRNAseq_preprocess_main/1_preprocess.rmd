@@ -1,0 +1,238 @@
+---
+title: "1. Load data, quality check, and integration"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(scater)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("functions.R")
+here::i_am("1_preprocess.rmd")
+print(paste("Current working directory:", here::here()))
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+data_dirs <-
+  c("./data/ctrl_raw_feature_bc_matrix",
+    "./data/stim_raw_feature_bc_matrix"
+    )
+
+data_list <- list()
+for (i in seq_along(data_dirs)){
+  tmp <- Read10X(
+    data_dirs[i],
+    unique.features = TRUE,
+    strip.suffix = FALSE
+  )
+  data_list[i] <- CreateSeuratObject(
+    tmp,
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200,
+    project = basename(data_dirs[i])
+  )
+}
+
+combined <- purrr::reduce(data_list, function(x, y) {
+    merge(x = x, y = y, merge.data = T)
+  })
+
+
+```
+
+
+# Number of cells of the original data
+
+```{r,echo=F,eval=T,message=F,warning=F}
+table(combined$orig.ident)
+
+```
+
+
+
+```{r,echo=F,eval=T,message=F,warning=F}
+rb.genes <-
+  rownames(combined)[grep("^RP[SL][[:digit:]]", rownames(combined))]
+percent.ribo <-
+  colSums(combined[rb.genes, ]) / Matrix::colSums(combined) * 100
+combined <-
+  AddMetaData(combined, percent.ribo, col.name = "percent.ribo")
+
+combined <- PercentageFeatureSet(combined, "^MT-", col.name = "percent.mito")
+
+mito_genes <- rownames(combined)[grep("^MT-", rownames(combined))]
+
+```
+
+
+# QC metrics in the original data
+
+Before analyzing the single-cell gene expression data, we must ensure that all cellular barcode data correspond to viable cells. Cell quality control is performed based on four QC covariates:
+
+- The number of unique genes detected in each cell (nFeature_RNA). Low-quality cells or empty droplets will often have very few genes. Cell doublets or multiplets may exhibit an aberrantly high gene count.
+
+- The total number of molecules detected within a cell (correlates strongly with unique genes) (nCount_RNA)
+
+- The percentage of reads that map to the mitochondrial genome (percent.mito). Low-quality / dying cells often exhibit extensive mitochondrial contamination. We use the set of all genes starting with MT- as a set of mitochondrial genes
+
+- The percentage of reads that map to the ribosomal genome (percent.ribo).
+
+The violin plot for those four QC metrics was shown below:
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=6, fig.width=10}
+VlnPlot(
+  combined,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 4,
+  pt.size = 0.1
+)
+
+```
+
+
+# Filter cells and plot after QC
+
+**Delete after reading: choose your threshold based on our own data metrics.**
+
+After checking the violin plots, these cells are removed:
+
+- Cells with above 50% ribosomal reads
+
+- Cells with above 5% mitochondrial reads
+
+- Cells detected less than 200 genes and more than 1500 genes
+
+- Cells with more than 6000 total reads
+
+These genes were removed: 
+
+- Genes detected in fewer than 3 cells
+
+```{r,echo=F,eval=T,message=F,warning=F}
+combined_qc <-
+  subset(
+    combined,
+    subset = 
+      percent.mito < 5 &
+      percent.ribo < 50 &
+      nFeature_RNA > 200 &
+      nFeature_RNA < 1500 &
+      nCount_RNA < 6000
+  )
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F}
+
+freq1 <- rbind(ncol(combined), as.data.frame(table(combined$orig.ident)))
+freq2 <- rbind(ncol(combined_qc), as.data.frame(table(combined_qc$orig.ident)))
+freq_df <- freq1 %>%
+  left_join(freq2, by="Var1") %>%
+  mutate(
+    Var1 = as.character(Var1)
+  )
+colnames(freq_df) <- c("sample","before_qc","after_qc")
+freq_df[1,1] <- "Total"
+
+knitr::kable(freq_df)
+```
+
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=6, fig.width=10}
+VlnPlot(
+  combined_qc,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 4,
+  pt.size = 0.1
+)
+```
+
+# Integrate data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+set.seed(42)
+
+DefaultAssay(combined_qc) <- "RNA"
+combine.list <- SplitObject(combined_qc, split.by = "orig.ident")
+combine.list <- lapply(
+  X = combine.list,
+  FUN = function(x) {
+    x <- NormalizeData(x)
+    x <-
+      FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+  }
+)
+combine.anchors <-
+  FindIntegrationAnchors(object.list = combine.list, dims = 1:15)
+combined_qc <- IntegrateData(anchorset = combine.anchors, dims = 1:15)
+DefaultAssay(combined_qc) <- "integrated"
+combined_qc <- ScaleData(combined_qc, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, npcs = 15, verbose = FALSE)
+combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:15, verbose = FALSE)
+combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:15, verbose = FALSE)
+combined_qc <- FindClusters(combined_qc, resolution = 0.2, verbose = FALSE)
+
+```
+
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=6, fig.width=8}
+# cell_type_color are built-in colors list from function.R
+DimPlot(combined_qc,
+        reduction = "umap",
+        group.by = "seurat_clusters",
+        cols = cell_type_color,
+        label = T)
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=4, fig.width=8}
+# This one splits by samples, adjust the figure height and width as needed
+
+DimPlot(
+  combined_qc,
+  split.by = "orig.ident",
+  group.by = "seurat_clusters",
+  reduction = "umap",
+  cols = cell_type_color,
+  label = T
+)
+
+```
+
+
+```{r,echo=F,eval=T,message=F,warning=F}
+# We will use combined.qsave for other downstream analysis
+qs::qsave(combined_qc, "combined.qsave") 
+```
+
+# Session info
+
+```{r,echo=F,eval=T,message=F,warning=F}
+sessionInfo()
+```

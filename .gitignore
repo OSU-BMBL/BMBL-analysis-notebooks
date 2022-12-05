@@ -1,4 +1,5 @@
 # R
+
 *.qsave
 archive/
 docs/
@@ -28,7 +29,7 @@ tmp/
 *.h5
 sample_obj/
 deg/
-
+!figure_code/example_combined.qsave
 ### Node
 # Logs
 logs

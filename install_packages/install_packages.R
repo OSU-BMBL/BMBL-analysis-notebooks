@@ -1,9 +1,10 @@
-
-# Automate package installation -------------------------------------------
-
+#########
+# Automate package installation
+#########
 if ("BiocManager" %in% rownames(installed.packages()) == FALSE) {
   install.packages("BiocManager")
 }
+
 ProjectLibraries <- function(pkgs) {
   library(BiocManager)
   pkgs_miss <- pkgs[which(!pkgs %in% installed.packages()[, 1])]

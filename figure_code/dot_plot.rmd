@@ -1,0 +1,242 @@
+---
+title: "Dot plot"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(here)
+library(qs)
+library(tidyverse)
+library(Seurat)
+library(SeuratDisk)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+set.seed(1)
+
+here::i_am("dot_plot.rmd")
+print(paste("Current working directory:", here::here()))
+source("../common/functions.R")
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+combined <- qs::qread("example_combined.qsave")
+
+```
+
+# Dot plot using Seurat
+
+```{r, fig.width=10, fig.height=4}
+
+DefaultAssay(combined) <- "RNA"
+two_color <- c('#C0C0C0', '#B00D23')
+
+this_genes <-
+  c(
+    "CD14",
+    "LYZ",
+    "FCGR3A",
+    "MS4A7",
+    "MARCO",
+    "ITGAM",
+    "ADGRE1",
+    "FCER1A",
+    "CST3",
+    "IL3RA",
+    "GZMB",
+    "CD79A",
+    "MS4A1",
+    "CD3D",
+    "IL7R",
+    "CCR7",
+    "CD8A",
+    "GNLY",
+    "NKG7"
+  )
+
+p1 <-
+  DotPlot(combined,
+          features = this_genes,
+          group.by = "cell_type",
+          cols = two_color) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 1))
+
+print(p1)
+
+
+```
+
+## Save to PNG 
+
+```{r,echo=T,eval=T, fig.height=4, fig.width=8}
+
+png(
+  paste0('./img/dotplot_cell_type_seurat.png'),
+  width = 2500,
+  height = 1200,
+  res = 300
+)
+print(p1)
+dev.off()
+
+```
+
+
+# Dot plot using plot1cell package
+
+More examples: https://github.com/TheHumphreysLab/plot1cell
+
+## How to install plot1cell package
+
+```{r, eval=T}
+
+bioc_packages <- c("biomaRt", "GenomeInfoDb","EnsDb.Hsapiens.v86","GEOquery","simplifyEnrichment","ComplexHeatmap")
+
+check_plot1cell <-
+  !("plot1cell" %in% installed.packages()[, "Package"])
+if (check_plot1cell) {
+  bioc_packages <-
+    c(
+      "biomaRt",
+      "GenomeInfoDb",
+      "EnsDb.Hsapiens.v86",
+      "GEOquery",
+      "simplifyEnrichment",
+      "ComplexHeatmap"
+    )
+  dev_packages <- c("DoubletFinder", "hdf5r", "loomR")
+  dev.packages <-
+    c("chris-mcginnis-ucsf/DoubletFinder",
+      "Novartis/hdf5r",
+      "mojaveazure/loomR")
+  bioc_np <-
+    bioc_packages[!(bioc_packages %in% installed.packages()[, "Package"])]
+  dev_np <-
+    dev_packages[!(dev_packages %in% installed.packages()[, "Package"])]
+  
+  if (!require("BiocManager"))
+    install.packages("BiocManager")
+  if (length(bioc_np)) {
+    BiocManager::install(bioc_np)
+  }
+  if (length(dev_np)) {
+    devtools::install_github(dev.packages[!(dev_packages %in% installed.packages()[, "Package"])])
+  }
+  devtools::install_github("TheHumphreysLab/plot1cell")
+}
+
+```
+
+
+## Multiple genes in cell types and split by group
+
+```{r, fig.width=10, fig.height=6}
+library(plot1cell)
+DefaultAssay(combined) <- "RNA"
+
+this_genes <-
+  c(
+    "FCGR3A",
+    "LYZ",
+    "MS4A7",
+    "MARCO",
+    "ITGAM",
+    "ADGRE1",
+    "FCER1A",
+    "CST3",
+    "IL3RA",
+    "GZMB",
+    "CD79A",
+    "MS4A1",
+    "CD3D",
+    "IL7R",
+    "CCR7",
+    "CD8A",
+    "GNLY",
+    "NKG7"
+  )
+
+complex_dotplot_multiple(
+  combined,
+  feature = this_genes,
+  groups = c("group"),
+  celltypes = unique(combined$cell_type)
+)
+
+```
+
+## Save to PNG 
+
+```{r,echo=T,eval=T, fig.height=4, fig.width=8}
+
+png(
+  paste0('./img/dotplot_plot1cell_cell_type_by_group.png'),
+  width = 3500,
+  height = 1800,
+  res = 300
+)
+complex_dotplot_multiple(
+  combined,
+  feature = this_genes,
+  groups = c("group"),
+  celltypes = unique(combined$cell_type)
+)
+dev.off()
+
+```
+
+
+# One gene in cell types and split by group and sex
+
+```{r, fig.width=10, fig.height=6}
+library(plot1cell)
+DefaultAssay(combined) <- "RNA"
+
+this_gene <-"FCGR3A"
+
+complex_dotplot_single(
+  combined,
+  feature = this_gene,
+  groups = c("sex","age")
+)
+
+```
+
+![./img/dotplot_plot1cell_FCGR3A_by_multiple_groups.png](./img/dotplot_plot1cell_FCGR3A_by_multiple_groups.png)
+
+## Save to PNG 
+
+```{r,echo=T,eval=T, fig.height=4, fig.width=8}
+
+png(
+  paste0('./img/dotplot_plot1cell_FCGR3A_by_multiple_groups.png'),
+  width = 1800,
+  height = 1200,
+  res = 300
+)
+
+complex_dotplot_single(
+  combined,
+  feature = this_gene,
+  groups = c("sex","age")
+)
+
+dev.off()
+
+```
