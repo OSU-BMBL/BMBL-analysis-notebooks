@@ -1,0 +1,54 @@
+---
+title: Trajectory analysis using Monocle
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: false
+    number_sections: true
+    code_folding: hide
+---
+
+<style>
+    body .main-container {
+        max-width: 90%;
+        width: 90%;
+    }
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(qs)
+library(tidyverse)
+library(Seurat)
+library(SeuratDisk)
+
+```
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("../common/functions.R")
+here::i_am("4_trajectory.rmd")
+print(paste("Current working directory:", here::here()))
+
+```
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+set.seed(42)
+
+combined <- qs::qread(paste0("combined.qsave"))
+
+```
+
+
+Add more here
+
+
+# Session info
+
+```{r,echo=F,eval=T,message=F,warning=F}
+sessionInfo()
+```
