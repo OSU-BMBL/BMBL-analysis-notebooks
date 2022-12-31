@@ -1,6 +1,6 @@
 ---
 title: Trajectory analysis using Monocle
-author: "Cankun Wang"
+author: "Megan McNutt"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
   html_document:
@@ -24,6 +24,11 @@ library(qs)
 library(tidyverse)
 library(Seurat)
 library(SeuratDisk)
+library(monocle3)
+library(SeuratWrappers)
+library(patchwork)
+#library(dplyr)
+
 
 ```
 
@@ -43,8 +48,191 @@ combined <- qs::qread(paste0("combined.qsave"))
 
 ```
 
+# Set Colorblind-friendly palettes
+```{r}
 
-Add more here
+tol_high_contrast_palette <- c("#DDAA33", "#BB5566", "#004488")
+tol_vibrant_palette <- c("#0077BB", "#33BBEE", "#009988",
+                         "#EE7733", "#CC3311", "#EE3377",
+                         "#BBBBBB")
+tol_muted_palette <- c("#332288", "#88CCEE", "#44AA99",
+                       "#117733", "#999933", "#DDCC77",
+                       "#CC6677", "#882255", "#AA4499")
+
+```
+
+# Load Data into Seurat
+```{r}
+data_location <- "data_download/"
+samples <- c("sample1", "sample2", "sample3")
+
+raw10x <- lapply(samples, function(i){
+  d10x <- Read10X_h5(file.path(data_location, paste0(i, "_raw_feature_bc_matrix.h5")))
+  colnames(d10x$`Gene Expression`) <- paste(sapply(strsplit(colnames(d10x$`Gene Expression`),split="-"),'[[',1L),i,sep="-")
+  colnames(d10x$`Antibody Capture`) <- paste(sapply(strsplit(colnames(d10x$`Antibody Capture`),split="-"),'[[',1L),i,sep="-")
+  d10x
+})
+
+
+names(raw10x) <- samples
+trA <- CreateSeuratObject(do.call("cbind", lapply(raw10x,"[[", "Gene Expression")),
+                          project = "cellranger multi",
+                          min.cells = 0,
+                          min.features = 300,
+                          names.field = 2,
+                          names.delim = "\\-")
+trA$percent_mito <- PercentageFeatureSet(trA, pattern = "^MT-")
+
+trA <- subset(trA, percent_mito <= 10)
+trA <- subset(trA, nCount_RNA <= 10000)
+trA <- subset(trA, nFeature_RNA >= 500)
+table(trA$orig.ident)
+
+```
+
+# Seurat processing of data
+
+```{r}
+# First split the sample by original identity
+trA.list <- SplitObject(trA, split.by = "orig.ident")
+
+# perform standard preprocessing on each object
+for (i in 1:length(trA.list)) {
+  trA.list[[i]] <- NormalizeData(trA.list[[i]], verbose = FALSE)
+  trA.list[[i]] <- FindVariableFeatures(
+    trA.list[[i]], selection.method = "vst",
+    nfeatures = 2000, verbose = FALSE
+  )
+}
+
+features <- SelectIntegrationFeatures(trA.list)
+for (i in seq_along(along.with = trA.list)) {
+    trA.list[[i]] <- ScaleData(trA.list[[i]], features = features)
+    trA.list[[i]] <- RunPCA(trA.list[[i]], features = features)
+}
+
+# find anchors
+anchors <- FindIntegrationAnchors(object.list = trA.list)
+
+# integrate data
+trA.integrated <- IntegrateData(anchorset = anchors)
+
+trA.integrated <- ScaleData(trA.integrated)
+
+trA.integrated <- RunPCA(trA.integrated)
+
+trA.integrated <- RunUMAP(trA.integrated, dims = 1:50, reduction.name = "UMAP")
+
+trA.integrated <- FindNeighbors(trA.integrated, dims = 1:50)
+
+trA.integrated <- FindClusters(trA.integrated)
+
+DimPlot(trA.integrated, group.by = c("orig.ident", "ident"))
+
+```
+
+# Setting up monocle3 cell_data_set object using SeuratWrappers
+```{r}
+cds <- as.cell_data_set(trA.integrated)
+cds <- cluster_cells(cds, resolution=1e-3)
+
+p1 <- plot_cells(cds, color_cells_by = "cluster", show_trajectory_graph = FALSE)
+p2 <- plot_cells(cds, color_cells_by = "partition", show_trajectory_graph = FALSE)
+wrap_plots(p1, p2)
+
+# subsetting partitions
+integrated.sub <- subset(as.Seurat(cds, assay = NULL), monocle3_partitions == 1)
+cds <- as.cell_data_set(integrated.sub)
+
+```
+
+# Trajectory Analysis
+```{r}
+cds <- learn_graph(cds, use_partition = TRUE, verbose = FALSE)
+
+plot_cells(cds,
+           color_cells_by = "cluster",
+           label_groups_by_cluster=FALSE,
+           label_leaves=FALSE,
+           label_branch_points=FALSE)
+```
+
+# Color cells by pseudotime
+```{r}
+cds <- order_cells(cds, root_cells = colnames(cds[,clusters(cds) == 4]))
+plot_cells(cds,
+           color_cells_by = "pseudotime",
+           group_cells_by = "cluster",
+           label_cell_groups = FALSE,
+           label_groups_by_cluster=FALSE,
+           label_leaves=FALSE,
+           label_branch_points=FALSE,
+           label_roots = FALSE,
+           trajectory_graph_color = "grey60")
+
+integrated.sub <- as.Seurat(cds, assay = NULL)
+FeaturePlot(integrated.sub, "monocle3_pseudotime")
+```
+
+# Identify genes that change as a function of pseudotime
+```{r}
+cds_graph_test_results <- graph_test(cds,
+                                     neighbor_graph = "principal_graph",
+                                     cores = 8)
+
+rowData(cds)$gene_short_name <- row.names(rowData(cds))
+
+head(cds_graph_test_results, error=FALSE, message=FALSE, warning=FALSE)
+
+deg_ids <- rownames(subset(cds_graph_test_results[order(cds_graph_test_results$morans_I, decreasing = TRUE),], q_value < 0.05))
+
+plot_cells(cds,
+           genes=head(deg_ids),
+           show_trajectory_graph = FALSE,
+           label_cell_groups = FALSE,
+           label_leaves = FALSE)
+
+gene_modules <- find_gene_modules(cds[deg_ids,],
+                                  resolution=c(10^seq(-6,-1)))
+table(gene_modules$module)
+
+cell_groups <- data.frame(cell = row.names(colData(cds)),
+                             cell_group = colData(cds)$orig.ident)
+agg_mat <- aggregate_gene_expression(cds,
+                                     gene_group_df = gene_modules,
+                                     cell_group_df = cell_groups)
+dim(agg_mat)
+
+row.names(agg_mat) <- paste0("Module ", row.names(agg_mat))
+pheatmap::pheatmap(agg_mat,
+                   scale="column",
+                   treeheight_row = 0,
+                   treeheight_col = 0,
+                   clustering_method="ward.D2")
+
+cluster_groups <- data.frame(cell = row.names(colData(cds)),
+                             cluster_group = cds@clusters$UMAP[[2]])
+agg_mat2 <- aggregate_gene_expression(cds, gene_modules, cluster_groups)
+dim(agg_mat2)
+
+row.names(agg_mat2) <- paste0("Module ", row.names(agg_mat2))
+pheatmap::pheatmap(agg_mat2,
+                   scale="column",
+                   treeheight_row = 0,
+                   treeheight_col = 0,
+                   clustering_method="ward.D2")
+
+gm <- gene_modules[which(gene_modules$module %in% c(8, 18)),]
+plot_cells(cds,
+           genes=gm,
+           label_cell_groups=FALSE,
+           show_trajectory_graph=TRUE,
+           label_branch_points = FALSE,
+           label_roots = FALSE,
+           label_leaves = FALSE,
+           trajectory_graph_color = "grey60")
+```
+
 
 
 # Session info
