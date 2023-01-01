@@ -61,79 +61,9 @@ tol_muted_palette <- c("#332288", "#88CCEE", "#44AA99",
 
 ```
 
-# Load Data into Seurat
-```{r}
-data_location <- "data_download/"
-samples <- c("sample1", "sample2", "sample3")
-
-raw10x <- lapply(samples, function(i){
-  d10x <- Read10X_h5(file.path(data_location, paste0(i, "_raw_feature_bc_matrix.h5")))
-  colnames(d10x$`Gene Expression`) <- paste(sapply(strsplit(colnames(d10x$`Gene Expression`),split="-"),'[[',1L),i,sep="-")
-  colnames(d10x$`Antibody Capture`) <- paste(sapply(strsplit(colnames(d10x$`Antibody Capture`),split="-"),'[[',1L),i,sep="-")
-  d10x
-})
-
-
-names(raw10x) <- samples
-trA <- CreateSeuratObject(do.call("cbind", lapply(raw10x,"[[", "Gene Expression")),
-                          project = "cellranger multi",
-                          min.cells = 0,
-                          min.features = 300,
-                          names.field = 2,
-                          names.delim = "\\-")
-trA$percent_mito <- PercentageFeatureSet(trA, pattern = "^MT-")
-
-trA <- subset(trA, percent_mito <= 10)
-trA <- subset(trA, nCount_RNA <= 10000)
-trA <- subset(trA, nFeature_RNA >= 500)
-table(trA$orig.ident)
-
-```
-
-# Seurat processing of data
-
-```{r}
-# First split the sample by original identity
-trA.list <- SplitObject(trA, split.by = "orig.ident")
-
-# perform standard preprocessing on each object
-for (i in 1:length(trA.list)) {
-  trA.list[[i]] <- NormalizeData(trA.list[[i]], verbose = FALSE)
-  trA.list[[i]] <- FindVariableFeatures(
-    trA.list[[i]], selection.method = "vst",
-    nfeatures = 2000, verbose = FALSE
-  )
-}
-
-features <- SelectIntegrationFeatures(trA.list)
-for (i in seq_along(along.with = trA.list)) {
-    trA.list[[i]] <- ScaleData(trA.list[[i]], features = features)
-    trA.list[[i]] <- RunPCA(trA.list[[i]], features = features)
-}
-
-# find anchors
-anchors <- FindIntegrationAnchors(object.list = trA.list)
-
-# integrate data
-trA.integrated <- IntegrateData(anchorset = anchors)
-
-trA.integrated <- ScaleData(trA.integrated)
-
-trA.integrated <- RunPCA(trA.integrated)
-
-trA.integrated <- RunUMAP(trA.integrated, dims = 1:50, reduction.name = "UMAP")
-
-trA.integrated <- FindNeighbors(trA.integrated, dims = 1:50)
-
-trA.integrated <- FindClusters(trA.integrated)
-
-DimPlot(trA.integrated, group.by = c("orig.ident", "ident"))
-
-```
-
 # Setting up monocle3 cell_data_set object using SeuratWrappers
 ```{r}
-cds <- as.cell_data_set(trA.integrated)
+cds <- as.cell_data_set(combined)
 cds <- cluster_cells(cds, resolution=1e-3)
 
 p1 <- plot_cells(cds, color_cells_by = "cluster", show_trajectory_graph = FALSE)
