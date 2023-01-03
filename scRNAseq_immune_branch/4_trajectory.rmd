@@ -66,7 +66,7 @@ tol_muted_palette <- c("#332288", "#88CCEE", "#44AA99",
 cds <- as.cell_data_set(combined)
 cds <- cluster_cells(cds, resolution=1e-3)
 
-p1 <- plot_cells(cds, color_cells_by = "cluster", show_trajectory_graph = FALSE)
+p1 <- plot_cells(cds, color_cells_by = "cell_type", show_trajectory_graph = FALSE)
 p2 <- plot_cells(cds, color_cells_by = "partition", show_trajectory_graph = FALSE)
 wrap_plots(p1, p2)
 
@@ -104,64 +104,6 @@ integrated.sub <- as.Seurat(cds, assay = NULL)
 FeaturePlot(integrated.sub, "monocle3_pseudotime")
 ```
 
-# Identify genes that change as a function of pseudotime
-```{r}
-cds_graph_test_results <- graph_test(cds,
-                                     neighbor_graph = "principal_graph",
-                                     cores = 8)
-
-rowData(cds)$gene_short_name <- row.names(rowData(cds))
-
-head(cds_graph_test_results, error=FALSE, message=FALSE, warning=FALSE)
-
-deg_ids <- rownames(subset(cds_graph_test_results[order(cds_graph_test_results$morans_I, decreasing = TRUE),], q_value < 0.05))
-
-plot_cells(cds,
-           genes=head(deg_ids),
-           show_trajectory_graph = FALSE,
-           label_cell_groups = FALSE,
-           label_leaves = FALSE)
-
-gene_modules <- find_gene_modules(cds[deg_ids,],
-                                  resolution=c(10^seq(-6,-1)))
-table(gene_modules$module)
-
-cell_groups <- data.frame(cell = row.names(colData(cds)),
-                             cell_group = colData(cds)$orig.ident)
-agg_mat <- aggregate_gene_expression(cds,
-                                     gene_group_df = gene_modules,
-                                     cell_group_df = cell_groups)
-dim(agg_mat)
-
-row.names(agg_mat) <- paste0("Module ", row.names(agg_mat))
-pheatmap::pheatmap(agg_mat,
-                   scale="column",
-                   treeheight_row = 0,
-                   treeheight_col = 0,
-                   clustering_method="ward.D2")
-
-cluster_groups <- data.frame(cell = row.names(colData(cds)),
-                             cluster_group = cds@clusters$UMAP[[2]])
-agg_mat2 <- aggregate_gene_expression(cds, gene_modules, cluster_groups)
-dim(agg_mat2)
-
-row.names(agg_mat2) <- paste0("Module ", row.names(agg_mat2))
-pheatmap::pheatmap(agg_mat2,
-                   scale="column",
-                   treeheight_row = 0,
-                   treeheight_col = 0,
-                   clustering_method="ward.D2")
-
-gm <- gene_modules[which(gene_modules$module %in% c(8, 18)),]
-plot_cells(cds,
-           genes=gm,
-           label_cell_groups=FALSE,
-           show_trajectory_graph=TRUE,
-           label_branch_points = FALSE,
-           label_roots = FALSE,
-           label_leaves = FALSE,
-           trajectory_graph_color = "grey60")
-```
 
 
 
