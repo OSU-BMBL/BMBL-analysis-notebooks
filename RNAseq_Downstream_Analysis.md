@@ -44,7 +44,7 @@ Make sure the following R packages are updated and installed:
 
 - Assign counts.csv and meta.csv files to variables (generated in preprocessing quantification).
 
-- Filter genes with low counts by editing the "keep" variable  and setting the minimum count (i.e. 20)
+- Filter genes with low counts by editing the "keep" variable  and setting the minimum count (i.e. 20).
 
 - When printing the metadata, users can edit the length of the table by editing "pagelength". For example, setting pagelength = 10 sets 10 samples per page of the table.
 
@@ -84,7 +84,7 @@ this_groups <- c("group_1", "group_2")
 
 The volcano plot can be used the visualize the log of the p-value on the Y-axis and log fold cahnge of samples on the X-axis. 
 
-The dashed line on the image of the plot below represents the cutoff to annotate differentially expressed genes. In this example, the cut-off for log2 fold-change is >|1.5|, and the cutt-off of the adjusted p-value is 0.05. The values can be adjusted by the user based on experimental needs.
+The dashed line on the the plot represents the cutoff to annotate differentially expressed genes. In this example, the cut-off for log2 fold-change is >|1.5|, and the cutt-off of the adjusted p-value is 0.05. The values can be adjusted by the user based on experimental needs.
 
 ```
 EnhancedVolcano(result,
