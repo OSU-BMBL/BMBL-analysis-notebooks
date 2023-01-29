@@ -32,15 +32,17 @@ Assuming users are using PCON0022 in OSC, all tools needed for RNAseq preprocess
 
 1. **Example file directory structure.** Each folder is an RNA-seq sample and contains all fastq files. Put your fastq files into folders in the following format:
    
+   ![](./fastqs.png#center)
+   
    ```
    /working_directory/folder1/fastq1.fastq.gz 
    ```
 
-2. **Prepare a fastq file list.** The file will be named fastq_list.txt and will contain three columns: the first two specift two pair-end files of a sample, and the third column is the sample name, separated by a tab.
+2. **Prepare a fastq file list.** The file will be named fastq_list.txt and will contain three columns: the first two specify two pair-end files of a sample, and the third column is the sample name, separated by a tab.
    
-   **INSERT PICTURE HERE**
+  ![](./list.png#center)
    
-   To generate a **fastq_list.txt** automat, run the following code:
+  To generate a **fastq_list.txt** automat, run the following code:
    
    ```
    chmod +x *
@@ -107,10 +109,15 @@ After modifying the above code, submit the reads alignment jobs in the Pitzer Sh
 ```
 ./submit_primary_alignment.sh
 ```
+Running the primary alignment will generate the following directories:
+- **alignment_out** : contains .bam, .sam, and .sorted.bam files
+- **fastp_out** : contains R1 and R2 fastq.gz files
+- **result** : contains a pre-alignment directory with .fastp.json and html files
+
 
 ## Quantification
 
-After the alignment is finished, we will submit quantification to generate and RNA-seq count matrix.
+After the alignment is finished, we will submit quantification to generate an RNA-seq count matrix.
 
 To know if the alignment is finished, run this code:
 
@@ -118,7 +125,7 @@ To know if the alignment is finished, run this code:
 squeue -u USERNAME
 ```
 
-If there are now current jobs, continue with quantification.
+If there are no current jobs, continue with quantification.
 
 The code for the file **run_quantification.sh** is included below. Users will need to modify the working directory and reference genome.
 
@@ -163,6 +170,7 @@ In the Pitzer Shell Access Cluster in OSC, set your correct working directory an
 ```
 sbatch run_quantification.sh
 ```
+Running the quanitification will generate a slurm.out file in the working directory, as well as out.txt, out.txt.summary, and out2.txt files.
 
 To generate counts.csv and meta.csv files:
 
@@ -170,7 +178,7 @@ To generate counts.csv and meta.csv files:
 
 2. Copy all content in the file and paste it into excel
 
-3. Save the file as CSV format
+3. Save the file as counts.csv, ensuring it is in csv format
 
 4. Create a meta.csv file. Each sample name should correspond to column names in counts.csv
 
@@ -189,7 +197,11 @@ pip install multiqc
 
 ### 2. Generate quality check report
 
-Enter the folder containing **out.txt.summary** and **out.txt**
+Enter the results folder containing **out.txt.summary** and **out.txt**
+
+![](./outs.png#center)
+
+Then run the following code to generate a quality check report.
 
 ```
 ml python
@@ -198,3 +210,6 @@ multiqc *
 ```
 
 ### 3. Access the report
+In the same result folder, download the multiqc_report.html file to your PC. The result will resmeble the image below.
+![](./multiqc.png#center
+)
