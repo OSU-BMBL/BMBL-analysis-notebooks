@@ -78,7 +78,7 @@ Users must set correct working directory, select the correct relevant reference 
 ```
 The first line will remain the same, but users can change the account, in this case PCON0022, as well as the time, nodes, number of tasks, and memory necessary to run the file.
 
-After modifying run_primary_alignment, submit the reads alignment jobs in the _Pitzer Shell Acess Cluster is OSC. Be sure to set your working directory in the cluster before running the following code:
+After modifying run_primary_alignment, submit the reads alignment jobs in the Pitzer Shell Acess Cluster is OSC. Be sure to set your working directory in the cluster before running the following code:
 
 ```
 ./submit_primary_alignment.sh
@@ -104,7 +104,7 @@ If there are no current jobs, continue with quantification.
 The code for the file **run_quantification.sh** is included in this Github folder. Users will need to modify the working directory, reference genome, and Slurm script header.
 
 
-In the _Pitzer Shell Access Cluster in OSC, set your correct working directory and run the following code:
+In the Pitzer Shell Access Cluster in OSC, set your correct working directory and run the following code:
 
 ```
 sbatch run_quantification.sh
@@ -143,7 +143,7 @@ Enter the results folder containing **out.txt.summary** and **out.txt**
 
 ![](./img/outs.png#center)
 
-Then run the following code in the _Pitzer Shell Access Cluster to generate a quality check report.
+Then run the following code in the Pitzer Shell Access Cluster to generate a quality check report.
 
 ```
 ml python
