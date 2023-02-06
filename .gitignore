@@ -4,7 +4,6 @@
 archive/
 docs/
 pdf/
-*.qsave
 *.rds
 result*
 *.log
@@ -14,7 +13,6 @@ result*
 *.log
 *result*
 *.Rhistory
-*.png
 *.zip
 *.pdf
 figure/
@@ -33,6 +31,7 @@ deg/
 ## Whitelist
 !figure_code/example_combined.qsave
 !figure_code/img/*
+!RNAseq_tutorials/all_gene_sets_human.qsave
 
 
 ### Node
