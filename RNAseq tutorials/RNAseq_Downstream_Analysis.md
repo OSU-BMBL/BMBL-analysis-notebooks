@@ -1,10 +1,12 @@
 # RNAseq Downstream Analysis
 
 After following the "RNAseq Preprocessing" tutorial and generating a meta.csv and counts.csv file, continue to downstream analysis. This tutorial is for individuals with bioinformatics skills and aims to provide assistance in putting data and code together. The RMD file downstream_analysis_template.rmd provides a template for the following analysis.
-
+___
 ## Tools
 
 In order to perform the following analysis, specific tools are required. Make sure the the R packages found in RNAseq_install_packages.R are properly installed before proceeding.
+
+___
 ## Overview
 
 - Load GSEA database (dependent on species).
@@ -15,7 +17,7 @@ In order to perform the following analysis, specific tools are required. Make su
 
 - When printing the metadata, users can edit the length of the table by editing "pagelength". For example, setting pagelength = 10 sets 10 samples per page of the table.
 
-
+___
 ## Principle Component Analysis (PCA) by Group
 
 Principle Component Analysis (PCA) is useful for exploratory data analysis and allows scientists to visualize variation that may be present in a dataset that has numerous variables. Most of the provided code does not need to be editied in this analysis.
@@ -35,7 +37,7 @@ OR
 pcaData <- plotPCA(vsd, intgroup=c("treatment"), returnData=TRUE)
 ```
 
-
+___
 ## Differential Gene Expression (DGE) Analysis
 The goal of DGE analysis is to  test if the observed difference between treatment and control is caused by experimental variability or not.
 
@@ -46,7 +48,7 @@ this_groups <- c("group_1", "group_2")
 - It is important to specify the groups when defining the results, as well as the output .csv file.
 
 
-
+___
 ## Volcano Plot
 
 The volcano plot can be used the visualize the log of the p-value on the Y-axis and log fold cahnge of samples on the X-axis. 
@@ -64,7 +66,7 @@ EnhancedVolcano(result,
     )
     
 ```
-
+___
 ## Enrichment Analysis using enrichr
 The Enrichr package is used to perform over-representation analysis. It compares the proportion of genes associated with a particular process/pathway in the list of differentially expressed genes to the proportion of genes associated with that pathway in a background list (genes tested for DE). The over-representation analyses identify processes and pathways related to 
 genes exhibiting larger changes in expression between the conditions.
@@ -85,14 +87,16 @@ dbs <-
   )
   ```
 
-Note that if mouse data is being used, "KEGG_2019_Human" above becomes "KEGG_2019_Mouse". In this example, DEGs with adj.p-value < 0.05 and absolute log foldchange > 1 are used.
+Note that if mouse data is being used, "KEGG_2019_Human" above becomes "KEGG_2019_Mouse". 
+
+In this example, DEGs with adj.p-value < 0.05 and absolute log foldchange > 1 are used:
 
 ```
 up_regulated_genes <- rownames(result[which(result$padj < 0.05 & result$log2FoldChange > 1),])
 ```
 This then allows users to create tables like the one shown below, showing up-regulated and down-regulated genes determined from the databases.
 
-
+___
 ## Enrichment Analysis using fgsea
 
 The fgsea package is used to perform fast gene set enrichment analysis. This allows users to make more permutations and get more fine-grained p-values.

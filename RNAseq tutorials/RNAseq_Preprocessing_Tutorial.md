@@ -3,7 +3,7 @@
 ## Prepare Data and Tools
 
 In order to use the following tutorial, users must have an OSC account and use PCON0022.
-This tutorial will use example data found in the Example_Data folder under RNA_seq_tutorial_fastq, or it can be found here in OSC:
+This tutorial will use example data found in the Example_Data folder, as well as here in OSC:
 ```
 /fs/ess/PCON0022/bmbl_notebooks/RNAseq_tutorial_fastq
 ```
@@ -35,17 +35,23 @@ Assuming users are using PCON0022 in OSC, all tools needed for RNAseq preprocess
 
 ### 3. Prepare Data
 
-1. **Example file directory structure.** Each folder is an RNA-seq sample and contains all fastq files. Put your fastq files into folders in the following format:
+1. **Copy Example Data.** If you are using the example data provided for this tutorial, you may copy it from here:
+```
+/fs/ess/PCON0022/bmbl_notebooks/RNAseq_tutorial_fastq
+```
+If you are using your own data, you may disregard this step.
+
+2. **Example file directory structure.** Each folder is an RNA-seq sample and contains all fastq files. Put your fastq files into folders in the following format:
    
-   ![](./fastqs.png)
+   ![](./img/fastqs.png)
    
    ```
    /working_directory/folder1/fastq1.fastq.gz 
    ```
 
-2. **Prepare a fastq file list.** The file will be named fastq_list.txt and will contain three columns: the first two specify two pair-end files of a sample, and the third column is the sample name, separated by a tab.
+3. **Prepare a fastq file list.** The file will be named fastq_list.txt and will contain three columns: the first two specify two pair-end files of a sample, and the third column is the sample name, separated by a tab.
    
-  ![](./list.png#center)
+  ![](./img/list.png)
    
   To generate a **fastq_list.txt** automat, run the following code:
    
@@ -61,10 +67,18 @@ Assuming users are using PCON0022 in OSC, all tools needed for RNAseq preprocess
 
 The following code is used to align the data. This is in a file named **run_primary_alignment.sh**
 
-Note: users must set correct working directory and select the correct relevant reference data.
+Users must set correct working directory, select the correct relevant reference data, and set the OSC Slurm script header. The OSC Slurm script header follows the format below:
+```
+#!/usr/bin/bash
+#SBATCH --account PCON0022
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1 
+#SBATCH --ntasks=8
+#SBATCH --mem=32GB
+```
+The first line will remain the same, but users can change the account, in this case PCON0022, as well as the time, nodes, number of tasks, and memory necessary to run the file.
 
-
-After modifying the above code, submit the reads alignment jobs in the Pitzer Shell Acess Cluster is OSC. Be sure to set your working directory in the cluster before running the following code:
+After modifying run_primary_alignment, submit the reads alignment jobs in the _Pitzer Shell Acess Cluster is OSC. Be sure to set your working directory in the cluster before running the following code:
 
 ```
 ./submit_primary_alignment.sh
@@ -73,7 +87,7 @@ Running the primary alignment will generate the following directories:
 - **alignment_out** : contains .bam, .sam, and .sorted.bam files
 - **fastp_out** : contains R1 and R2 fastq.gz files
 - **result** : contains a pre-alignment directory with .fastp.json and html files
-
+___
 
 ## Quantification
 
@@ -87,10 +101,10 @@ squeue -u USERNAME
 
 If there are no current jobs, continue with quantification.
 
-The code for the file **run_quantification.sh** is included in this Github folder. Users will need to modify the working directory and reference genome.
+The code for the file **run_quantification.sh** is included in this Github folder. Users will need to modify the working directory, reference genome, and Slurm script header.
 
 
-In the Pitzer Shell Access Cluster in OSC, set your correct working directory and run the following code:
+In the _Pitzer Shell Access Cluster in OSC, set your correct working directory and run the following code:
 
 ```
 sbatch run_quantification.sh
@@ -108,6 +122,7 @@ To generate counts.csv and meta.csv files:
 4. Create a meta.csv file. Each sample name should correspond to column names in counts.csv
 
 An example of what these outputs should look like can be found in the Example_Data folder.
+___
 
 ## MultiQC (optional)
 
@@ -126,9 +141,9 @@ pip install multiqc
 
 Enter the results folder containing **out.txt.summary** and **out.txt**
 
-![](./outs.png#center)
+![](./img/outs.png#center)
 
-Then run the following code to generate a quality check report.
+Then run the following code in the _Pitzer Shell Access Cluster to generate a quality check report.
 
 ```
 ml python
@@ -138,4 +153,5 @@ multiqc *
 
 ### 3. Access the report
 In the same result folder, download the multiqc_report.html file to your PC. The result will resmeble the image below.
-![](./multiqc.png#center)
+
+![](./img/multiqc.png#center)
