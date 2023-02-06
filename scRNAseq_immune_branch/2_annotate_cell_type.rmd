@@ -3,6 +3,7 @@ title: Cell type annotation
 author: "Cankun Wang"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
+
   html_document:
     toc: true
     toc_float: false
@@ -40,7 +41,7 @@ print(paste("Current working directory:", here::here()))
 ```{r,echo=F,eval=T,message=F,warning=F,error=F}
 set.seed(42)
 
-combined <- qs::qread(paste0("combined.qsave"))
+combined <- qs::qread(paste0("../scRNAseq_preprocess_main/combined.qsave"))
 ```
 
 

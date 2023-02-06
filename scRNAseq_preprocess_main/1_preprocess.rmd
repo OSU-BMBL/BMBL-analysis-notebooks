@@ -27,7 +27,7 @@ library(scater)
 # Set working dir
 
 ```{r,echo=F,eval=T,message=F,warning=F,error=F}
-source("functions.R")
+source("../common/functions.R")
 here::i_am("1_preprocess.rmd")
 print(paste("Current working directory:", here::here()))
 
