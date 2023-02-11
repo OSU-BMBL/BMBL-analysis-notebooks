@@ -1,0 +1,288 @@
+---
+title: "RNA-seq data analysis-- Downstream Analysis Template Using Example Data"
+author: "Brutus Buckeye"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+# Hide all warnings and messages, show code
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+
+# 'here' package automatically sets working directory for us
+library(here)
+# DESeq2 provides methods to test for differential gene expression (DGE) analysis 
+library(DESeq2)
+# ‘ggplot2’ and its extension for publication ready plots
+library(ggplot2)
+library(ggpubr) 
+# Volcano plot
+library(EnhancedVolcano) 
+# Heatmap
+library(pheatmap) 
+# enrichR provides functional gene set enrichment analysis
+library(enrichR) 
+library(tidyverse)
+library(fgsea) 
+library(msigdbr)
+library(data.table)
+library(qs)
+library(ggrepel)
+library(VennDiagram)
+library(stringr)
+
+
+```
+
+
+# Overview
+
+
+```{r}
+# Load GSEA database
+#all_gene_sets = msigdbr(species = "human")
+#qs::qsave(all_gene_sets, "all_gene_sets_human.qsave")
+all_gene_sets <- qs::qread("all_gene_sets_human.qsave")
+# Read the count matrix
+
+counts <- read.csv("./Example_Data/counts.csv")
+
+# Read metadata
+meta <- read.csv("./Example_Data/meta.csv", stringsAsFactors = F)
+colnames(meta)[1]<-'sample_id'
+colnames(meta)[2]<-'group'
+
+# Remove rows with duplicated row names
+if (length(which(duplicated.default(counts[, 1]))) > 0) {
+  counts <- counts[-which(duplicated.default(counts[, 1]) == T),]
+}
+
+rownames(counts) <- counts[, 1]
+counts <- counts[,-1]
+
+# You can filter the genes with low counts, it is called most minimal filtering rule: removing rows of the dataset that have no counts, or only a count of 20 across all samples. The value can be adjusted based on your dataset condition.
+keep <- rowSums(counts) >= 20
+
+counts <- counts[keep, ]
+
+
+```
+
+```{r}
+
+# Print the metadata
+DT::datatable(
+  meta,
+  extensions = 'FixedColumns',
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    scrollCollapse = TRUE,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+
+```
+
+
+```{r}
+
+
+dds <- DESeq2::DESeqDataSetFromMatrix(
+  countData = counts,
+  colData = meta,
+  design = ~ group
+)
+
+vsd <- vst(dds, blind = FALSE)
+
+
+```
+
+## Principal component analysis (PCA)
+
+### PCA plot colored by group
+
+```{r, fig.width=7, fig.height=5}
+pcaData <- plotPCA(vsd, intgroup=c("group"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+ggplot(pcaData, aes(PC1, PC2, color=group)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  theme_classic() +
+  geom_label_repel(
+    label=meta$sample_id, 
+    nudge_x = 1, nudge_y = 1, 
+    check_overlap = T
+  )
+
+```
+
+# Diffrential gene expression analysis
+
+## Group1 vs Group2
+
+```{r}
+design(dds) <- formula( ~ group)
+dds <- DESeq(dds)
+#resultsNames(dds)
+
+res <- results(dds, contrast = c("group", "NCH3", "NCH1"))
+dir.create('result', showWarnings = F)
+result <- as.data.frame(res[order(res$pvalue),])
+summary(res, alpha = 0.1)
+write.csv(result, "./result/Group1_vs_Group2.csv")
+
+#norm_counts <- counts(dds, normalized=TRUE)
+#write.csv(norm_counts,"normalized_counts.csv")
+
+```
+
+## DEG table (top 500 rows)
+
+```{r}
+DT::datatable(
+  result[1:500, c(1, 2, 5, 6)],
+  extensions = 'FixedColumns',
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    scrollCollapse = TRUE,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+
+```
+
+
+# Functional enriched analysis
+
+```{r}
+
+res_gsea <- result %>%
+  rownames_to_column("gene") %>%
+  dplyr::select(gene, stat) %>%
+  arrange(desc(stat)) %>%
+  na.omit() %>%
+  distinct() %>%
+  group_by(gene) %>%
+  deframe() %>%
+  sort(decreasing = T)
+
+```
+
+## C5: GOBP
+
+```{r}
+
+this_terms <- all_gene_sets %>%
+  filter(gs_cat == 'C5' & gs_subcat == 'GO:BP')
+
+m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
+
+fgseaRes <- fgsea(pathways = m_list,
+                  stats = res_gsea,
+                  nperm = 1000)
+
+fgseaResTidy <- fgseaRes %>%
+  as_tibble() %>%
+  arrange(desc(NES)) %>%
+  dplyr::select(-ES,-nMoreExtreme) %>%
+  arrange(padj) 
+
+fwrite(
+  fgseaResTidy,
+  file = paste0("./result/DMSO_vs_DAPT_GOBP.csv"),
+  sep = ",",
+  sep2 = c("", " ", "")
+)
+
+DT::datatable(
+  fgseaResTidy[, c(1, 3, 4, 5)],
+  extensions = 'FixedColumns',
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    scrollCollapse = TRUE,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+
+```
+
+## C5: KEGG
+
+```{r}
+
+this_terms <- all_gene_sets %>%
+  filter(gs_cat == 'C2' & gs_subcat == 'CP:KEGG')
+
+m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
+
+fgseaRes <- fgsea(pathways = m_list,
+                  stats = res_gsea,
+                  nperm = 1000)
+
+fgseaResTidy <- fgseaRes %>%
+  as_tibble() %>%
+  arrange(desc(NES)) %>%
+  dplyr::select(-ES,-nMoreExtreme) %>%
+  arrange(padj) 
+
+fwrite(
+  fgseaResTidy,
+  file = paste0("./result/Group1_vs_Group2_KEGG.csv"),
+  sep = ",",
+  sep2 = c("", " ", "")
+)
+
+DT::datatable(
+  fgseaResTidy[, c(1, 3, 4, 5)],
+  extensions = 'FixedColumns',
+  options = list(
+    pageLength = 10,
+    scrollX = TRUE,
+    scrollCollapse = TRUE,
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+
+```
+
+
+# Reference
+
+Rmarkdown reference: [Reference](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+
+How to experimental design in DESeq2 (https://rpubs.com/ge600/deseq2)
+
+[Mathematics in Rmarkdown](https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html)
+
+[Analyzing RNA-seq data with DESeq2](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#independent-hypothesis-weighting)
+
+[RNA-seq workflow: gene-level exploratory analysis and differential expression](http://bioconductor.org/packages/release/bioc/vignettes/IHW/inst/doc/introduction_to_ihw.html#an-example-rna-seq-differential-expression)
+
+[RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://www.bioconductor.org/packages/devel/workflows/vignettes/RNAseq123/inst/doc/limmaWorkflow.html)
+
+[RNA-seq workshop from Harvard Medical School](https://github.com/hbctraining/Training-modules)
+
+
+# Session info
+
+```{r, echo=T,eval=T,message=F,warning=F,error=T}
+
+sessionInfo()
+
+```

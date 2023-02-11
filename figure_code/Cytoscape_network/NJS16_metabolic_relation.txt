@@ -1,0 +1,4484 @@
+Metabolic_activity	compound	taxonomy ID
+Production (export)	C03044, C03046	1423
+Consumption (import)	C03044, C03046	1718
+Production (export)	C03044, C03046	69218
+Production (export)	C03044, C03046	550
+Consumption (import) & production (export)	C03044, C03046	573
+Production (export)	C03044, C03046	244366
+Production (export)	C03044, C03046	1590
+Consumption (import)	C03044, C03046	19
+Consumption (import)	C03044, C03046	29543
+Consumption (import)	C03044, C03046	287
+Consumption (import)	C00641, C01885 	 
+Production (export)	C01380	818
+Consumption (import)	C01380	19
+Consumption (import)	C01380	29543
+Consumption (import)	C01380	110500
+Consumption (import)	C01380	119484
+Consumption (import)	C01380	51197
+Consumption (import)	C01380	863
+Consumption (import)	C01380	86170
+Consumption (import)	C01380	316277
+Production (export)	C00583, C02912, C02917	818
+Production (export)	C00583, C02912, C02917	216816
+Consumption (import)	C00583, C02912, C02917	1492
+Production (export)	C00583, C02912, C02917	1581
+Consumption (import)	C00583, C02912, C02917	19
+Consumption (import)	C00583, C02912, C02917	28901
+Production (export)	C02457	545
+Production (export)	C02457	67825
+Production (export)	C02457	133448
+Production (export)	C02457	167642
+Production (export)	C02457	573
+Production (export)	C02457	1580
+Production (export)	C02457	1581
+Consumption (import) & production (export)	C02457	19
+Consumption (import)	C02457	110500
+Production (export)	C02261, C02356	1491
+Production (export)	C02261, C02356	1509
+Production (export)	C02261, C02356	1511
+Consumption (import)	C18319	 
+Consumption (import)	C18319	894
+Consumption (import)	C18319	833
+Consumption (import)	C18319	839
+Consumption (import)	C18319	1264
+Consumption (import)	C18319	40518
+Consumption (import)	C00109	169435
+Production (export)	C00109	1509
+Consumption (import)	C00109	28123
+Consumption (import)	C05629	 
+Consumption (import)	C00568	216816
+Consumption (import)	C00568	1488
+Consumption (import)	C00568	1492
+Consumption (import)	C00568	1582
+Consumption (import)	C00568	1590
+Consumption (import)	C00568	1264
+Consumption (import)	C00334	358
+Consumption (import)	C00334	105841
+Consumption (import)	C00334	1423
+Production (export)	C00334	1680
+Production (export)	C00334	1689
+Production (export)	C00334	216816
+Consumption (import)	C00334	1488
+Production (export)	C00334	1491
+Production (export)	C00334	1496
+Production (export)	C00334	1509
+Consumption (import)	C00334	 
+Consumption (import)	C00334	1718
+Production (export)	C00334	562
+Production (export)	C00334	1580
+Production (export)	C00334	47715
+Production (export)	C00334	287
+Production (export)	C00334	294
+Production (export)	C00431	1491
+Production (export)	C00431	1496
+Production (export)	C00431	1509
+Production (export)	C00431	1511
+Consumption (import)	C00084	 
+Production (export)	C00033	35830
+Production (export)	C00033	438
+Production (export)	C00033	28187
+Production (export)	C00033	2148
+Production (export)	C00033	905
+Production (export)	C00033	103618
+Production (export)	C00033	1660
+Production (export)	C00033	544580
+Production (export)	C00033	103621
+Production (export)	C00033	1656
+Consumption (import) & production (export)	C00033	105841
+Production (export)	C00033	169435
+Production (export)	C00033	2234
+Production (export)	C00033	1382
+Production (export)	C00033	1383
+Production (export)	C00033	82135
+Production (export)	C00033	1423
+Production (export)	C00033	47678
+Production (export)	C00033	246787
+Production (export)	C00033	310298
+Production (export)	C00033	387090
+Production (export)	C00033	357276
+Production (export)	C00033	28111
+Production (export)	C00033	338188
+Production (export)	C00033	817
+Production (export)	C00033	290053
+Production (export)	C00033	329854
+Production (export)	C00033	28116
+Production (export)	C00033	384638
+Production (export)	C00033	310297
+Production (export)	C00033	376805
+Production (export)	C00033	46506
+Production (export)	C00033	818
+Production (export)	C00033	820
+Production (export)	C00033	821
+Production (export)	C00033	371601
+Production (export)	C00033	1680
+Production (export)	C00033	1683
+Production (export)	C00033	28025
+Production (export)	C00033	1681
+Production (export)	C00033	1685
+Production (export)	C00033	1686
+Production (export)	C00033	1689
+Production (export)	C00033	78342
+Production (export)	C00033	216816
+Production (export)	C00033	28026
+Production (export)	C00033	35833
+Production (export)	C00033	53443
+Consumption (import) & production (export)	C00033	45851
+Consumption (import) & production (export)	C00033	831
+Consumption (import) & production (export)	C00033	43305
+Production (export)	C00033	100886
+Production (export)	C00033	545
+Production (export)	C00033	67825
+Production (export)	C00033	133448
+Production (export)	C00033	1488
+Production (export)	C00033	333367
+Production (export)	C00033	261299
+Production (export)	C00033	1520
+Production (export)	C00033	208479
+Production (export)	C00033	1491
+Production (export)	C00033	1492
+Production (export)	C00033	217159
+Production (export)	C00033	1521
+Production (export)	C00033	1493
+Production (export)	C00033	 
+Production (export)	C00033	1496
+Production (export)	C00033	154046
+Production (export)	C00033	89152
+Production (export)	C00033	89153
+Consumption (import) & production (export)	C00033	1534
+Production (export)	C00033	1535
+Production (export)	C00033	1538
+Production (export)	C00033	84026
+Production (export)	C00033	29361
+Production (export)	C00033	1542
+Production (export)	C00033	29362
+Production (export)	C00033	1502
+Production (export)	C00033	66219
+Production (export)	C00033	84030
+Production (export)	C00033	29347
+Production (export)	C00033	1509
+Production (export)	C00033	1511
+Production (export)	C00033	1512
+Production (export)	C00033	1513
+Production (export)	C00033	1515
+Consumption (import)	C00033	 
+Consumption (import)	C00033	285
+Consumption (import) & production (export)	C00033	116085
+Production (export)	C00033	410072
+Consumption (import) & production (export)	C00033	33043
+Consumption (import) & production (export)	C00033	894
+Consumption (import)	C00033	58138
+Consumption (import)	C00033	1565
+Consumption (import)	C00033	59610
+Consumption (import) & production (export)	C00033	182210
+Consumption (import) & production (export)	C00033	876
+Consumption (import) & production (export)	C00033	878
+Consumption (import) & production (export)	C00033	184917
+Consumption (import) & production (export)	C00033	901
+Consumption (import) & production (export)	C00033	880
+Consumption (import) & production (export)	C00033	881
+Consumption (import)	C00033	891
+Production (export)	C00033	218538
+Production (export)	C00033	39486
+Production (export)	C00033	88431
+Production (export)	C00033	37734
+Production (export)	C00033	1351
+Production (export)	C00033	1352
+Production (export)	C00033	1353
+Production (export)	C00033	246144
+Production (export)	C00033	208962
+Production (export)	C00033	562
+Production (export)	C00033	564
+Consumption (import)	C00033	29322
+Consumption (import)	C00033	39485
+Consumption (import)	C00033	39488
+Consumption (import) & production (export)	C00033	1736
+Consumption (import) & production (export)	C00033	39491
+Consumption (import)	C00033	467210
+Consumption (import)	C00033	51123
+Consumption (import) & production (export)	C00033	39492
+Consumption (import)	C00033	39496
+Consumption (import) & production (export)	C00033	853
+Production (export)	C00033	833
+Production (export)	C00033	1260
+Consumption (import) & production (export)	C00033	851
+Consumption (import)	C00033	225194
+Consumption (import)	C00033	313985
+Consumption (import) & production (export)	C00033	28232
+Consumption (import)	C00033	35554
+Consumption (import)	C00033	351604
+Consumption (import)	C00033	2238
+Consumption (import)	C00033	2246
+Production (export)	C00033	61171
+Consumption (import) & production (export)	C00033	573
+Production (export)	C00033	1579
+Production (export)	C00033	83683
+Production (export)	C00033	1604
+Production (export)	C00033	227943
+Production (export)	C00033	1580
+Production (export)	C00033	1581
+Production (export)	C00033	1582
+Production (export)	C00033	181675
+Production (export)	C00033	47770
+Production (export)	C00033	1584
+Production (export)	C00033	1613
+Production (export)	C00033	1596
+Production (export)	C00033	1587
+Production (export)	C00033	1588
+Production (export)	C00033	147802
+Production (export)	C00033	109790
+Production (export)	C00033	33959
+Production (export)	C00033	1632
+Production (export)	C00033	1597
+Production (export)	C00033	1590
+Production (export)	C00033	1598
+Production (export)	C00033	47715
+Production (export)	C00033	1623
+Production (export)	C00033	1599
+Production (export)	C00033	1624
+Production (export)	C00033	227945
+Production (export)	C00033	1633
+Production (export)	C00033	1358
+Production (export)	C00033	168384
+Production (export)	C00033	158847
+Production (export)	C00033	187326
+Consumption (import)	C00033	83816
+Consumption (import)	C00033	2173
+Consumption (import)	C00033	39152
+Consumption (import)	C00033	2224
+Consumption (import) & production (export)	C00033	2214
+Consumption (import)	C00033	2208
+Consumption (import)	C00033	2209
+Consumption (import)	C00033	2317
+Consumption (import)	C00033	475088
+Consumption (import)	C00033	2203
+Production (export)	C00033	1525
+Production (export)	C00033	2110
+Production (export)	C00033	47687
+Production (export)	C00033	2111
+Production (export)	C00033	28903
+Production (export)	C00033	2095
+Production (export)	C00033	45361
+Production (export)	C00033	50052
+Production (export)	C00033	2115
+Production (export)	C00033	2096
+Production (export)	C00033	2097
+Production (export)	C00033	29501
+Production (export)	C00033	2098
+Production (export)	C00033	2099
+Production (export)	C00033	2100
+Production (export)	C00033	2105
+Production (export)	C00033	2118
+Production (export)	C00033	2102
+Production (export)	C00033	28227
+Production (export)	C00033	2104
+Production (export)	C00033	2107
+Production (export)	C00033	2109
+Production (export)	C00033	28118
+Production (export)	C00033	387661
+Production (export)	C00033	46503
+Production (export)	C00033	208216
+Production (export)	C00033	19
+Production (export)	C00033	29543
+Production (export)	C00033	110500
+Production (export)	C00033	1261
+Production (export)	C00033	341694
+Production (export)	C00033	419005
+Production (export)	C00033	242750
+Production (export)	C00033	28125
+Production (export)	C00033	77095
+Production (export)	C00033	28126
+Production (export)	C00033	28127
+Production (export)	C00033	165179
+Production (export)	C00033	28130
+Production (export)	C00033	189722
+Production (export)	C00033	28132
+Production (export)	C00033	282402
+Production (export)	C00033	28134
+Production (export)	C00033	28135
+Production (export)	C00033	839
+Production (export)	C00033	228604
+Production (export)	C00033	76122
+Production (export)	C00033	386414
+Production (export)	C00033	28137
+Production (export)	C00033	1747
+Production (export)	C00033	1744
+Production (export)	C00033	106588
+Consumption (import)	C00033	300
+Production (export)	C00033	638849
+Production (export)	C00033	2261
+Consumption (import)	C00033	166486
+Consumption (import)	C00033	360807
+Production (export)	C00033	1264
+Production (export)	C00033	40518
+Production (export)	C00033	1265
+Production (export)	C00033	33038
+Production (export)	C00033	40520
+Production (export)	C00033	33039
+Production (export)	C00033	671224
+Production (export)	C00033	135080
+Production (export)	C00033	135083
+Production (export)	C00033	69823
+Production (export)	C00033	24
+Production (export)	C00033	1311
+Production (export)	C00033	1328
+Production (export)	C00033	113107
+Production (export)	C00033	1335
+Production (export)	C00033	45634
+Production (export)	C00033	1317
+Production (export)	C00033	1334
+Production (export)	C00033	1336
+Production (export)	C00033	315405
+Production (export)	C00033	1302
+Production (export)	C00033	102684
+Production (export)	C00033	68892
+Production (export)	C00033	28037
+Production (export)	C00033	1309
+Production (export)	C00033	1303
+Production (export)	C00033	1318
+Production (export)	C00033	68891
+Production (export)	C00033	1313
+Production (export)	C00033	361101
+Production (export)	C00033	1314
+Production (export)	C00033	1304
+Production (export)	C00033	1305
+Production (export)	C00033	1307
+Production (export)	C00033	1308
+Production (export)	C00033	1349
+Production (export)	C00033	1343
+Production (export)	C00033	214851
+Production (export)	C00033	119484
+Production (export)	C00033	51197
+Production (export)	C00033	863
+Production (export)	C00033	86170
+Production (export)	C00033	316277
+Production (export)	C00033	2336
+Production (export)	C00033	39777
+Production (export)	C00033	39778
+Production (export)	C00033	29466
+Consumption (import)	C00033	844
+Consumption (import)	C00033	339
+Production (export)	C00466, C00810	1590
+Consumption (import)	C00466, C00810	19
+Consumption (import)	C00466, C00810	29543
+Production (export)	C00207	1423
+Production (export)	C00207	1488
+Production (export)	C00207	333367
+Production (export)	C00207	261299
+Production (export)	C00207	1520
+Production (export)	C00207	208479
+Production (export)	C00207	1491
+Production (export)	C00207	1492
+Production (export)	C00207	217159
+Production (export)	C00207	1521
+Production (export)	C00207	1493
+Production (export)	C00207	 
+Production (export)	C00207	1496
+Production (export)	C00207	154046
+Production (export)	C00207	89152
+Production (export)	C00207	89153
+Production (export)	C00207	1534
+Production (export)	C00207	1535
+Production (export)	C00207	1538
+Production (export)	C00207	84026
+Production (export)	C00207	29361
+Production (export)	C00207	1542
+Production (export)	C00207	29362
+Production (export)	C00207	1502
+Production (export)	C00207	66219
+Production (export)	C00207	84030
+Production (export)	C00207	29347
+Production (export)	C00207	1509
+Production (export)	C00207	1511
+Production (export)	C00207	1512
+Production (export)	C00207	1513
+Production (export)	C00207	1515
+Consumption (import)	C00207	 
+Consumption (import)	C00147	 
+Consumption (import)	C00212	 
+Production (export)	C00194	1404
+Consumption (import)	C00194	1423
+Consumption (import)	C00194	28111
+Consumption (import)	C00194	817
+Consumption (import)	C00194	818
+Consumption (import)	C00194	821
+Production (export)	C00194	1681
+Production (export)	C00194	1685
+Production (export)	C00194	216816
+Consumption (import)	C00194	 
+Consumption (import)	C00194	1717
+Consumption (import)	C00194	1299
+Consumption (import) & production (export)	C00194	562
+Consumption (import) & production (export)	C00194	573
+Consumption (import)	C00194	1584
+Production (export)	C00194	1598
+Production (export)	C00194	1642
+Production (export)	C00194	381
+Consumption (import)	C00194	1769
+Production (export)	C00194	1772
+Consumption (import)	C00194	823
+Consumption (import)	C00194	837
+Consumption (import)	C00194	839
+Production (export)	C00194	1744
+Consumption (import)	C00194	584
+Consumption (import)	C00194	287
+Consumption (import)	C00194	40518
+Production (export)	C00194	28901
+Consumption (import)	C00194	623
+Consumption (import)	C00194	624
+Consumption (import)	C00194	1280
+Production (export)	C00194	1911
+Consumption (import)	C06104	80867
+Consumption (import)	C06104	47920
+Macromolecule degradation	C01768	28116
+Consumption (import)	C00026	219314
+Consumption (import)	C06427	831
+Consumption (import)	C06427	1264
+Consumption (import)	C02477	 
+Consumption (import)	C00108	 
+Macromolecule degradation	C00569	28116
+Macromolecule degradation	C00569	818
+Macromolecule degradation	C00569	821
+Macromolecule degradation	C00569	216816
+Consumption (import)	C06425	 
+Consumption (import)	C00072	 
+Production (export)	C00072	442
+Production (export)	C00072	92945
+Consumption (import)	C00261	28232
+Consumption (import)	C00180	28232
+Consumption (import)	C00180	573
+Consumption (import)	C00180	114616
+Consumption (import)	C00180	863
+Consumption (import)	C00180	316277
+Consumption (import)	C00556	28232
+Consumption (import)	C00099	29461
+Consumption (import)	C00099	1717
+Consumption (import)	C00719	28187
+Consumption (import)	C00719	562
+Consumption (import)	C00719	2224
+Consumption (import)	C00719	2209
+Consumption (import)	C00719	114616
+Consumption (import)	C00288	817
+Production (export)	C00288	 
+Consumption (import)	C00288	894
+Consumption (import)	C00288	2173
+Consumption (import)	C00288	29543
+Consumption (import)	C00288	40518
+Consumption (import)	C00120	1423
+Production (export)	C00120	186490
+Production (export)	C00120	1680
+Production (export)	C00120	1681
+Production (export)	C00120	216816
+Consumption (import)	C00120	1393
+Consumption (import)	C00120	235
+Consumption (import)	C00120	29459
+Consumption (import)	C00120	29461
+Consumption (import)	C00120	1488
+Consumption (import)	C00120	1491
+Consumption (import)	C00120	1492
+Consumption (import)	C00120	1509
+Consumption (import)	C00120	1513
+Consumption (import)	C00120	 
+Consumption (import)	C00120	1299
+Production (export)	C00120	562
+Consumption (import)	C00120	833
+Consumption (import)	C00120	1579
+Consumption (import)	C00120	1582
+Consumption (import)	C00120	1245
+Consumption (import)	C00120	1639
+Consumption (import)	C00120	1464
+Consumption (import)	C00120	1406
+Consumption (import)	C00120	384
+Consumption (import)	C00120	1061
+Consumption (import)	C00120	1085
+Consumption (import)	C00120	1264
+Consumption (import)	C00120	40518
+Consumption (import)	C00120	1280
+Consumption (import)	C00120	1335
+Consumption (import)	C00120	1304
+Consumption (import)	C06142	35833
+Production (export)	C06142	1488
+Production (export)	C06142	1520
+Consumption (import)	C06142	28232
+Consumption (import)	C06142	1525
+Consumption (import)	C06142	19
+Consumption (import)	C06142	29543
+Consumption (import)	C06142	110500
+Consumption (import)	C06142	119484
+Consumption (import)	C06142	51197
+Consumption (import)	C06142	863
+Consumption (import)	C06142	86170
+Consumption (import)	C06142	316277
+Production (export)	C18706	28116
+Production (export)	C18706	818
+Production (export)	C18706	216816
+Production (export)	C00246	905
+Production (export)	C00246	33029
+Production (export)	C00246	33032
+Production (export)	C00246	33034
+Production (export)	C00246	33036
+Production (export)	C00246	33037
+Production (export)	C00246	105841
+Production (export)	C00246	169435
+Production (export)	C00246	47678
+Production (export)	C00246	246787
+Production (export)	C00246	310298
+Production (export)	C00246	387090
+Production (export)	C00246	357276
+Production (export)	C00246	28111
+Production (export)	C00246	338188
+Production (export)	C00246	817
+Production (export)	C00246	290053
+Production (export)	C00246	329854
+Production (export)	C00246	28116
+Production (export)	C00246	384638
+Production (export)	C00246	310297
+Production (export)	C00246	376805
+Production (export)	C00246	46506
+Production (export)	C00246	818
+Production (export)	C00246	820
+Production (export)	C00246	821
+Production (export)	C00246	371601
+Production (export)	C00246	216816
+Production (export)	C00246	45851
+Production (export)	C00246	831
+Production (export)	C00246	43305
+Production (export)	C00246	100886
+Production (export)	C00246	1488
+Production (export)	C00246	333367
+Production (export)	C00246	261299
+Production (export)	C00246	1520
+Production (export)	C00246	208479
+Production (export)	C00246	1491
+Production (export)	C00246	1492
+Production (export)	C00246	217159
+Production (export)	C00246	1521
+Production (export)	C00246	1493
+Production (export)	C00246	 
+Production (export)	C00246	1496
+Production (export)	C00246	154046
+Production (export)	C00246	89152
+Production (export)	C00246	89153
+Production (export)	C00246	1534
+Production (export)	C00246	1535
+Production (export)	C00246	1538
+Production (export)	C00246	84026
+Production (export)	C00246	29361
+Production (export)	C00246	1542
+Production (export)	C00246	29362
+Production (export)	C00246	1502
+Production (export)	C00246	66219
+Production (export)	C00246	84030
+Production (export)	C00246	29347
+Production (export)	C00246	1509
+Production (export)	C00246	1511
+Production (export)	C00246	1512
+Production (export)	C00246	1513
+Production (export)	C00246	1515
+Consumption (import)	C00246	 
+Production (export)	C00246	116085
+Production (export)	C00246	410072
+Production (export)	C00246	33043
+Consumption (import)	C00246	453230
+Consumption (import)	C00246	58138
+Consumption (import)	C00246	1565
+Consumption (import)	C00246	59610
+Consumption (import)	C00246	182210
+Consumption (import)	C00246	876
+Consumption (import)	C00246	878
+Consumption (import)	C00246	184917
+Consumption (import)	C00246	901
+Consumption (import)	C00246	880
+Consumption (import)	C00246	881
+Production (export)	C00246	1351
+Production (export)	C00246	29322
+Production (export)	C00246	39485
+Production (export)	C00246	39488
+Production (export)	C00246	1736
+Production (export)	C00246	39491
+Production (export)	C00246	467210
+Production (export)	C00246	51123
+Production (export)	C00246	39492
+Production (export)	C00246	39496
+Production (export)	C00246	853
+Production (export)	C00246	849
+Production (export)	C00246	850
+Production (export)	C00246	851
+Production (export)	C00246	860
+Production (export)	C00246	861
+Production (export)	C00246	856
+Consumption (import)	C00246	28232
+Production (export)	C00246	187326
+Production (export)	C00246	28118
+Production (export)	C00246	29543
+Consumption (import)	C00246	110500
+Production (export)	C00246	54005
+Production (export)	C00246	33031
+Consumption (import)	C00246	839
+Production (export)	C00246	166486
+Production (export)	C00246	360807
+Production (export)	C00246	214851
+Consumption (import)	C00246	119484
+Consumption (import)	C00246	51197
+Consumption (import)	C00246	863
+Consumption (import)	C00246	86170
+Consumption (import)	C00246	316277
+Consumption (import)	C00076	 
+Production (export)	C01672	197
+Production (export)	C01672	84030
+Production (export)	C01672	550
+Production (export)	C01672	562
+Consumption (import)	C01585	80867
+Consumption (import)	C01585	47920
+Production (export)	C01585	1534
+Consumption (import)	C01585	863
+Consumption (import)	C00237	28187
+Consumption (import)	C00237	2234
+Consumption (import)	C00237	 
+Consumption (import)	C00237	2214
+Consumption (import)	C00237	2208
+Consumption (import)	C00237	2209
+Consumption (import)	C00237	145263
+Consumption (import)	C00237	145262
+Consumption (import)	C00237	1525
+Consumption (import)	C00185	35830
+Consumption (import)	C00185	67854
+Consumption (import)	C00185	219314
+Consumption (import)	C00185	645
+Consumption (import)	C00185	169435
+Consumption (import)	C00185	28116
+Consumption (import)	C00185	818
+Consumption (import)	C00185	820
+Consumption (import)	C00185	371601
+Consumption (import)	C00185	1680
+Consumption (import)	C00185	1685
+Consumption (import)	C00185	53443
+Consumption (import)	C00185	831
+Consumption (import)	C00185	43305
+Consumption (import)	C00185	100886
+Consumption (import)	C00185	1488
+Consumption (import)	C00185	1521
+Consumption (import)	C00185	1515
+Consumption (import)	C00185	74426
+Consumption (import)	C00185	147207
+Consumption (import)	C00185	147206
+Consumption (import)	C00185	33043
+Consumption (import)	C00185	39491
+Consumption (import)	C00185	39492
+Consumption (import)	C00185	833
+Consumption (import)	C00185	986
+Consumption (import)	C00185	61171
+Consumption (import)	C00185	573
+Consumption (import)	C00185	40542
+Consumption (import)	C00185	157692
+Consumption (import)	C00185	157688
+Consumption (import)	C00185	168384
+Consumption (import)	C00185	158847
+Consumption (import)	C00185	823
+Consumption (import)	C00185	165179
+Consumption (import)	C00185	839
+Consumption (import)	C00185	2261
+Consumption (import)	C00185	166486
+Consumption (import)	C00185	1264
+Consumption (import)	C00185	1265
+Consumption (import)	C00185	40520
+Consumption (import)	C00185	1335
+Consumption (import)	C00185	214851
+Consumption (import)	C00185	2287
+Consumption (import)	C02013, C06217, C06218, C06219 	1685
+Consumption (import)	C02013, C06217, C06218, C06219 	1515
+Consumption (import)	C02013, C06217, C06218, C06219 	833
+Consumption (import)	C02013, C06217, C06218, C06219 	2261
+Macromolecule degradation	C00760	35830
+Macromolecule degradation	C00760	28049
+Macromolecule degradation	C00760	40567
+Macromolecule degradation	C00760	1408
+Macromolecule degradation	C00760	246787
+Macromolecule degradation	C00760	831
+Macromolecule degradation	C00760	31899
+Macromolecule degradation	C00760	44001
+Macromolecule degradation	C00760	1711
+Macromolecule degradation	C00760	29360
+Macromolecule degradation	C00760	1488
+Macromolecule degradation	C00760	1521
+Macromolecule degradation	C00760	1493
+Macromolecule degradation	C00760	29362
+Macromolecule degradation	C00760	1515
+Macromolecule degradation	C00760	985
+Macromolecule degradation	C00760	1353
+Macromolecule degradation	C00760	29322
+Macromolecule degradation	C00760	833
+Macromolecule degradation	C00760	168384
+Macromolecule degradation	C00760	839
+Macromolecule degradation	C00760	29549
+Macromolecule degradation	C00760	1264
+Macromolecule degradation	C00760	1265
+Macromolecule degradation	C00760	154
+Macromolecule degradation	C00760	2021
+Macromolecule degradation	C00760	2020
+Macromolecule degradation	C00760	2336
+Macromolecule degradation	C00760	2337
+Consumption (import) & production (export)	C02528	817
+Consumption (import)	C02528	329854
+Consumption (import)	C02528	818
+Production (export)	C02528	821
+Production (export)	C02528	1680
+Production (export)	C02528	28025
+Production (export)	C02528	1681
+Production (export)	C02528	1685
+Production (export)	C02528	216816
+Consumption (import)	C02528	89152
+Consumption (import)	C02528	89153
+Consumption (import)	C02528	1535
+Consumption (import) & production (export)	C02528	1502
+Consumption (import)	C02528	29347
+Consumption (import)	C02528	562
+Production (export)	C02528	1579
+Production (export)	C02528	1580
+Production (export)	C02528	1581
+Production (export)	C02528	1596
+Production (export)	C02528	1588
+Production (export)	C02528	33959
+Production (export)	C02528	1590
+Production (export)	C02528	1639
+Macromolecule degradation	C00461	986
+Macromolecule degradation	C00461	1358
+Macromolecule degradation	C00461	1916
+Macromolecule degradation	C00461	666
+Consumption (import)	C05443	 
+Consumption (import) & production (export)	C00695	817
+Consumption (import)	C00695	329854
+Consumption (import)	C00695	818
+Production (export)	C00695	821
+Production (export)	C00695	1680
+Production (export)	C00695	28025
+Production (export)	C00695	1681
+Production (export)	C00695	1685
+Production (export)	C00695	216816
+Consumption (import)	C00695	89152
+Consumption (import)	C00695	89153
+Consumption (import)	C00695	1535
+Consumption (import) & production (export)	C00695	1502
+Consumption (import)	C00695	29347
+Consumption (import)	C00695	562
+Production (export)	C00695	1579
+Production (export)	C00695	1580
+Production (export)	C00695	1581
+Production (export)	C00695	1596
+Production (export)	C00695	1588
+Production (export)	C00695	33959
+Production (export)	C00695	1590
+Production (export)	C00695	1639
+Consumption (import)	C00114	 
+Consumption (import)	C00114	19
+Consumption (import)	C00114	1318
+Macromolecule degradation	C00634, C00635	28116
+Macromolecule degradation	C00634, C00635	818
+Consumption (import)	C00417, C02341	905
+Consumption (import)	C00417, C02341	80867
+Consumption (import)	C00417, C02341	47920
+Consumption (import)	C00417, C02341	114616
+Consumption (import)	C00158	72556
+Consumption (import)	C00158	905
+Consumption (import)	C00158	80867
+Consumption (import)	C00158	47920
+Consumption (import)	C00158	644
+Consumption (import)	C00158	645
+Consumption (import)	C00158	 
+Consumption (import)	C00158	573
+Consumption (import)	C00158	1590
+Consumption (import)	C00698	 
+Production (export)	C00011	35830
+Consumption (import)	C00011	28187
+Production (export)	C00011	905
+Consumption (import)	C00011	53635
+Consumption (import)	C00011	920
+Production (export)	C00011	358
+Production (export)	C00011	105841
+Production (export)	C00011	354
+Production (export)	C00011	1390
+Production (export)	C00011	1392
+Production (export)	C00011	1452
+Production (export)	C00011	1413
+Production (export)	C00011	1396
+Production (export)	C00011	79880
+Production (export)	C00011	1398
+Production (export)	C00011	408580
+Production (export)	C00011	86665
+Production (export)	C00011	1402
+Production (export)	C00011	1404
+Production (export)	C00011	1405
+Production (export)	C00011	79885
+Production (export)	C00011	64104
+Production (export)	C00011	1408
+Production (export)	C00011	85683
+Production (export)	C00011	1423
+Production (export)	C00011	1428
+Production (export)	C00011	1405
+Consumption (import) & production (export)	C00011	47678
+Consumption (import) & production (export)	C00011	246787
+Consumption (import) & production (export)	C00011	310298
+Consumption (import) & production (export)	C00011	387090
+Consumption (import) & production (export)	C00011	357276
+Consumption (import) & production (export)	C00011	28111
+Consumption (import) & production (export)	C00011	338188
+Consumption (import) & production (export)	C00011	817
+Consumption (import) & production (export)	C00011	290053
+Consumption (import) & production (export)	C00011	329854
+Consumption (import) & production (export)	C00011	28116
+Consumption (import) & production (export)	C00011	384638
+Consumption (import) & production (export)	C00011	310297
+Consumption (import) & production (export)	C00011	376805
+Consumption (import) & production (export)	C00011	46506
+Consumption (import) & production (export)	C00011	818
+Consumption (import) & production (export)	C00011	820
+Consumption (import) & production (export)	C00011	821
+Consumption (import) & production (export)	C00011	371601
+Consumption (import)	C00011	53443
+Production (export)	C00011	45851
+Production (export)	C00011	831
+Production (export)	C00011	43305
+Consumption (import)	C00011	291048
+Consumption (import)	C00011	1108
+Production (export)	C00011	1488
+Production (export)	C00011	333367
+Production (export)	C00011	261299
+Production (export)	C00011	1520
+Production (export)	C00011	208479
+Production (export)	C00011	1491
+Production (export)	C00011	1492
+Production (export)	C00011	217159
+Production (export)	C00011	1521
+Production (export)	C00011	1493
+Production (export)	C00011	 
+Production (export)	C00011	1496
+Production (export)	C00011	154046
+Production (export)	C00011	89152
+Production (export)	C00011	89153
+Production (export)	C00011	1534
+Production (export)	C00011	1535
+Production (export)	C00011	1538
+Production (export)	C00011	84026
+Production (export)	C00011	29361
+Production (export)	C00011	1542
+Production (export)	C00011	29362
+Production (export)	C00011	1502
+Production (export)	C00011	66219
+Production (export)	C00011	84030
+Production (export)	C00011	29347
+Production (export)	C00011	1509
+Production (export)	C00011	1511
+Production (export)	C00011	1512
+Production (export)	C00011	1513
+Production (export)	C00011	1515
+Consumption (import) & production (export)	C00011	 
+Production (export)	C00011	33043
+Consumption (import)	C00011	2296
+Consumption (import)	C00011	894
+Consumption (import)	C00011	182210
+Consumption (import)	C00011	876
+Consumption (import)	C00011	878
+Consumption (import)	C00011	184917
+Consumption (import)	C00011	901
+Consumption (import)	C00011	880
+Consumption (import) & production (export)	C00011	881
+Production (export)	C00011	891
+Production (export)	C00011	39486
+Production (export)	C00011	208962
+Production (export)	C00011	562
+Production (export)	C00011	564
+Production (export)	C00011	29322
+Production (export)	C00011	39485
+Production (export)	C00011	39488
+Production (export)	C00011	1736
+Consumption (import) & production (export)	C00011	39491
+Production (export)	C00011	467210
+Production (export)	C00011	51123
+Production (export)	C00011	39492
+Production (export)	C00011	39496
+Production (export)	C00011	853
+Consumption (import) & production (export)	C00011	833
+Production (export)	C00011	28232
+Production (export)	C00011	35554
+Production (export)	C00011	210
+Consumption (import)	C00011	160233
+Production (export)	C00011	573
+Production (export)	C00011	244366
+Production (export)	C00011	1579
+Production (export)	C00011	83683
+Production (export)	C00011	1604
+Production (export)	C00011	227943
+Production (export)	C00011	1580
+Production (export)	C00011	1581
+Production (export)	C00011	1582
+Production (export)	C00011	181675
+Production (export)	C00011	47770
+Production (export)	C00011	1584
+Production (export)	C00011	1613
+Production (export)	C00011	1596
+Production (export)	C00011	1587
+Production (export)	C00011	1588
+Production (export)	C00011	147802
+Production (export)	C00011	109790
+Production (export)	C00011	33959
+Production (export)	C00011	1632
+Production (export)	C00011	1597
+Production (export)	C00011	1590
+Production (export)	C00011	1598
+Production (export)	C00011	47715
+Production (export)	C00011	1623
+Production (export)	C00011	1599
+Production (export)	C00011	1624
+Production (export)	C00011	227945
+Production (export)	C00011	1633
+Production (export)	C00011	33964
+Production (export)	C00011	115778
+Production (export)	C00011	136609
+Production (export)	C00011	1245
+Production (export)	C00011	168384
+Consumption (import)	C00011	43687
+Consumption (import)	C00011	83816
+Consumption (import)	C00011	2173
+Consumption (import)	C00011	2190
+Consumption (import)	C00011	39152
+Consumption (import)	C00011	2187
+Consumption (import)	C00011	2188
+Consumption (import)	C00011	2320
+Consumption (import) & production (export)	C00011	2224
+Consumption (import) & production (export)	C00011	2214
+Consumption (import) & production (export)	C00011	2208
+Consumption (import) & production (export)	C00011	2209
+Consumption (import)	C00011	475088
+Consumption (import)	C00011	2203
+Consumption (import)	C00011	145262
+Consumption (import)	C00011	2180
+Production (export)	C00011	414
+Production (export)	C00011	2110
+Production (export)	C00011	47687
+Production (export)	C00011	2111
+Production (export)	C00011	28903
+Production (export)	C00011	2095
+Production (export)	C00011	45361
+Production (export)	C00011	50052
+Production (export)	C00011	2115
+Production (export)	C00011	2096
+Production (export)	C00011	2097
+Production (export)	C00011	29501
+Production (export)	C00011	2098
+Production (export)	C00011	2099
+Production (export)	C00011	2100
+Production (export)	C00011	2105
+Production (export)	C00011	2118
+Production (export)	C00011	2102
+Production (export)	C00011	28227
+Production (export)	C00011	2104
+Production (export)	C00011	2107
+Production (export)	C00011	2109
+Production (export)	C00011	847
+Production (export)	C00011	208216
+Consumption (import)	C00011	29543
+Consumption (import) & production (export)	C00011	110500
+Production (export)	C00011	1261
+Production (export)	C00011	341694
+Production (export)	C00011	28123
+Production (export)	C00011	1747
+Production (export)	C00011	1744
+Consumption (import) & production (export)	C00011	287
+Production (export)	C00011	13773
+Production (export)	C00011	166486
+Production (export)	C00011	1264
+Consumption (import) & production (export)	C00011	1265
+Production (export)	C00011	24
+Production (export)	C00011	1311
+Production (export)	C00011	1328
+Production (export)	C00011	113107
+Production (export)	C00011	1335
+Production (export)	C00011	45634
+Production (export)	C00011	1317
+Production (export)	C00011	1334
+Production (export)	C00011	1336
+Production (export)	C00011	315405
+Production (export)	C00011	1302
+Production (export)	C00011	102684
+Production (export)	C00011	68892
+Production (export)	C00011	28037
+Production (export)	C00011	1309
+Production (export)	C00011	1303
+Production (export)	C00011	1318
+Production (export)	C00011	68891
+Production (export)	C00011	1313
+Production (export)	C00011	361101
+Production (export)	C00011	1314
+Production (export)	C00011	1304
+Production (export)	C00011	1305
+Production (export)	C00011	1307
+Production (export)	C00011	1308
+Production (export)	C00011	1349
+Production (export)	C00011	1343
+Production (export)	C00011	2287
+Production (export)	C00011	119484
+Consumption (import) & production (export)	C00011	863
+Consumption (import) & production (export)	C00011	316277
+Production (export)	C00011	2303
+Production (export)	C00011	2336
+Consumption (import)	C00011	36861
+Production (export)	C00011	29466
+Production (export)	C00011	542
+Consumption (import)	C01771	1534
+Consumption (import)	C01771	863
+Consumption (import)	C00070	 
+Consumption (import)	C00475	 
+Consumption (import)	C00380	 
+Consumption (import)	C00216, C00259	80867
+Consumption (import)	C00216, C00259	47920
+Consumption (import)	C00216, C00259	67854
+Consumption (import)	C00216, C00259	644
+Consumption (import)	C00216, C00259	645
+Consumption (import)	C00216, C00259	28116
+Consumption (import)	C00216, C00259	818
+Consumption (import)	C00216, C00259	371601
+Consumption (import)	C00216, C00259	831
+Consumption (import)	C00216, C00259	43305
+Consumption (import)	C00216, C00259	1488
+Consumption (import)	C00216, C00259	 
+Consumption (import)	C00216, C00259	410072
+Consumption (import)	C00216, C00259	88431
+Consumption (import)	C00216, C00259	39491
+Consumption (import)	C00216, C00259	61171
+Consumption (import)	C00216, C00259	573
+Consumption (import)	C00216, C00259	168384
+Consumption (import)	C00216, C00259	158847
+Consumption (import)	C00216, C00259	114616
+Consumption (import)	C00216, C00259	28118
+Consumption (import)	C00216, C00259	165179
+Consumption (import)	C00216, C00259	839
+Consumption (import)	C00216, C00259	166486
+Consumption (import)	C00216, C00259	40520
+Consumption (import)	C00216, C00259	621
+Consumption (import)	C00216, C00259	2285
+Consumption (import)	C00216, C00259	2287
+Consumption (import)	C00095	2148
+Consumption (import)	C00095	67854
+Consumption (import)	C00095	105841
+Consumption (import)	C00095	169435
+Consumption (import)	C00095	47678
+Consumption (import)	C00095	246787
+Consumption (import)	C00095	310298
+Consumption (import)	C00095	387090
+Consumption (import)	C00095	357276
+Consumption (import)	C00095	28111
+Consumption (import)	C00095	338188
+Consumption (import)	C00095	817
+Consumption (import)	C00095	290053
+Consumption (import)	C00095	329854
+Consumption (import)	C00095	28116
+Consumption (import)	C00095	384638
+Consumption (import)	C00095	310297
+Consumption (import)	C00095	376805
+Consumption (import)	C00095	46506
+Consumption (import)	C00095	818
+Consumption (import)	C00095	820
+Consumption (import)	C00095	821
+Consumption (import)	C00095	371601
+Consumption (import)	C00095	1680
+Consumption (import)	C00095	1683
+Consumption (import)	C00095	28025
+Consumption (import)	C00095	1681
+Consumption (import)	C00095	1685
+Consumption (import)	C00095	1686
+Consumption (import)	C00095	1689
+Consumption (import)	C00095	78342
+Consumption (import)	C00095	216816
+Consumption (import)	C00095	28026
+Consumption (import)	C00095	53443
+Consumption (import)	C00095	831
+Consumption (import)	C00095	43305
+Consumption (import)	C00095	100886
+Consumption (import)	C00095	1496
+Consumption (import)	C00095	147207
+Consumption (import)	C00095	 
+Consumption (import)	C00095	116085
+Consumption (import)	C00095	410072
+Consumption (import)	C00095	33043
+Consumption (import)	C00095	39486
+Consumption (import)	C00095	88431
+Consumption (import)	C00095	39492
+Consumption (import)	C00095	853
+Consumption (import)	C00095	986
+Consumption (import)	C00095	61171
+Consumption (import)	C00095	1579
+Consumption (import)	C00095	83683
+Consumption (import)	C00095	1604
+Consumption (import)	C00095	227943
+Consumption (import)	C00095	1580
+Consumption (import)	C00095	1581
+Consumption (import)	C00095	1582
+Consumption (import)	C00095	181675
+Consumption (import)	C00095	47770
+Consumption (import)	C00095	1584
+Consumption (import)	C00095	1613
+Consumption (import)	C00095	1596
+Consumption (import)	C00095	1587
+Consumption (import)	C00095	1588
+Consumption (import)	C00095	147802
+Consumption (import)	C00095	109790
+Consumption (import)	C00095	33959
+Consumption (import)	C00095	1632
+Consumption (import)	C00095	1597
+Consumption (import)	C00095	1590
+Consumption (import)	C00095	1598
+Consumption (import)	C00095	47715
+Consumption (import)	C00095	1623
+Consumption (import)	C00095	1599
+Consumption (import)	C00095	1624
+Consumption (import)	C00095	227945
+Consumption (import)	C00095	1633
+Consumption (import)	C00095	1245
+Consumption (import)	C00095	168384
+Consumption (import)	C00095	28118
+Consumption (import)	C00095	1254
+Consumption (import)	C00095	166486
+Consumption (import)	C00095	40518
+Consumption (import)	C00095	1318
+Consumption (import)	C00095	1304
+Consumption (import)	C00095	1343
+Consumption (import)	C00095	214851
+Consumption (import)	C00095	2287
+Consumption (import)	C00905	562
+Consumption (import)	C02262	28025
+Consumption (import)	C02262	1685
+Consumption (import)	C02262	1686
+Consumption (import)	C02262	1689
+Consumption (import)	C02262	216816
+Consumption (import)	C00124	2148
+Consumption (import)	C00124	85698
+Consumption (import)	C00124	80867
+Consumption (import)	C00124	47920
+Consumption (import)	C00124	33032
+Consumption (import)	C00124	169435
+Consumption (import)	C00124	28111
+Consumption (import)	C00124	28116
+Consumption (import)	C00124	818
+Consumption (import)	C00124	371601
+Consumption (import)	C00124	1680
+Consumption (import)	C00124	1683
+Consumption (import)	C00124	28025
+Consumption (import)	C00124	1681
+Consumption (import)	C00124	1685
+Consumption (import)	C00124	1686
+Consumption (import)	C00124	1689
+Consumption (import)	C00124	78342
+Consumption (import)	C00124	216816
+Consumption (import)	C00124	28026
+Consumption (import)	C00124	53443
+Consumption (import)	C00124	831
+Consumption (import)	C00124	43305
+Consumption (import)	C00124	100886
+Consumption (import)	C00124	1488
+Consumption (import)	C00124	29361
+Consumption (import)	C00124	147207
+Consumption (import)	C00124	 
+Consumption (import)	C00124	410072
+Consumption (import)	C00124	39486
+Consumption (import)	C00124	88431
+Consumption (import)	C00124	562
+Consumption (import)	C00124	986
+Consumption (import)	C00124	168384
+Consumption (import)	C00124	114616
+Consumption (import)	C00124	28118
+Consumption (import)	C00124	82076
+Consumption (import)	C00124	33039
+Consumption (import)	C00124	214851
+Consumption (import)	C00124	2285
+Consumption (import)	C00124	2287
+Consumption (import)	C00333	28111
+Consumption (import)	C00333	817
+Consumption (import)	C00333	28116
+Consumption (import)	C00333	818
+Consumption (import)	C00333	821
+Consumption (import)	C00333	43305
+Consumption (import)	C00333	562
+Consumption (import)	C00333	986
+Consumption (import)	C00257	72556
+Consumption (import)	C00257	562
+Consumption (import)	C00257	573
+Consumption (import)	C00257	114616
+Consumption (import)	C00329	28111
+Consumption (import)	C00329	817
+Consumption (import)	C00329	28116
+Consumption (import)	C00329	818
+Consumption (import)	C00329	821
+Consumption (import)	C00329	28025
+Consumption (import)	C00329	1681
+Consumption (import)	C00329	1685
+Consumption (import)	C00329	1686
+Consumption (import)	C00329	1689
+Consumption (import)	C00329	216816
+Consumption (import)	C00329	28026
+Consumption (import)	C00329	74426
+Consumption (import)	C00329	 
+Consumption (import)	C00329	88431
+Consumption (import)	C00329	986
+Consumption (import)	C00031	2148
+Consumption (import)	C00031	85698
+Consumption (import)	C00031	524
+Consumption (import)	C00031	80867
+Consumption (import)	C00031	47920
+Consumption (import)	C00031	67854
+Consumption (import)	C00031	644
+Consumption (import)	C00031	56636
+Consumption (import)	C00031	358
+Consumption (import)	C00031	33029
+Consumption (import)	C00031	33032
+Consumption (import)	C00031	33034
+Consumption (import)	C00031	33036
+Consumption (import)	C00031	33037
+Consumption (import)	C00031	105841
+Consumption (import)	C00031	169435
+Consumption (import)	C00031	2234
+Consumption (import)	C00031	354
+Consumption (import)	C00031	817
+Consumption (import)	C00031	28116
+Consumption (import)	C00031	818
+Consumption (import)	C00031	371601
+Consumption (import)	C00031	1680
+Consumption (import)	C00031	28025
+Consumption (import)	C00031	1681
+Consumption (import)	C00031	1685
+Consumption (import)	C00031	216816
+Consumption (import)	C00031	1322
+Consumption (import)	C00031	53443
+Consumption (import)	C00031	9
+Consumption (import)	C00031	831
+Consumption (import)	C00031	43305
+Consumption (import)	C00031	100886
+Consumption (import)	C00031	1488
+Consumption (import)	C00031	1520
+Consumption (import)	C00031	1491
+Consumption (import)	C00031	1492
+Consumption (import)	C00031	1521
+Consumption (import)	C00031	1496
+Consumption (import)	C00031	1509
+Consumption (import)	C00031	1515
+Consumption (import)	C00031	74426
+Consumption (import)	C00031	147207
+Consumption (import)	C00031	147206
+Consumption (import)	C00031	 
+Consumption (import)	C00031	410072
+Consumption (import)	C00031	33043
+Consumption (import)	C00031	901
+Consumption (import)	C00031	39486
+Consumption (import)	C00031	88431
+Consumption (import)	C00031	1351
+Consumption (import)	C00031	562
+Consumption (import)	C00031	39488
+Consumption (import)	C00031	1736
+Consumption (import)	C00031	39491
+Consumption (import)	C00031	39492
+Consumption (import)	C00031	853
+Consumption (import)	C00031	833
+Consumption (import)	C00031	986
+Consumption (import)	C00031	851
+Consumption (import)	C00031	727
+Consumption (import)	C00031	729
+Consumption (import)	C00031	2238
+Consumption (import)	C00031	2242
+Consumption (import)	C00031	2246
+Consumption (import)	C00031	61171
+Consumption (import)	C00031	573
+Consumption (import)	C00031	1579
+Consumption (import)	C00031	1604
+Consumption (import)	C00031	1596
+Consumption (import)	C00031	33959
+Consumption (import)	C00031	1590
+Consumption (import)	C00031	40542
+Consumption (import)	C00031	157692
+Consumption (import)	C00031	157688
+Consumption (import)	C00031	1245
+Consumption (import)	C00031	168384
+Consumption (import)	C00031	158847
+Consumption (import)	C00031	187326
+Consumption (import)	C00031	2190
+Consumption (import)	C00031	28118
+Consumption (import)	C00031	823
+Consumption (import)	C00031	46503
+Consumption (import)	C00031	1261
+Consumption (import)	C00031	82076
+Consumption (import)	C00031	165179
+Consumption (import)	C00031	839
+Consumption (import)	C00031	1747
+Consumption (import)	C00031	1744
+Consumption (import)	C00031	287
+Consumption (import)	C00031	300
+Consumption (import)	C00031	13773
+Consumption (import)	C00031	2261
+Consumption (import)	C00031	53953
+Consumption (import)	C00031	329
+Consumption (import)	C00031	166486
+Consumption (import)	C00031	1264
+Consumption (import)	C00031	40520
+Consumption (import)	C00031	671224
+Consumption (import)	C00031	135080
+Consumption (import)	C00031	135083
+Consumption (import)	C00031	69823
+Consumption (import)	C00031	621
+Consumption (import)	C00031	63612
+Consumption (import)	C00031	1335
+Consumption (import)	C00031	1302
+Consumption (import)	C00031	1309
+Consumption (import)	C00031	214851
+Consumption (import)	C00031	2285
+Consumption (import)	C00031	2287
+Consumption (import)	C00031	55802
+Consumption (import)	C00031	187878
+Consumption (import)	C00031	311400
+Consumption (import)	C00031	342948
+Consumption (import)	C00031	172049
+Consumption (import)	C00031	2303
+Consumption (import)	C00031	2336
+Consumption (import)	C00031	339
+Consumption (import)	C00031	542
+Consumption (import)	C00191	67854
+Consumption (import)	C00191	28111
+Consumption (import)	C00191	817
+Consumption (import)	C00191	28116
+Consumption (import)	C00191	818
+Consumption (import)	C00191	821
+Consumption (import)	C00191	216816
+Consumption (import)	C00191	43305
+Consumption (import)	C00191	562
+Consumption (import)	C00191	114616
+Consumption (import)	C00476, C01508	818
+Consumption (import)	C00476, C01508	 
+Consumption (import)	C00476, C01508	114616
+Consumption (import)	C00392	80867
+Consumption (import)	C00392	47920
+Consumption (import)	C00392	67854
+Consumption (import)	C00392	219314
+Consumption (import)	C00392	371601
+Consumption (import)	C00392	1681
+Consumption (import)	C00392	1496
+Consumption (import)	C00392	116085
+Consumption (import)	C00392	61171
+Consumption (import)	C00392	1579
+Consumption (import)	C00392	1582
+Consumption (import)	C00392	1584
+Consumption (import) & production (export)	C00392	1613
+Consumption (import)	C00392	1596
+Consumption (import)	C00392	1597
+Consumption (import)	C00392	1590
+Production (export)	C00392	1598
+Consumption (import)	C00392	47715
+Consumption (import)	C00392	1624
+Consumption (import)	C00392	1772
+Consumption (import)	C00392	621
+Consumption (import)	C00392	1311
+Consumption (import)	C00392	1328
+Consumption (import)	C00392	113107
+Consumption (import)	C00392	1335
+Consumption (import)	C00392	45634
+Consumption (import)	C00392	1317
+Consumption (import)	C00392	1334
+Consumption (import)	C00392	1336
+Consumption (import)	C00392	315405
+Consumption (import)	C00392	1302
+Consumption (import)	C00392	102684
+Consumption (import)	C00392	68892
+Consumption (import)	C00392	28037
+Consumption (import)	C00392	1309
+Consumption (import)	C00392	1303
+Consumption (import)	C00392	1318
+Consumption (import)	C00392	68891
+Consumption (import)	C00392	1313
+Consumption (import)	C00392	361101
+Consumption (import)	C00392	1314
+Consumption (import)	C00392	1304
+Consumption (import)	C00392	1305
+Consumption (import)	C00392	1307
+Consumption (import)	C00392	1308
+Consumption (import)	C00392	1349
+Consumption (import)	C00392	1343
+Consumption (import)	C00159	85698
+Consumption (import)	C00159	47920
+Consumption (import)	C00159	328814
+Consumption (import)	C00159	33029
+Consumption (import)	C00159	33032
+Consumption (import)	C00159	33034
+Consumption (import)	C00159	33036
+Consumption (import)	C00159	33037
+Consumption (import)	C00159	169435
+Consumption (import)	C00159	28116
+Consumption (import)	C00159	818
+Consumption (import)	C00159	371601
+Consumption (import)	C00159	186490
+Consumption (import)	C00159	53443
+Consumption (import)	C00159	831
+Consumption (import)	C00159	43305
+Consumption (import)	C00159	100886
+Consumption (import)	C00159	1488
+Consumption (import)	C00159	74426
+Consumption (import)	C00159	147207
+Consumption (import)	C00159	 
+Consumption (import)	C00159	33043
+Consumption (import)	C00159	986
+Consumption (import)	C00159	61171
+Consumption (import)	C00159	1579
+Consumption (import)	C00159	40542
+Consumption (import)	C00159	157692
+Consumption (import)	C00159	168384
+Consumption (import)	C00159	158847
+Consumption (import)	C00159	28118
+Consumption (import)	C00159	823
+Consumption (import)	C00159	46503
+Consumption (import)	C00159	1261
+Consumption (import)	C00159	40520
+Consumption (import)	C00159	621
+Consumption (import)	C00159	214851
+Consumption (import)	C00159	2287
+Consumption (import)	C06468	28116
+Consumption (import)	C06468	818
+Consumption (import)	C06468	820
+Consumption (import)	C06468	371601
+Consumption (import)	C06468	1680
+Consumption (import)	C06468	1683
+Consumption (import)	C06468	28025
+Consumption (import)	C06468	1681
+Consumption (import)	C06468	1685
+Consumption (import)	C06468	1686
+Consumption (import)	C06468	1689
+Consumption (import)	C06468	78342
+Consumption (import)	C06468	216816
+Consumption (import)	C06468	28026
+Consumption (import)	C06468	1264
+Consumption (import)	C06468	40518
+Consumption (import)	C06468	1265
+Consumption (import)	C06468	33038
+Consumption (import)	C06468	46228
+Consumption (import)	C06468	40520
+Consumption (import)	C06468	33039
+Consumption (import)	C00121	80867
+Consumption (import)	C00121	47920
+Consumption (import)	C00121	28116
+Consumption (import)	C00121	818
+Consumption (import)	C00121	1685
+Consumption (import)	C00121	74426
+Consumption (import)	C00121	147207
+Consumption (import)	C00121	 
+Consumption (import)	C00121	1351
+Consumption (import)	C00121	562
+Consumption (import)	C00121	61171
+Consumption (import)	C00121	114616
+Consumption (import)	C00794, C01722	80867
+Consumption (import)	C00794, C01722	47920
+Consumption (import)	C00794, C01722	67854
+Consumption (import)	C00794, C01722	645
+Consumption (import)	C00794, C01722	371601
+Consumption (import)	C00794, C01722	1496
+Consumption (import)	C00794, C01722	 
+Consumption (import)	C00794, C01722	88431
+Consumption (import)	C00794, C01722	61171
+Consumption (import)	C00794, C01722	28901
+Consumption (import)	C00794, C01722	621
+Consumption (import)	C00794, C01722	622
+Consumption (import)	C00794, C01722	623
+Consumption (import)	C00794, C01722	624
+Consumption (import)	C00795	37734
+Consumption (import)	C00795	1351
+Consumption (import)	C00795	1352
+Consumption (import)	C00795	1353
+Consumption (import)	C00795	246144
+Consumption (import)	C00795	1582
+Consumption (import)	C00795	1613
+Consumption (import)	C00795	1587
+Consumption (import)	C00795	1597
+Consumption (import)	C00795	47715
+Consumption (import)	C00558	562
+Consumption (import)	C19636	169435
+Consumption (import)	C19636	40542
+Consumption (import)	C19636	157688
+Consumption (import)	C19636	214851
+Consumption (import)	C00181	85698
+Consumption (import)	C00181	67854
+Consumption (import)	C00181	28116
+Consumption (import)	C00181	818
+Consumption (import)	C00181	371601
+Consumption (import)	C00181	216816
+Consumption (import)	C00181	831
+Consumption (import)	C00181	43305
+Consumption (import)	C00181	1488
+Consumption (import)	C00181	 
+Consumption (import)	C00181	410072
+Consumption (import)	C00181	88431
+Consumption (import)	C00181	986
+Consumption (import)	C00181	2246
+Consumption (import)	C00181	61171
+Consumption (import)	C00181	573
+Consumption (import)	C00181	168384
+Consumption (import)	C00181	158847
+Consumption (import)	C00181	114616
+Consumption (import)	C00181	823
+Consumption (import)	C00181	46503
+Consumption (import)	C00181	165179
+Consumption (import)	C00181	839
+Consumption (import)	C00181	166486
+Consumption (import)	C00181	40520
+Consumption (import)	C00181	621
+Consumption (import)	C00181	2285
+Consumption (import)	C00181	2287
+Consumption (import)	C00310, C00312	1772
+Production (export)	C04483	817
+Production (export)	C04483	818
+Production (export)	C04483	821
+Production (export)	C04483	1680
+Production (export)	C04483	28025
+Production (export)	C04483	1681
+Production (export)	C04483	1685
+Production (export)	C04483	216816
+Production (export)	C04483	35833
+Production (export)	C04483	89152
+Production (export)	C04483	89153
+Production (export)	C04483	1535
+Production (export)	C04483	1502
+Production (export)	C04483	29347
+Production (export)	C04483	1579
+Production (export)	C04483	1580
+Production (export)	C04483	1581
+Production (export)	C04483	1596
+Production (export)	C04483	1588
+Production (export)	C04483	33959
+Production (export)	C04483	1590
+Production (export)	C04483	1639
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	169435
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	47678
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	817
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	28116
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	46506
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	818
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	821
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1680
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1685
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	216816
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	28026
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	45851
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	831
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	43305
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1488
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	333367
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	261299
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1520
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	208479
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1491
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1492
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	217159
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1521
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1493
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	 
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1496
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	154046
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	89152
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	89153
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1534
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1535
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1538
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	84026
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	29361
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1542
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	29362
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1502
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	66219
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	84030
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	29347
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1509
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1511
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1512
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1513
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1515
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	986
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1579
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1580
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1582
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1613
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1587
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	1590
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	40518
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	214851
+Consumption (import)	C00721, C01835, C01935, C01936, C02052 	2336
+Consumption (import)	C02271	408
+Consumption (import)	C00580	2214
+Production (export)	C00543	817
+Production (export)	C00543	28116
+Production (export)	C00543	818
+Production (export)	C00543	1680
+Production (export)	C00543	1681
+Production (export)	C00543	216816
+Production (export)	C00543	1502
+Production (export)	C00543	562
+Production (export)	C00543	853
+Consumption (import)	C00543	2176
+Consumption (import)	C00543	2214
+Consumption (import)	C00543	2208
+Consumption (import)	C00543	2209
+Consumption (import)	C00543	2317
+Macromolecule degradation	C00039, C00046, C00419	1402
+Macromolecule degradation	C00039, C00046, C00419	1404
+Macromolecule degradation	C00039, C00046, C00419	1408
+Macromolecule degradation	C00039, C00046, C00419	1423
+Macromolecule degradation	C00039, C00046, C00419	1393
+Macromolecule degradation	C00039, C00046, C00419	833
+Macromolecule degradation	C00039, C00046, C00419	77095
+Macromolecule degradation	C00039, C00046, C00419	839
+Macromolecule degradation	C00039, C00046, C00419	303
+Macromolecule degradation	C00039, C00046, C00419	24
+Macromolecule degradation	C00039, C00046, C00419	1280
+Macromolecule degradation	C00039, C00046, C00419	28035
+Macromolecule degradation	C00039, C00046, C00419	40324
+Macromolecule degradation	C00039, C00046, C00419	1328
+Macromolecule degradation	C00039, C00046, C00419	1313
+Macromolecule degradation	C00039, C00046, C00419	1304
+Macromolecule degradation	C00039, C00046, C00419	666
+Macromolecule degradation	C00039, C00046, C00419	672
+Consumption (import)	C02679	863
+Consumption (import)	C00503	61171
+Production (export)	C00469	35830
+Consumption (import)	C00469	438
+Production (export)	C00469	358
+Production (export)	C00469	354
+Production (export)	C00469	818
+Production (export)	C00469	1680
+Production (export)	C00469	1683
+Production (export)	C00469	28025
+Production (export)	C00469	1681
+Production (export)	C00469	1685
+Production (export)	C00469	1686
+Production (export)	C00469	1689
+Production (export)	C00469	78342
+Production (export)	C00469	216816
+Production (export)	C00469	28026
+Consumption (import)	C00469	35833
+Production (export)	C00469	53443
+Production (export)	C00469	1488
+Production (export)	C00469	333367
+Production (export)	C00469	261299
+Production (export)	C00469	1520
+Production (export)	C00469	208479
+Production (export)	C00469	1491
+Production (export)	C00469	1492
+Production (export)	C00469	217159
+Production (export)	C00469	1521
+Production (export)	C00469	1493
+Production (export)	C00469	 
+Production (export)	C00469	1496
+Production (export)	C00469	154046
+Production (export)	C00469	89152
+Production (export)	C00469	89153
+Consumption (import) & production (export)	C00469	1534
+Production (export)	C00469	1535
+Production (export)	C00469	1538
+Production (export)	C00469	84026
+Production (export)	C00469	29361
+Production (export)	C00469	1542
+Production (export)	C00469	29362
+Production (export)	C00469	1502
+Production (export)	C00469	66219
+Production (export)	C00469	84030
+Production (export)	C00469	29347
+Production (export)	C00469	1509
+Production (export)	C00469	1511
+Production (export)	C00469	1512
+Production (export)	C00469	1513
+Production (export)	C00469	1515
+Production (export)	C00469	74426
+Production (export)	C00469	147207
+Production (export)	C00469	147206
+Production (export)	C00469	33043
+Consumption (import)	C00469	894
+Consumption (import)	C00469	1565
+Consumption (import)	C00469	182210
+Consumption (import)	C00469	876
+Consumption (import)	C00469	878
+Consumption (import)	C00469	184917
+Consumption (import)	C00469	901
+Consumption (import)	C00469	880
+Consumption (import)	C00469	881
+Production (export)	C00469	39486
+Production (export)	C00469	88431
+Production (export)	C00469	208962
+Production (export)	C00469	562
+Production (export)	C00469	564
+Consumption (import)	C00469	1736
+Production (export)	C00469	39492
+Consumption (import)	C00469	225194
+Consumption (import)	C00469	313985
+Consumption (import)	C00469	28232
+Consumption (import)	C00469	35554
+Consumption (import)	C00469	351604
+Production (export)	C00469	573
+Production (export)	C00469	1579
+Production (export)	C00469	83683
+Production (export)	C00469	1604
+Production (export)	C00469	227943
+Production (export)	C00469	1580
+Production (export)	C00469	1581
+Production (export)	C00469	1582
+Production (export)	C00469	181675
+Production (export)	C00469	47770
+Production (export)	C00469	1584
+Production (export)	C00469	1613
+Production (export)	C00469	1596
+Production (export)	C00469	1587
+Production (export)	C00469	1588
+Production (export)	C00469	147802
+Production (export)	C00469	109790
+Production (export)	C00469	33959
+Production (export)	C00469	1632
+Production (export)	C00469	1597
+Production (export)	C00469	1590
+Production (export)	C00469	1598
+Production (export)	C00469	47715
+Production (export)	C00469	1623
+Production (export)	C00469	1599
+Production (export)	C00469	1624
+Production (export)	C00469	227945
+Production (export)	C00469	1633
+Production (export)	C00469	1358
+Production (export)	C00469	33964
+Production (export)	C00469	115778
+Production (export)	C00469	136609
+Production (export)	C00469	1245
+Consumption (import)	C00469	2173
+Consumption (import)	C00469	1525
+Consumption (import) & production (export)	C00469	19
+Consumption (import)	C00469	29543
+Consumption (import)	C00469	110500
+Production (export)	C00469	287
+Production (export)	C00469	1264
+Production (export)	C00469	40518
+Production (export)	C00469	33039
+Production (export)	C00469	1311
+Production (export)	C00469	1328
+Production (export)	C00469	113107
+Production (export)	C00469	1335
+Production (export)	C00469	45634
+Production (export)	C00469	1317
+Production (export)	C00469	1334
+Production (export)	C00469	1336
+Production (export)	C00469	315405
+Production (export)	C00469	1302
+Production (export)	C00469	102684
+Production (export)	C00469	68892
+Production (export)	C00469	28037
+Production (export)	C00469	1309
+Production (export)	C00469	1303
+Production (export)	C00469	1318
+Production (export)	C00469	68891
+Production (export)	C00469	1313
+Production (export)	C00469	361101
+Production (export)	C00469	1314
+Production (export)	C00469	1304
+Production (export)	C00469	1305
+Production (export)	C00469	1307
+Production (export)	C00469	1308
+Production (export)	C00469	1349
+Production (export)	C00469	1343
+Consumption (import)	C00469	119484
+Consumption (import)	C00469	51197
+Consumption (import)	C00469	863
+Consumption (import)	C00469	86170
+Consumption (import)	C00469	316277
+Production (export)	C00469	542
+Consumption (import)	C00189, C00350	80867
+Consumption (import)	C00189, C00350	573
+Consumption (import)	C00189, C00350	19
+Production (export)	C00504	186490
+Production (export)	C00504	1680
+Consumption (import) & production (export)	C00504	28025
+Production (export)	C00504	1681
+Production (export)	C00504	1685
+Production (export)	C00504	1686
+Production (export)	C00504	1689
+Production (export)	C00504	216816
+Production (export)	C00504	28026
+Consumption (import)	C00504	1542
+Consumption (import)	C00504	1513
+Consumption (import)	C00504	 
+Production (export)	C00504	1351
+Production (export)	C00504	562
+Production (export)	C00504	1579
+Production (export)	C00504	1580
+Consumption (import) & production (export)	C00504	1582
+Production (export)	C00504	1613
+Consumption (import)	C00504	1596
+Production (export)	C00504	1590
+Production (export)	C00504	1598
+Consumption (import) & production (export)	C00504	1358
+Consumption (import)	C00504	2095
+Consumption (import)	C00504	1309
+Production (export)	C00504	1308
+Production (export)	C00067	1351
+Production (export)	C00067	562
+Production (export)	C00067	573
+Consumption (import)	C00067	408
+Consumption (import)	C00067	114616
+Production (export)	C00067	287
+Consumption (import)	C00067	303
+Production (export)	C00067	1280
+Production (export)	C00067	1313
+Consumption (import)	C00058	28187
+Production (export)	C00058	105841
+Production (export)	C00058	1382
+Production (export)	C00058	1383
+Production (export)	C00058	82135
+Production (export)	C00058	47678
+Production (export)	C00058	46506
+Production (export)	C00058	818
+Production (export)	C00058	821
+Production (export)	C00058	1680
+Production (export)	C00058	1683
+Production (export)	C00058	28025
+Production (export)	C00058	1681
+Production (export)	C00058	1685
+Production (export)	C00058	1686
+Production (export)	C00058	1689
+Production (export)	C00058	78342
+Production (export)	C00058	216816
+Production (export)	C00058	28026
+Consumption (import)	C00058	35833
+Consumption (import)	C00058	53443
+Production (export)	C00058	45851
+Production (export)	C00058	831
+Production (export)	C00058	43305
+Consumption (import)	C00058	824
+Production (export)	C00058	1515
+Production (export)	C00058	74426
+Production (export)	C00058	147207
+Production (export)	C00058	147206
+Production (export)	C00058	33043
+Consumption (import)	C00058	453230
+Production (export)	C00058	259354
+Consumption (import)	C00058	182210
+Consumption (import)	C00058	876
+Consumption (import)	C00058	878
+Consumption (import)	C00058	184917
+Consumption (import)	C00058	901
+Consumption (import)	C00058	880
+Consumption (import) & production (export)	C00058	881
+Production (export)	C00058	39486
+Production (export)	C00058	88431
+Production (export)	C00058	208962
+Production (export)	C00058	562
+Production (export)	C00058	564
+Production (export)	C00058	29322
+Production (export)	C00058	39485
+Production (export)	C00058	39488
+Production (export)	C00058	1736
+Production (export)	C00058	39491
+Production (export)	C00058	467210
+Production (export)	C00058	51123
+Production (export)	C00058	39492
+Production (export)	C00058	39496
+Production (export)	C00058	853
+Production (export)	C00058	833
+Consumption (import)	C00058	35554
+Consumption (import)	C00058	573
+Production (export)	C00058	1582
+Production (export)	C00058	1590
+Production (export)	C00058	1358
+Consumption (import)	C00058	168384
+Consumption (import)	C00058	83816
+Consumption (import)	C00058	2173
+Consumption (import)	C00058	42879
+Consumption (import)	C00058	39152
+Consumption (import)	C00058	2187
+Consumption (import)	C00058	2188
+Consumption (import)	C00058	83984
+Consumption (import)	C00058	2198
+Consumption (import)	C00058	54120
+Production (export)	C00058	2214
+Consumption (import)	C00058	475088
+Consumption (import)	C00058	2203
+Consumption (import)	C00058	145263
+Consumption (import)	C00058	145262
+Consumption (import)	C00058	155863
+Consumption (import)	C00058	405
+Consumption (import)	C00058	408
+Consumption (import)	C00058	114616
+Consumption (import)	C00058	1525
+Production (export)	C00058	847
+Production (export)	C00058	19
+Production (export)	C00058	110500
+Consumption (import)	C00058	300
+Consumption (import)	C00058	329
+Production (export)	C00058	1085
+Production (export)	C00058	166486
+Production (export)	C00058	360807
+Production (export)	C00058	40518
+Production (export)	C00058	1265
+Production (export)	C00058	33038
+Production (export)	C00058	40520
+Production (export)	C00058	33039
+Production (export)	C00058	28901
+Consumption (import)	C00058	24
+Production (export)	C00058	621
+Production (export)	C00058	622
+Production (export)	C00058	623
+Production (export)	C00058	624
+Production (export)	C00058	119484
+Production (export)	C00058	51197
+Production (export)	C00058	863
+Production (export)	C00058	86170
+Production (export)	C00058	316277
+Production (export)	C00058	666
+Consumption (import)	C00058	844
+Consumption (import)	c1	105841
+Consumption (import)	c1	817
+Consumption (import)	c1	28116
+Consumption (import)	c1	818
+Consumption (import)	c1	820
+Consumption (import)	c1	1680
+Consumption (import)	c1	28025
+Consumption (import)	c1	1681
+Consumption (import)	c1	1685
+Consumption (import)	c1	216816
+Consumption (import)	c1	28026
+Consumption (import)	c1	831
+Consumption (import)	c1	43305
+Consumption (import)	c1	1492
+Consumption (import)	c1	410072
+Consumption (import)	c1	33043
+Consumption (import)	c1	88431
+Consumption (import)	c1	39491
+Consumption (import)	c1	853
+Consumption (import)	c1	833
+Consumption (import)	c1	1579
+Consumption (import)	c1	1582
+Consumption (import)	c1	1587
+Consumption (import)	c1	1590
+Consumption (import)	c1	166486
+Consumption (import)	c1	360807
+Consumption (import)	c1	40518
+Macromolecule degradation	C01355, C03323, C06215	818
+Macromolecule degradation	C01355, C03323, C06215	1680
+Macromolecule degradation	C01355, C03323, C06215	216816
+Macromolecule degradation	C01355, C03323, C06215	166486
+Macromolecule degradation	C05796	818
+Macromolecule degradation	C05796	1685
+Consumption (import)	C01697	442
+Consumption (import)	C01697	1772
+Consumption (import)	C00116	371601
+Consumption (import)	C00116	35833
+Consumption (import)	C00116	545
+Consumption (import)	C00116	67825
+Consumption (import)	C00116	133448
+Consumption (import)	C00116	1492
+Consumption (import)	C00116	 
+Consumption (import)	C00116	182210
+Consumption (import)	C00116	876
+Consumption (import)	C00116	878
+Consumption (import)	C00116	184917
+Consumption (import)	C00116	901
+Consumption (import)	C00116	880
+Consumption (import)	C00116	881
+Consumption (import)	C00116	167642
+Consumption (import)	C00116	573
+Consumption (import)	C00116	1579
+Consumption (import)	C00116	1580
+Consumption (import)	C00116	1581
+Consumption (import)	C00116	1582
+Consumption (import)	C00116	1584
+Consumption (import)	C00116	1597
+Consumption (import)	C00116	1598
+Consumption (import)	C00116	47715
+Consumption (import)	C00116	114616
+Consumption (import)	C00116	1773
+Consumption (import)	C00116	19
+Consumption (import)	C00116	29543
+Consumption (import)	C00116	1744
+Consumption (import)	C00116	621
+Consumption (import)	C05466	817
+Consumption (import)	C05466	1680
+Consumption (import)	C05466	28025
+Consumption (import)	C05466	1681
+Consumption (import)	C05466	1685
+Consumption (import)	C05466	216816
+Consumption (import)	C05466	1502
+Production (export)	C05466	 
+Consumption (import)	C05466	1579
+Consumption (import)	C05466	1580
+Consumption (import)	C05466	1581
+Consumption (import)	C05466	1596
+Consumption (import)	C05466	1588
+Consumption (import)	C05466	33959
+Consumption (import)	C05466	1590
+Consumption (import)	C05466	1639
+Consumption (import)	C01921	817
+Consumption (import)	C01921	1680
+Consumption (import)	C01921	28025
+Consumption (import)	C01921	1681
+Consumption (import)	C01921	1685
+Consumption (import)	C01921	216816
+Consumption (import)	C01921	1502
+Production (export)	C01921	 
+Consumption (import)	C01921	1579
+Consumption (import)	C01921	1580
+Consumption (import)	C01921	1581
+Consumption (import)	C01921	1596
+Consumption (import)	C01921	1588
+Consumption (import)	C01921	33959
+Consumption (import)	C01921	1590
+Consumption (import)	C01921	1639
+Consumption (import)	C01921	1525
+Consumption (import)	C05464	817
+Consumption (import)	C05464	1680
+Consumption (import)	C05464	28025
+Consumption (import)	C05464	1681
+Consumption (import)	C05464	1685
+Consumption (import)	C05464	216816
+Consumption (import)	C05464	1502
+Consumption (import)	C05464	1579
+Consumption (import)	C05464	1580
+Consumption (import)	C05464	1581
+Consumption (import)	C05464	1596
+Consumption (import)	C05464	1588
+Consumption (import)	C05464	33959
+Consumption (import)	C05464	1590
+Consumption (import)	C05464	1639
+Consumption (import)	C00160	1525
+Consumption (import)	C00160	51197
+Consumption (import)	C15557	1680
+Consumption (import)	C15557	28025
+Consumption (import)	C15557	1681
+Consumption (import)	C15557	1685
+Consumption (import)	C15557	216816
+Consumption (import)	C15557	1502
+Consumption (import)	C15557	1579
+Consumption (import)	C15557	1580
+Consumption (import)	C15557	1581
+Consumption (import)	C15557	1596
+Consumption (import)	C15557	1588
+Consumption (import)	C15557	1590
+Consumption (import)	C15557	1639
+Consumption (import)	C00048	1525
+Consumption (import)	C00048	51197
+Consumption (import)	C00242	 
+Consumption (import)	C00387	 
+Production (export)	C00282	35830
+Consumption (import)	C00282	28187
+Production (export)	C00282	905
+Production (export)	C00282	28117
+Production (export)	C00282	105841
+Production (export)	C00282	1390
+Production (export)	C00282	1392
+Production (export)	C00282	1452
+Production (export)	C00282	1413
+Production (export)	C00282	1396
+Production (export)	C00282	79880
+Production (export)	C00282	1398
+Production (export)	C00282	408580
+Production (export)	C00282	86665
+Production (export)	C00282	1402
+Production (export)	C00282	1404
+Production (export)	C00282	1405
+Production (export)	C00282	79885
+Production (export)	C00282	64104
+Production (export)	C00282	1408
+Production (export)	C00282	85683
+Production (export)	C00282	1423
+Production (export)	C00282	1428
+Production (export)	C00282	1405
+Production (export)	C00282	47678
+Production (export)	C00282	246787
+Production (export)	C00282	310298
+Production (export)	C00282	387090
+Production (export)	C00282	357276
+Production (export)	C00282	28111
+Production (export)	C00282	338188
+Production (export)	C00282	817
+Production (export)	C00282	290053
+Production (export)	C00282	329854
+Production (export)	C00282	28116
+Production (export)	C00282	384638
+Production (export)	C00282	310297
+Production (export)	C00282	376805
+Production (export)	C00282	46506
+Production (export)	C00282	818
+Production (export)	C00282	820
+Production (export)	C00282	821
+Production (export)	C00282	371601
+Production (export)	C00282	216816
+Consumption (import)	C00282	35833
+Consumption (import)	C00282	1322
+Consumption (import)	C00282	53443
+Production (export)	C00282	45851
+Production (export)	C00282	831
+Production (export)	C00282	43305
+Consumption (import)	C00282	291048
+Consumption (import)	C00282	824
+Production (export)	C00282	1488
+Production (export)	C00282	333367
+Production (export)	C00282	261299
+Production (export)	C00282	1520
+Production (export)	C00282	208479
+Production (export)	C00282	1491
+Production (export)	C00282	1492
+Production (export)	C00282	217159
+Production (export)	C00282	1521
+Production (export)	C00282	1493
+Production (export)	C00282	 
+Production (export)	C00282	1496
+Production (export)	C00282	154046
+Production (export)	C00282	89152
+Production (export)	C00282	89153
+Production (export)	C00282	1534
+Production (export)	C00282	1535
+Production (export)	C00282	1538
+Production (export)	C00282	84026
+Production (export)	C00282	29361
+Production (export)	C00282	1542
+Production (export)	C00282	29362
+Production (export)	C00282	1502
+Production (export)	C00282	66219
+Production (export)	C00282	84030
+Production (export)	C00282	29347
+Production (export)	C00282	1509
+Production (export)	C00282	1511
+Production (export)	C00282	1512
+Production (export)	C00282	1513
+Production (export)	C00282	1515
+Production (export)	C00282	74426
+Production (export)	C00282	147207
+Production (export)	C00282	147206
+Production (export)	C00282	116085
+Production (export)	C00282	33043
+Consumption (import)	C00282	894
+Consumption (import)	C00282	182210
+Consumption (import)	C00282	876
+Consumption (import)	C00282	878
+Consumption (import)	C00282	184917
+Consumption (import)	C00282	901
+Consumption (import)	C00282	880
+Consumption (import) & production (export)	C00282	881
+Production (export)	C00282	39486
+Production (export)	C00282	37734
+Production (export)	C00282	1351
+Production (export)	C00282	1352
+Production (export)	C00282	1353
+Production (export)	C00282	246144
+Production (export)	C00282	562
+Production (export)	C00282	253239
+Production (export)	C00282	29322
+Production (export)	C00282	39485
+Production (export)	C00282	39488
+Consumption (import) & production (export)	C00282	1736
+Production (export)	C00282	39491
+Production (export)	C00282	467210
+Production (export)	C00282	51123
+Production (export)	C00282	39492
+Production (export)	C00282	39496
+Production (export)	C00282	28232
+Consumption (import) & production (export)	C00282	35554
+Consumption (import)	C00282	160233
+Consumption (import)	C00282	168384
+Consumption (import)	C00282	83816
+Consumption (import)	C00282	2173
+Consumption (import)	C00282	83171
+Consumption (import)	C00282	67760
+Consumption (import)	C00282	2190
+Consumption (import)	C00282	73913
+Consumption (import)	C00282	42879
+Consumption (import)	C00282	39152
+Consumption (import)	C00282	2187
+Consumption (import)	C00282	2188
+Consumption (import)	C00282	83984
+Consumption (import)	C00282	2198
+Consumption (import)	C00282	54120
+Consumption (import)	C00282	2320
+Consumption (import)	C00282	2224
+Consumption (import)	C00282	2214
+Consumption (import)	C00282	2208
+Consumption (import)	C00282	2209
+Consumption (import)	C00282	2317
+Consumption (import)	C00282	475088
+Consumption (import)	C00282	2203
+Consumption (import)	C00282	145263
+Consumption (import)	C00282	145262
+Consumption (import)	C00282	155863
+Consumption (import)	C00282	2180
+Production (export)	C00282	28118
+Production (export)	C00282	19
+Production (export)	C00282	110500
+Production (export)	C00282	28123
+Production (export)	C00282	29292
+Production (export)	C00282	2261
+Production (export)	C00282	53953
+Production (export)	C00282	166486
+Production (export)	C00282	1264
+Production (export)	C00282	40518
+Production (export)	C00282	1265
+Production (export)	C00282	33038
+Production (export)	C00282	46228
+Production (export)	C00282	40520
+Production (export)	C00282	33039
+Consumption (import)	C00282	332055
+Production (export)	C00282	119484
+Production (export)	C00282	863
+Production (export)	C00282	316277
+Production (export)	C00282	2336
+Production (export)	C00282	29466
+Consumption (import)	C00282	844
+Consumption (import)	C00027	 
+Production (export)	C00027	1311
+Production (export)	C00027	1328
+Production (export)	C00027	113107
+Production (export)	C00027	1335
+Production (export)	C00027	45634
+Production (export)	C00027	1317
+Production (export)	C00027	1334
+Production (export)	C00027	1336
+Production (export)	C00027	315405
+Production (export)	C00027	1302
+Production (export)	C00027	102684
+Production (export)	C00027	68892
+Production (export)	C00027	28037
+Production (export)	C00027	1309
+Production (export)	C00027	1303
+Production (export)	C00027	1318
+Production (export)	C00027	68891
+Production (export)	C00027	1313
+Production (export)	C00027	361101
+Production (export)	C00027	1314
+Production (export)	C00027	1304
+Production (export)	C00027	1305
+Production (export)	C00027	1307
+Production (export)	C00027	1308
+Production (export)	C00027	1349
+Production (export)	C00027	1343
+Production (export)	C00283	72556
+Production (export)	C00283	905
+Production (export)	C00283	169435
+Production (export)	C00283	2234
+Production (export)	C00283	84156
+Production (export)	C00283	35833
+Production (export)	C00283	76887
+Production (export)	C00283	291048
+Production (export)	C00283	453230
+Production (export)	C00283	259354
+Production (export)	C00283	2296
+Production (export)	C00283	894
+Production (export)	C00283	181663
+Production (export)	C00283	45663
+Production (export)	C00283	899
+Production (export)	C00283	488939
+Production (export)	C00283	84980
+Production (export)	C00283	58138
+Production (export)	C00283	1565
+Production (export)	C00283	59610
+Production (export)	C00283	182210
+Production (export)	C00283	876
+Production (export)	C00283	878
+Production (export)	C00283	184917
+Production (export)	C00283	901
+Production (export)	C00283	880
+Production (export)	C00283	881
+Consumption (import)	C00283	2208
+Production (export)	C00283	28118
+Production (export)	C00283	638849
+Production (export)	C00283	24
+Production (export)	C00283	119484
+Production (export)	C00283	28262
+Macromolecule degradation	c3	103618
+Macromolecule degradation	c3	1660
+Macromolecule degradation	c3	544580
+Macromolecule degradation	c3	103621
+Macromolecule degradation	c3	1656
+Macromolecule degradation	c3	40567
+Macromolecule degradation	c3	1408
+Macromolecule degradation	c3	246787
+Macromolecule degradation	c3	357276
+Macromolecule degradation	c3	28111
+Macromolecule degradation	c3	817
+Macromolecule degradation	c3	329854
+Macromolecule degradation	c3	28116
+Macromolecule degradation	c3	818
+Macromolecule degradation	c3	1680
+Macromolecule degradation	c3	28025
+Macromolecule degradation	c3	1681
+Macromolecule degradation	c3	1686
+Macromolecule degradation	c3	1689
+Macromolecule degradation	c3	216816
+Macromolecule degradation	c3	28026
+Macromolecule degradation	c3	45851
+Macromolecule degradation	c3	831
+Macromolecule degradation	c3	43305
+Macromolecule degradation	c3	31899
+Macromolecule degradation	c3	1521
+Macromolecule degradation	c3	833
+Macromolecule degradation	c3	986
+Macromolecule degradation	c3	823
+Macromolecule degradation	c3	77095
+Macromolecule degradation	c3	839
+Macromolecule degradation	c3	166486
+Macromolecule degradation	c3	1264
+Macromolecule degradation	c3	1265
+Macromolecule degradation	c3	1916
+Macromolecule degradation	c3	2021
+Production (export)	C00388	1502
+Consumption (import)	C00388	 
+Macromolecule degradation	C00518	28116
+Macromolecule degradation	C00518	818
+Macromolecule degradation	C00518	1502
+Macromolecule degradation	C00518	1314
+Consumption (import)	C00708	 
+Production (export)	C00463	28117
+Production (export)	C00463	328814
+Production (export)	C00463	33029
+Production (export)	C00463	33037
+Production (export)	C00463	169435
+Production (export)	C00463	1509
+Consumption (import)	C00463	 
+Consumption (import)	C00463	182210
+Consumption (import)	C00463	876
+Consumption (import)	C00463	878
+Consumption (import)	C00463	184917
+Consumption (import)	C00463	901
+Consumption (import)	C00463	880
+Consumption (import)	C00463	881
+Production (export)	C00463	562
+Production (export)	C00463	467210
+Production (export)	C00463	28118
+Production (export)	C00463	54005
+Production (export)	C00463	33031
+Production (export)	C00954	1491
+Production (export)	C00954	1509
+Production (export)	C00954	1511
+Consumption (import)	C00954	 
+Consumption (import) & production (export)	C00954	562
+Consumption (import)	C00294	169435
+Consumption (import)	C00294	 
+Consumption (import)	C00137, C01177	 
+Consumption (import)	C00137, C01177	88431
+Consumption (import)	C00137, C01177	61171
+Consumption (import)	C00137, C01177	573
+Consumption (import)	C00137, C01177	1464
+Consumption (import)	C05123	35833
+Consumption (import)	C02632	80867
+Consumption (import)	C02632	47920
+Production (export)	C02632	28117
+Production (export)	C02632	105841
+Production (export)	C02632	818
+Production (export)	C02632	53443
+Consumption (import)	C02632	45851
+Consumption (import)	C02632	831
+Consumption (import)	C02632	43305
+Production (export)	C02632	100886
+Production (export)	C02632	1511
+Consumption (import)	C02632	 
+Consumption (import)	C02632	833
+Consumption (import)	C02632	28232
+Production (export)	C02632	28118
+Production (export)	C02632	1261
+Consumption (import) & production (export)	C02632	839
+Production (export)	C02632	638849
+Consumption (import)	C02632	1264
+Consumption (import)	C02632	40518
+Consumption (import)	C02632	1265
+Consumption (import)	C00252	1680
+Consumption (import)	C00252	1685
+Consumption (import)	C00252	216816
+Production (export)	C01845	1520
+Consumption (import)	C08262	72556
+Consumption (import)	C08262	80867
+Consumption (import)	C08262	47920
+Production (export)	C08262	28117
+Production (export)	C08262	105841
+Production (export)	C08262	28116
+Production (export)	C08262	818
+Production (export)	C08262	53443
+Consumption (import)	C08262	45851
+Consumption (import)	C08262	831
+Consumption (import)	C08262	43305
+Production (export)	C08262	1511
+Consumption (import)	C08262	 
+Consumption (import)	C08262	2296
+Consumption (import)	C08262	28232
+Production (export)	C08262	28118
+Production (export)	C08262	1261
+Consumption (import) & production (export)	C08262	839
+Production (export)	C08262	638849
+Consumption (import)	C08262	40518
+Consumption (import)	C08262	1265
+Production (export)	C08262	1280
+Consumption (import)	C00490	72556
+Production (export)	C00238	 
+Consumption (import)	C00041, C00133	81468
+Consumption (import)	C00041, C00133	186490
+Consumption (import)	C00041, C00133	1491
+Consumption (import)	C00041, C00133	1496
+Consumption (import)	C00041, C00133	1509
+Consumption (import)	C00041, C00133	 
+Production (export)	C00041, C00133	39491
+Consumption (import)	C00041, C00133	114616
+Consumption (import)	C00041, C00133	1335
+Consumption (import)	C00532, C01904	80867
+Consumption (import)	C00532, C01904	47920
+Consumption (import)	C00532, C01904	67854
+Consumption (import)	C00532, C01904	 
+Consumption (import)	C00532, C01904	573
+Consumption (import)	C00062	219314
+Consumption (import)	C00062	33032
+Consumption (import)	C00062	33034
+Consumption (import)	C00062	33036
+Consumption (import)	C00062	33037
+Consumption (import)	C00062	186490
+Consumption (import)	C00062	1491
+Consumption (import)	C00062	1496
+Consumption (import)	C00062	1502
+Consumption (import)	C00062	1509
+Consumption (import)	C00062	1513
+Consumption (import)	C00062	 
+Production (export)	C00062	1718
+Consumption (import)	C00062	1351
+Consumption (import)	C00062	1260
+Consumption (import)	C00062	54005
+Consumption (import)	C00062	33031
+Consumption (import)	C00062	1304
+Consumption (import)	C00062	40545
+Consumption (import)	C00152	28187
+Consumption (import)	C00152	 
+Consumption (import)	C00152	1299
+Consumption (import)	C00152	833
+Consumption (import)	C00152	839
+Consumption (import)	C00152	1264
+Consumption (import)	C00152	1265
+Consumption (import)	C00049, C00402	28187
+Consumption (import)	C00049, C00402	81468
+Consumption (import)	C00049, C00402	186490
+Consumption (import)	C00049, C00402	1491
+Consumption (import)	C00049, C00402	1496
+Consumption (import)	C00049, C00402	1502
+Consumption (import)	C00049, C00402	84030
+Consumption (import)	C00049, C00402	1509
+Consumption (import)	C00049, C00402	1513
+Consumption (import)	C00049, C00402	 
+Production (export)	C00049, C00402	1718
+Consumption (import)	C00049, C00402	39491
+Consumption (import)	C00049, C00402	851
+Consumption (import)	C00049, C00402	114616
+Consumption (import)	C00049, C00402	1304
+Consumption (import)	C00049, C00402	40545
+Consumption (import)	C00318, C15025	 
+Consumption (import)	C00097, C00793	817
+Consumption (import)	C00097, C00793	818
+Consumption (import)	C00097, C00793	821
+Consumption (import)	C00097, C00793	 
+Consumption (import)	C00097, C00793	833
+Consumption (import)	C00097, C00793	851
+Consumption (import)	C00097, C00793	823
+Consumption (import)	C00097, C00793	839
+Consumption (import)	C00097, C00793	40518
+Consumption (import)	C01019	80867
+Consumption (import)	C01019	47920
+Consumption (import)	C01019	817
+Consumption (import)	C01019	28116
+Consumption (import)	C01019	818
+Consumption (import)	C01019	821
+Consumption (import)	C01019	1685
+Consumption (import)	C01019	216816
+Consumption (import)	C01019	28026
+Consumption (import)	C01019	39485
+Consumption (import)	C01019	360807
+Consumption (import)	C01019	33038
+Consumption (import)	C01019	40520
+Consumption (import)	C01019	214851
+Consumption (import)	C00025, C00217	28187
+Consumption (import)	C00025, C00217	905
+Consumption (import)	C00025, C00217	219314
+Consumption (import)	C00025, C00217	81468
+Consumption (import)	C00025, C00217	186490
+Consumption (import)	C00025, C00217	 
+Consumption (import)	C00025, C00217	1717
+Production (export)	C00025, C00217	1718
+Consumption (import)	C00025, C00217	1299
+Consumption (import)	C00025, C00217	562
+Production (export)	C00025, C00217	39491
+Consumption (import)	C00025, C00217	851
+Consumption (import)	C00025, C00217	573
+Production (export)	C00025, C00217	110500
+Consumption (import)	C00025, C00217	1304
+Consumption (import)	C00064, C00819	186490
+Consumption (import)	C00064, C00819	1491
+Consumption (import)	C00064, C00819	1509
+Consumption (import)	C00064, C00819	1513
+Consumption (import)	C00064, C00819	 
+Consumption (import)	C00064, C00819	1299
+Consumption (import)	C00064, C00819	562
+Consumption (import) & production (export)	C00064, C00819	39491
+Consumption (import)	C00064, C00819	833
+Consumption (import)	C00064, C00819	851
+Production (export)	C00064, C00819	110500
+Consumption (import)	C00064, C00819	839
+Consumption (import)	C00064, C00819	1264
+Consumption (import)	C00064, C00819	1335
+Consumption (import)	C00037	1491
+Consumption (import)	C00037	1496
+Consumption (import)	C00037	1509
+Consumption (import)	C00037	1513
+Consumption (import)	C00037	 
+Consumption (import)	C00037	39491
+Consumption (import)	C00037	638849
+Consumption (import)	C00037	1304
+Consumption (import)	C00135	28187
+Consumption (import)	C00135	80867
+Consumption (import)	C00135	47920
+Consumption (import)	C00135	33034
+Consumption (import)	C00135	33037
+Production (export)	C00135	186490
+Consumption (import)	C00135	1491
+Consumption (import)	C00135	1496
+Consumption (import)	C00135	1513
+Consumption (import)	C00135	 
+Consumption (import)	C00135	562
+Consumption (import)	C00135	1260
+Consumption (import)	C00135	851
+Consumption (import)	C00135	54005
+Consumption (import)	C00135	33031
+Consumption (import)	C00135	1304
+Consumption (import)	C00263	186490
+Consumption (import)	C00770	562
+Consumption (import)	C06472	 
+Consumption (import)	C00407	81468
+Consumption (import)	C00407	186490
+Consumption (import)	C00407	1491
+Consumption (import)	C00407	1496
+Consumption (import)	C00407	1509
+Consumption (import)	C00407	 
+Consumption (import)	C00407	562
+Consumption (import)	C00407	1304
+Consumption (import)	C00186, C00256	438
+Consumption (import)	C00186, C00256	28187
+Production (export)	C00186, C00256	103618
+Production (export)	C00186, C00256	1660
+Production (export)	C00186, C00256	544580
+Production (export)	C00186, C00256	103621
+Production (export)	C00186, C00256	1656
+Consumption (import)	C00186, C00256	644
+Consumption (import)	C00186, C00256	714
+Consumption (import)	C00186, C00256	105841
+Production (export)	C00186, C00256	1382
+Production (export)	C00186, C00256	1383
+Production (export)	C00186, C00256	82135
+Consumption (import) & production (export)	C00186, C00256	817
+Production (export)	C00186, C00256	28116
+Production (export)	C00186, C00256	818
+Production (export)	C00186, C00256	1680
+Production (export)	C00186, C00256	1683
+Production (export)	C00186, C00256	28025
+Production (export)	C00186, C00256	1681
+Production (export)	C00186, C00256	1685
+Production (export)	C00186, C00256	1686
+Production (export)	C00186, C00256	1689
+Production (export)	C00186, C00256	78342
+Production (export)	C00186, C00256	216816
+Production (export)	C00186, C00256	28026
+Consumption (import)	C00186, C00256	35833
+Production (export)	C00186, C00256	1322
+Production (export)	C00186, C00256	53443
+Production (export)	C00186, C00256	45851
+Production (export)	C00186, C00256	831
+Production (export)	C00186, C00256	43305
+Production (export)	C00186, C00256	100886
+Production (export)	C00186, C00256	1521
+Consumption (import)	C00186, C00256	1534
+Production (export)	C00186, C00256	1502
+Production (export)	C00186, C00256	74426
+Production (export)	C00186, C00256	147207
+Production (export)	C00186, C00256	147206
+Consumption (import)	C00186, C00256	 
+Consumption (import)	C00186, C00256	285
+Consumption (import) & production (export)	C00186, C00256	116085
+Production (export)	C00186, C00256	410072
+Production (export)	C00186, C00256	33043
+Consumption (import)	C00186, C00256	894
+Consumption (import)	C00186, C00256	1565
+Consumption (import)	C00186, C00256	182210
+Consumption (import)	C00186, C00256	876
+Consumption (import)	C00186, C00256	878
+Consumption (import)	C00186, C00256	184917
+Consumption (import) & production (export)	C00186, C00256	901
+Consumption (import)	C00186, C00256	880
+Consumption (import)	C00186, C00256	881
+Production (export)	C00186, C00256	39486
+Production (export)	C00186, C00256	37734
+Production (export)	C00186, C00256	1351
+Production (export)	C00186, C00256	1352
+Production (export)	C00186, C00256	1353
+Production (export)	C00186, C00256	246144
+Production (export)	C00186, C00256	208962
+Production (export)	C00186, C00256	562
+Production (export)	C00186, C00256	564
+Production (export)	C00186, C00256	29322
+Production (export)	C00186, C00256	39485
+Consumption (import) & production (export)	C00186, C00256	39488
+Consumption (import) & production (export)	C00186, C00256	1736
+Production (export)	C00186, C00256	39491
+Production (export)	C00186, C00256	467210
+Production (export)	C00186, C00256	51123
+Production (export)	C00186, C00256	39492
+Production (export)	C00186, C00256	39496
+Production (export)	C00186, C00256	853
+Production (export)	C00186, C00256	833
+Production (export)	C00186, C00256	851
+Consumption (import)	C00186, C00256	727
+Consumption (import)	C00186, C00256	729
+Production (export)	C00186, C00256	61171
+Production (export)	C00186, C00256	1579
+Production (export)	C00186, C00256	83683
+Production (export)	C00186, C00256	1604
+Production (export)	C00186, C00256	227943
+Consumption (import) & production (export)	C00186, C00256	1580
+Consumption (import) & production (export)	C00186, C00256	1581
+Production (export)	C00186, C00256	1582
+Production (export)	C00186, C00256	181675
+Production (export)	C00186, C00256	47770
+Production (export)	C00186, C00256	1584
+Production (export)	C00186, C00256	1613
+Production (export)	C00186, C00256	1596
+Production (export)	C00186, C00256	1587
+Production (export)	C00186, C00256	1588
+Production (export)	C00186, C00256	147802
+Production (export)	C00186, C00256	109790
+Production (export)	C00186, C00256	33959
+Production (export)	C00186, C00256	1632
+Production (export)	C00186, C00256	1597
+Consumption (import) & production (export)	C00186, C00256	1590
+Production (export)	C00186, C00256	1598
+Production (export)	C00186, C00256	47715
+Production (export)	C00186, C00256	1623
+Production (export)	C00186, C00256	1599
+Production (export)	C00186, C00256	1624
+Production (export)	C00186, C00256	227945
+Production (export)	C00186, C00256	1633
+Production (export)	C00186, C00256	1358
+Production (export)	C00186, C00256	40542
+Production (export)	C00186, C00256	157692
+Production (export)	C00186, C00256	157688
+Production (export)	C00186, C00256	33964
+Production (export)	C00186, C00256	115778
+Production (export)	C00186, C00256	136609
+Production (export)	C00186, C00256	1245
+Production (export)	C00186, C00256	168384
+Production (export)	C00186, C00256	158847
+Consumption (import)	C00186, C00256	187326
+Consumption (import)	C00186, C00256	114616
+Consumption (import)	C00186, C00256	1525
+Production (export)	C00186, C00256	1247
+Production (export)	C00186, C00256	1254
+Production (export)	C00186, C00256	1255
+Consumption (import)	C00186, C00256	29543
+Consumption (import)	C00186, C00256	110500
+Consumption (import)	C00186, C00256	1747
+Consumption (import)	C00186, C00256	1744
+Consumption (import)	C00186, C00256	287
+Consumption (import) & production (export)	C00186, C00256	166486
+Production (export)	C00186, C00256	360807
+Production (export)	C00186, C00256	40518
+Production (export)	C00186, C00256	1265
+Production (export)	C00186, C00256	40520
+Production (export)	C00186, C00256	33039
+Consumption (import)	C00186, C00256	671224
+Consumption (import)	C00186, C00256	135080
+Consumption (import)	C00186, C00256	135083
+Consumption (import)	C00186, C00256	69823
+Consumption (import)	C00186, C00256	24
+Production (export)	C00186, C00256	1280
+Production (export)	C00186, C00256	29388
+Production (export)	C00186, C00256	1281
+Production (export)	C00186, C00256	1282
+Production (export)	C00186, C00256	1283
+Production (export)	C00186, C00256	1290
+Production (export)	C00186, C00256	28035
+Production (export)	C00186, C00256	283734
+Production (export)	C00186, C00256	29385
+Production (export)	C00186, C00256	1292
+Production (export)	C00186, C00256	1311
+Production (export)	C00186, C00256	1328
+Production (export)	C00186, C00256	113107
+Production (export)	C00186, C00256	1335
+Production (export)	C00186, C00256	45634
+Production (export)	C00186, C00256	1317
+Production (export)	C00186, C00256	1334
+Production (export)	C00186, C00256	1336
+Production (export)	C00186, C00256	315405
+Production (export)	C00186, C00256	1302
+Production (export)	C00186, C00256	102684
+Production (export)	C00186, C00256	68892
+Production (export)	C00186, C00256	28037
+Production (export)	C00186, C00256	1309
+Production (export)	C00186, C00256	1303
+Production (export)	C00186, C00256	1318
+Production (export)	C00186, C00256	68891
+Production (export)	C00186, C00256	1313
+Production (export)	C00186, C00256	361101
+Production (export)	C00186, C00256	1314
+Production (export)	C00186, C00256	1304
+Production (export)	C00186, C00256	1305
+Production (export)	C00186, C00256	1307
+Production (export)	C00186, C00256	1308
+Production (export)	C00186, C00256	1349
+Production (export)	C00186, C00256	1343
+Production (export)	C00186, C00256	214851
+Consumption (import)	C00186, C00256	119484
+Consumption (import)	C00186, C00256	863
+Consumption (import)	C00186, C00256	316277
+Consumption (import)	C00186, C00256	39777
+Consumption (import)	C00186, C00256	39778
+Consumption (import)	C00186, C00256	29466
+Production (export)	C00186, C00256	1249
+Consumption (import)	C00123	81468
+Consumption (import)	C00123	33036
+Consumption (import)	C00123	33037
+Consumption (import)	C00123	818
+Consumption (import)	C00123	186490
+Production (export)	C00123	9
+Consumption (import)	C00123	1491
+Consumption (import)	C00123	1496
+Consumption (import)	C00123	1509
+Consumption (import)	C00123	1513
+Consumption (import)	C00123	 
+Consumption (import)	C00123	562
+Consumption (import)	C00123	1260
+Consumption (import)	C00123	33031
+Consumption (import)	C00123	839
+Consumption (import)	C00123	1304
+Consumption (import)	C00047, C00739	186490
+Consumption (import)	C00047, C00739	1491
+Consumption (import)	C00047, C00739	1513
+Consumption (import)	C00047, C00739	 
+Production (export)	C00047, C00739	1718
+Consumption (import)	C00047, C00739	851
+Consumption (import)	C00047, C00739	28118
+Consumption (import)	C00047, C00739	1304
+Consumption (import)	C00149, C00497	169435
+Consumption (import)	C00149, C00497	1423
+Consumption (import)	C00149, C00497	35833
+Production (export)	C00149, C00497	1513
+Consumption (import)	C00149, C00497	 
+Consumption (import)	C00149, C00497	1718
+Consumption (import)	C00149, C00497	881
+Consumption (import)	C00149, C00497	382
+Consumption (import)	C00149, C00497	562
+Consumption (import)	C00149, C00497	573
+Consumption (import)	C00149, C00497	114616
+Production (export)	C00149, C00497	110500
+Consumption (import)	C00149, C00497	287
+Consumption (import)	C00149, C00497	384
+Consumption (import)	C00149, C00497	1061
+Consumption (import)	C00149, C00497	1076
+Consumption (import)	C00149, C00497	119484
+Consumption (import)	C00149, C00497	29466
+Consumption (import)	C00149, C00497	339
+Consumption (import)	C00073, C00855	2148
+Consumption (import)	C00073, C00855	81468
+Consumption (import)	C00073, C00855	817
+Consumption (import)	C00073, C00855	818
+Consumption (import)	C00073, C00855	821
+Production (export)	C00073, C00855	186490
+Production (export)	C00073, C00855	9
+Consumption (import)	C00073, C00855	1491
+Consumption (import)	C00073, C00855	1496
+Consumption (import)	C00073, C00855	1509
+Consumption (import)	C00073, C00855	1513
+Consumption (import)	C00073, C00855	 
+Consumption (import)	C00073, C00855	1299
+Consumption (import)	C00073, C00855	851
+Consumption (import)	C00073, C00855	823
+Consumption (import)	C00073, C00855	839
+Consumption (import)	C00073, C00855	1304
+Production (export)	C00077	1502
+Consumption (import)	C00077	 
+Production (export)	C00077	1351
+Consumption (import)	C00077	39491
+Consumption (import)	C00079, C02265	818
+Consumption (import)	C00079, C02265	186490
+Consumption (import)	C00079, C02265	1491
+Consumption (import)	C00079, C02265	1496
+Consumption (import)	C00079, C02265	1509
+Consumption (import)	C00079, C02265	1511
+Consumption (import)	C00079, C02265	1513
+Consumption (import)	C00079, C02265	 
+Consumption (import)	C00079, C02265	33031
+Consumption (import)	C00079, C02265	1304
+Consumption (import)	C00148, C00763	1491
+Consumption (import)	C00148, C00763	1496
+Consumption (import)	C00148, C00763	1509
+Consumption (import)	C00148, C00763	1511
+Consumption (import)	C00148, C00763	 
+Consumption (import)	C00148, C00763	114616
+Consumption (import)	C00148, C00763	1261
+Consumption (import)	C00507, C01684	644
+Consumption (import)	C00507, C01684	28116
+Consumption (import)	C00507, C01684	818
+Consumption (import)	C00507, C01684	371601
+Consumption (import)	C00507, C01684	831
+Consumption (import)	C00507, C01684	43305
+Consumption (import)	C00507, C01684	74426
+Consumption (import)	C00507, C01684	61171
+Consumption (import)	C00507, C01684	823
+Consumption (import)	C00507, C01684	165179
+Consumption (import)	C00507, C01684	40520
+Consumption (import)	C00507, C01684	214851
+Consumption (import)	C05688	 
+Consumption (import)	C00065, C00740	169435
+Consumption (import)	C00065, C00740	1491
+Consumption (import)	C00065, C00740	1496
+Consumption (import)	C00065, C00740	1535
+Consumption (import)	C00065, C00740	1509
+Consumption (import)	C00065, C00740	1513
+Consumption (import)	C00065, C00740	 
+Consumption (import)	C00065, C00740	1299
+Consumption (import)	C00065, C00740	851
+Consumption (import)	C00065, C00740	114616
+Consumption (import)	C00065, C00740	1747
+Consumption (import)	C00065, C00740	1335
+Consumption (import)	C00247	573
+Consumption (import)	C00188	80867
+Consumption (import)	C00188	47920
+Consumption (import)	C00188	186490
+Consumption (import)	C00188	1491
+Consumption (import)	C00188	1496
+Consumption (import)	C00188	1509
+Consumption (import)	C00188	1513
+Consumption (import)	C00188	 
+Production (export)	C00188	562
+Consumption (import)	C00188	851
+Consumption (import)	C00188	1335
+Consumption (import)	C00078	80867
+Consumption (import)	C00078	47920
+Consumption (import)	C00078	1423
+Consumption (import)	C00078	186490
+Consumption (import) & production (export)	C00078	9
+Consumption (import)	C00078	1491
+Consumption (import)	C00078	1496
+Consumption (import)	C00078	1509
+Consumption (import)	C00078	1511
+Consumption (import)	C00078	1513
+Consumption (import)	C00078	 
+Consumption (import)	C00078	833
+Consumption (import)	C00078	28118
+Consumption (import)	C00078	1264
+Consumption (import)	C00082	72556
+Consumption (import)	C00082	818
+Consumption (import)	C00082	186490
+Consumption (import)	C00082	1491
+Consumption (import)	C00082	1496
+Consumption (import)	C00082	1509
+Consumption (import)	C00082	1511
+Consumption (import)	C00082	1513
+Consumption (import)	C00082	 
+Consumption (import)	C00082	1304
+Consumption (import)	C00183, C06417	81468
+Consumption (import)	C00183, C06417	169435
+Consumption (import)	C00183, C06417	818
+Consumption (import)	C00183, C06417	186490
+Consumption (import)	C00183, C06417	1496
+Consumption (import)	C00183, C06417	 
+Consumption (import)	C00183, C06417	562
+Consumption (import)	C00183, C06417	1304
+Consumption (import)	C00243	67854
+Consumption (import)	C00243	645
+Consumption (import)	C00243	33029
+Consumption (import)	C00243	33032
+Consumption (import)	C00243	371601
+Consumption (import)	C00243	1680
+Consumption (import)	C00243	1683
+Consumption (import)	C00243	28025
+Consumption (import)	C00243	1681
+Consumption (import)	C00243	1685
+Consumption (import)	C00243	1686
+Consumption (import)	C00243	1689
+Consumption (import)	C00243	78342
+Consumption (import)	C00243	216816
+Consumption (import)	C00243	28026
+Consumption (import)	C00243	1322
+Consumption (import)	C00243	53443
+Consumption (import)	C00243	45851
+Consumption (import)	C00243	831
+Consumption (import)	C00243	43305
+Consumption (import)	C00243	100886
+Consumption (import)	C00243	74426
+Consumption (import)	C00243	147206
+Consumption (import)	C00243	410072
+Consumption (import)	C00243	33043
+Consumption (import)	C00243	39486
+Consumption (import)	C00243	88431
+Consumption (import)	C00243	69218
+Consumption (import)	C00243	550
+Consumption (import)	C00243	37734
+Consumption (import)	C00243	1351
+Consumption (import)	C00243	1352
+Consumption (import)	C00243	1353
+Consumption (import)	C00243	246144
+Consumption (import)	C00243	562
+Consumption (import)	C00243	39491
+Consumption (import)	C00243	1582
+Consumption (import)	C00243	1584
+Consumption (import)	C00243	1596
+Consumption (import)	C00243	1587
+Consumption (import)	C00243	33959
+Consumption (import)	C00243	1597
+Consumption (import)	C00243	1598
+Consumption (import)	C00243	47715
+Consumption (import)	C00243	1624
+Consumption (import)	C00243	40542
+Consumption (import)	C00243	157692
+Consumption (import)	C00243	157688
+Consumption (import)	C00243	1245
+Consumption (import)	C00243	168384
+Consumption (import)	C00243	158847
+Consumption (import)	C00243	28118
+Consumption (import)	C00243	823
+Consumption (import)	C00243	46503
+Consumption (import)	C00243	1254
+Consumption (import)	C00243	165179
+Consumption (import)	C00243	1744
+Consumption (import)	C00243	1311
+Consumption (import)	C00243	1328
+Consumption (import)	C00243	113107
+Consumption (import)	C00243	1335
+Consumption (import)	C00243	45634
+Consumption (import)	C00243	1317
+Consumption (import)	C00243	1334
+Consumption (import)	C00243	1336
+Consumption (import)	C00243	315405
+Consumption (import)	C00243	1302
+Consumption (import)	C00243	102684
+Consumption (import)	C00243	68892
+Consumption (import)	C00243	28037
+Consumption (import)	C00243	1309
+Consumption (import)	C00243	1303
+Consumption (import)	C00243	1318
+Consumption (import)	C00243	68891
+Consumption (import)	C00243	1313
+Consumption (import)	C00243	361101
+Consumption (import)	C00243	1314
+Consumption (import)	C00243	1304
+Consumption (import)	C00243	1305
+Consumption (import)	C00243	1307
+Consumption (import)	C00243	1308
+Consumption (import)	C00243	1349
+Consumption (import)	C00243	1343
+Consumption (import)	C00243	214851
+Production (export)	C01595	1685
+Production (export)	C01595	28026
+Consumption (import)	C01595	831
+Consumption (import)	C01595	43305
+Consumption (import)	C01595	 
+Consumption (import)	C01595	166486
+Consumption (import)	C01595	360807
+Consumption (import)	C01595	1264
+Production (export)	C03990	817
+Production (export)	C03990	818
+Production (export)	C03990	1680
+Production (export)	C03990	28025
+Production (export)	C03990	1681
+Production (export)	C03990	1685
+Production (export)	C03990	216816
+Production (export)	C03990	89152
+Production (export)	C03990	89153
+Production (export)	C03990	1535
+Production (export)	C03990	1502
+Production (export)	C03990	29347
+Production (export)	C03990	1579
+Production (export)	C03990	1580
+Production (export)	C03990	1581
+Production (export)	C03990	1596
+Production (export)	C03990	1588
+Production (export)	C03990	1590
+Production (export)	C03990	1639
+Consumption (import)	C00383	72556
+Consumption (import)	C00208	169435
+Consumption (import)	C00208	371601
+Consumption (import)	C00208	1680
+Consumption (import)	C00208	216816
+Consumption (import)	C00208	53443
+Consumption (import)	C00208	45851
+Consumption (import)	C00208	831
+Consumption (import)	C00208	43305
+Consumption (import)	C00208	100886
+Consumption (import)	C00208	74426
+Consumption (import)	C00208	147206
+Consumption (import)	C00208	410072
+Consumption (import)	C00208	33043
+Consumption (import)	C00208	901
+Consumption (import)	C00208	39486
+Consumption (import)	C00208	88431
+Consumption (import)	C00208	562
+Consumption (import)	C00208	39491
+Consumption (import)	C00208	986
+Consumption (import)	C00208	40542
+Consumption (import)	C00208	157692
+Consumption (import)	C00208	157688
+Consumption (import)	C00208	168384
+Consumption (import)	C00208	158847
+Consumption (import)	C00208	46503
+Consumption (import)	C00208	165179
+Consumption (import)	C00208	2261
+Consumption (import)	C00208	166486
+Consumption (import)	C00208	40518
+Consumption (import)	C00208	40520
+Consumption (import)	C00208	1335
+Consumption (import)	C00208	1302
+Consumption (import)	C00208	214851
+Consumption (import)	C00208	2287
+Consumption (import)	C00208	2336
+Consumption (import)	C05402	644
+Consumption (import)	C05402	371601
+Consumption (import)	C05402	33043
+Consumption (import)	C05402	61171
+Consumption (import)	C05402	40542
+Consumption (import)	C05402	158847
+Consumption (import)	C05402	166486
+Consumption (import)	C05402	214851
+Production (export)	C00828	1396
+Production (export)	C00828	1404
+Production (export)	C00828	1405
+Production (export)	C00828	1423
+Production (export)	C00828	817
+Production (export)	C00828	28116
+Production (export)	C00828	818
+Production (export)	C00828	821
+Consumption (import)	C00828	186490
+Consumption (import)	C00828	1680
+Consumption (import)	C00828	1681
+Consumption (import)	C00828	1689
+Consumption (import)	C00828	216816
+Production (export)	C00828	1393
+Consumption (import)	C00828	 
+Production (export)	C00828	1717
+Production (export)	C00828	84112
+Production (export)	C00828	1351
+Production (export)	C00828	1352
+Production (export)	C00828	562
+Consumption (import)	C00828	729
+Production (export)	C00828	1358
+Consumption (import)	C00828	1764
+Consumption (import)	C00828	1769
+Production (export)	C00828	1772
+Production (export)	C00828	1773
+Consumption (import)	C00828	837
+Production (export)	C00828	28126
+Consumption (import)	C00828	28132
+Consumption (import)	C00828	1747
+Production (export)	C00828	1280
+Production (export)	C00828	29388
+Production (export)	C00828	1282
+Production (export)	C00828	1283
+Production (export)	C00828	1292
+Consumption (import)	C00552, C00898	80867
+Consumption (import)	C00552, C00898	47920
+Production (export)	C01438	83816
+Production (export)	C01438	2173
+Production (export)	C01438	83171
+Production (export)	C01438	67760
+Production (export)	C01438	2190
+Production (export)	C01438	73913
+Production (export)	C01438	570267
+Production (export)	C01438	29291
+Production (export)	C01438	42879
+Production (export)	C01438	39152
+Production (export)	C01438	2187
+Production (export)	C01438	2188
+Production (export)	C01438	83984
+Production (export)	C01438	2198
+Production (export)	C01438	2322
+Production (export)	C01438	2176
+Production (export)	C01438	54120
+Production (export)	C01438	2320
+Production (export)	C01438	358766
+Production (export)	C01438	2224
+Production (export)	C01438	2214
+Production (export)	C01438	2208
+Production (export)	C01438	2209
+Production (export)	C01438	2317
+Production (export)	C01438	475088
+Production (export)	C01438	2203
+Production (export)	C01438	145263
+Production (export)	C01438	145262
+Production (export)	C01438	155863
+Production (export)	C01438	2180
+Consumption (import)	C01438	511746
+Consumption (import)	C01438	173365
+Consumption (import)	C01438	408
+Consumption (import)	C01438	223967
+Consumption (import)	C01438	199596
+Consumption (import)	C01438	414
+Consumption (import)	C01438	392484
+Consumption (import)	C01438	426
+Consumption (import)	C01438	266
+Production (export)	C00132	818
+Production (export)	C00132	562
+Consumption (import)	C00132	1736
+Consumption (import)	C00132	364410
+Consumption (import)	C00132	573
+Consumption (import)	C00132	2173
+Consumption (import)	C00132	2214
+Consumption (import)	C00132	2208
+Consumption (import)	C00132	2209
+Consumption (import)	C00132	2317
+Consumption (import)	C00132	105560
+Consumption (import)	C00132	405
+Consumption (import)	C00132	408
+Consumption (import)	C00132	114616
+Consumption (import)	C00132	199596
+Consumption (import)	C00132	414
+Consumption (import)	C00132	359408
+Consumption (import)	C00132	1525
+Consumption (import)	C00132	266
+Consumption (import)	C00132	19
+Consumption (import)	C00132	110500
+Consumption (import)	C00132	300
+Consumption (import)	C00132	329
+Production (export)	C00218	1680
+Production (export)	C00218	1681
+Production (export)	C00218	1496
+Production (export)	C00218	1502
+Production (export)	C00218	853
+Consumption (import)	C00218	573
+Consumption (import)	C00218	29291
+Consumption (import)	C00218	2322
+Consumption (import)	C00218	2176
+Consumption (import)	C00218	2214
+Consumption (import)	C00218	2208
+Consumption (import)	C00218	2209
+Consumption (import)	C00218	2317
+Consumption (import)	C00218	405
+Consumption (import)	C00218	408
+Consumption (import)	C00218	266
+Consumption (import)	C00218	300
+Consumption (import)	C00218	329
+Consumption (import)	C00305	 
+Consumption (import)	C19610	28232
+Consumption (import)	C19610	24
+Macromolecule degradation	C02705	239935
+Macromolecule degradation	C02705	47678
+Macromolecule degradation	C02705	817
+Macromolecule degradation	C02705	818
+Macromolecule degradation	C02705	820
+Macromolecule degradation	C02705	821
+Macromolecule degradation	C02705	1681
+Macromolecule degradation	C02705	1685
+Macromolecule degradation	C02705	216816
+Macromolecule degradation	C02705	1492
+Macromolecule degradation	C02705	1502
+Macromolecule degradation	C02705	1351
+Production (export)	C02705	 
+Macromolecule degradation	C02705	210
+Macromolecule degradation	C02705	1596
+Macromolecule degradation	C02705	52226
+Macromolecule degradation	C02705	823
+Macromolecule degradation	C02705	837
+Macromolecule degradation	C02705	33038
+Macromolecule degradation	C02705	46228
+Macromolecule degradation	C02705	33039
+Macromolecule degradation	C02705	1328
+Macromolecule degradation	C02705	1309
+Macromolecule degradation	C02705	1303
+Macromolecule degradation	C02705	1305
+Macromolecule degradation	C02705	666
+Consumption (import)	C06424	 
+Consumption (import)	C06424	863
+Consumption (import)	C00140	169435
+Consumption (import)	C00140	28116
+Consumption (import)	C00140	818
+Consumption (import)	C00140	853
+Consumption (import)	C00140	168384
+Consumption (import)	C00140	214851
+Consumption (import)	C00645	169435
+Consumption (import)	C00645	214851
+Consumption (import)	C01074	28116
+Consumption (import)	C01074	818
+Consumption (import)	C00270	169435
+Consumption (import)	C00270	818
+Consumption (import)	C00270	1496
+Consumption (import)	C00270	39486
+Consumption (import)	C00270	88431
+Consumption (import)	C00270	853
+Consumption (import)	C00270	851
+Consumption (import)	C00270	1590
+Consumption (import)	C00270	1599
+Consumption (import)	C00270	33038
+Consumption (import)	C00697	358
+Consumption (import)	C00697	1164
+Consumption (import)	C00697	264691
+Consumption (import)	C00697	7
+Consumption (import)	C00697	354
+Production (export)	C00697	1390
+Production (export)	C00697	1392
+Production (export)	C00697	1452
+Production (export)	C00697	1413
+Production (export)	C00697	1396
+Production (export)	C00697	79880
+Production (export)	C00697	1398
+Production (export)	C00697	408580
+Production (export)	C00697	86665
+Production (export)	C00697	1402
+Production (export)	C00697	1404
+Production (export)	C00697	1405
+Production (export)	C00697	79885
+Production (export)	C00697	64104
+Production (export)	C00697	1408
+Production (export)	C00697	85683
+Production (export)	C00697	1423
+Production (export)	C00697	1428
+Production (export)	C00697	1405
+Consumption (import)	C00697	533
+Consumption (import)	C00697	148447
+Consumption (import)	C00697	1492
+Consumption (import)	C00697	382
+Consumption (import)	C00697	1859
+Consumption (import)	C00697	 
+Consumption (import)	C00697	28232
+Consumption (import)	C00697	35554
+Consumption (import)	C00697	573
+Consumption (import)	C00697	39645
+Consumption (import)	C00697	381
+Consumption (import)	C00697	593909
+Consumption (import)	C00697	114616
+Consumption (import)	C00697	414
+Consumption (import)	C00697	272131
+Consumption (import)	C00697	1406
+Production (export)	C00697	287
+Production (export)	C00697	312306
+Production (export)	C00697	294
+Production (export)	C00697	300
+Production (export)	C00697	303
+Production (export)	C00697	29438
+Production (export)	C00697	316
+Production (export)	C00697	317
+Consumption (import)	C00697	29449
+Consumption (import)	C00697	384
+Consumption (import)	C00697	1061
+Consumption (import)	C00697	1063
+Consumption (import)	C00697	1076
+Consumption (import)	C01330	 
+Production (export)	C00014	905
+Production (export)	C00014	358
+Production (export)	C00014	1164
+Production (export)	C00014	264691
+Production (export)	C00014	7
+Production (export)	C00014	354
+Production (export)	C00014	1423
+Consumption (import)	C00014	47678
+Consumption (import)	C00014	246787
+Consumption (import)	C00014	310298
+Consumption (import)	C00014	387090
+Consumption (import)	C00014	357276
+Consumption (import)	C00014	28111
+Consumption (import)	C00014	338188
+Consumption (import) & production (export)	C00014	817
+Consumption (import)	C00014	290053
+Consumption (import)	C00014	329854
+Consumption (import) & production (export)	C00014	28116
+Consumption (import)	C00014	384638
+Consumption (import)	C00014	310297
+Consumption (import)	C00014	376805
+Consumption (import)	C00014	46506
+Consumption (import) & production (export)	C00014	818
+Consumption (import)	C00014	820
+Consumption (import) & production (export)	C00014	821
+Consumption (import)	C00014	371601
+Production (export)	C00014	533
+Production (export)	C00014	35833
+Consumption (import)	C00014	9
+Production (export)	C00014	831
+Production (export)	C00014	291048
+Production (export)	C00014	1488
+Production (export)	C00014	333367
+Production (export)	C00014	261299
+Production (export)	C00014	1520
+Production (export)	C00014	208479
+Production (export)	C00014	1491
+Production (export)	C00014	1492
+Production (export)	C00014	217159
+Production (export)	C00014	1521
+Production (export)	C00014	1493
+Production (export)	C00014	 
+Production (export)	C00014	1496
+Production (export)	C00014	154046
+Production (export)	C00014	89152
+Production (export)	C00014	89153
+Production (export)	C00014	1534
+Production (export)	C00014	1535
+Production (export)	C00014	1538
+Production (export)	C00014	84026
+Production (export)	C00014	29361
+Production (export)	C00014	1542
+Production (export)	C00014	29362
+Production (export)	C00014	1502
+Production (export)	C00014	66219
+Production (export)	C00014	84030
+Production (export)	C00014	29347
+Production (export)	C00014	1509
+Production (export)	C00014	1511
+Production (export)	C00014	1512
+Production (export)	C00014	1513
+Production (export)	C00014	1515
+Consumption (import)	C00014	 
+Consumption (import) & production (export)	C00014	901
+Consumption (import)	C00014	881
+Production (export)	C00014	382
+Production (export)	C00014	69218
+Production (export)	C00014	550
+Production (export)	C00014	1351
+Production (export)	C00014	1352
+Production (export)	C00014	562
+Production (export)	C00014	853
+Consumption (import)	C00014	833
+Production (export)	C00014	1859
+Production (export)	C00014	 
+Production (export)	C00014	851
+Production (export)	C00014	28232
+Production (export)	C00014	210
+Production (export)	C00014	573
+Production (export)	C00014	244366
+Production (export)	C00014	39645
+Production (export)	C00014	381
+Production (export)	C00014	593909
+Consumption (import)	C00014	2173
+Production (export)	C00014	39152
+Consumption (import)	C00014	414
+Production (export)	C00014	1270
+Production (export)	C00014	2110
+Production (export)	C00014	47687
+Production (export)	C00014	2111
+Production (export)	C00014	28903
+Production (export)	C00014	2095
+Production (export)	C00014	45361
+Production (export)	C00014	50052
+Production (export)	C00014	2115
+Production (export)	C00014	2096
+Production (export)	C00014	2097
+Production (export)	C00014	29501
+Production (export)	C00014	2098
+Production (export)	C00014	2099
+Production (export)	C00014	2100
+Production (export)	C00014	2105
+Production (export)	C00014	2118
+Production (export)	C00014	2102
+Production (export)	C00014	28227
+Production (export)	C00014	2104
+Production (export)	C00014	2107
+Production (export)	C00014	2109
+Consumption (import)	C00014	133539
+Consumption (import)	C00014	1229
+Consumption (import)	C00014	473531
+Consumption (import)	C00014	915
+Consumption (import)	C00014	916
+Consumption (import)	C00014	338192
+Consumption (import)	C00014	1231
+Production (export)	C00014	272131
+Production (export)	C00014	1406
+Consumption (import)	C00014	823
+Production (export)	C00014	1261
+Production (export)	C00014	341694
+Consumption (import) & production (export)	C00014	839
+Production (export)	C00014	584
+Production (export)	C00014	102862
+Consumption (import) & production (export)	C00014	287
+Production (export)	C00014	312306
+Production (export)	C00014	294
+Production (export)	C00014	300
+Production (export)	C00014	303
+Production (export)	C00014	29438
+Production (export)	C00014	316
+Production (export)	C00014	317
+Production (export)	C00014	29449
+Production (export)	C00014	384
+Production (export)	C00014	1061
+Production (export)	C00014	1063
+Production (export)	C00014	1076
+Consumption (import)	C00014	1264
+Consumption (import)	C00014	40518
+Consumption (import)	C00014	1265
+Production (export)	C00014	1311
+Production (export)	C00014	1328
+Production (export)	C00014	113107
+Consumption (import) & production (export)	C00014	1335
+Production (export)	C00014	45634
+Production (export)	C00014	1317
+Production (export)	C00014	1334
+Production (export)	C00014	1336
+Production (export)	C00014	315405
+Production (export)	C00014	1302
+Production (export)	C00014	102684
+Production (export)	C00014	68892
+Production (export)	C00014	28037
+Production (export)	C00014	1309
+Production (export)	C00014	1303
+Production (export)	C00014	1318
+Production (export)	C00014	68891
+Production (export)	C00014	1313
+Production (export)	C00014	361101
+Production (export)	C00014	1314
+Production (export)	C00014	1304
+Production (export)	C00014	1305
+Production (export)	C00014	1307
+Production (export)	C00014	1308
+Production (export)	C00014	1349
+Production (export)	C00014	1343
+Consumption (import)	C00014	36861
+Production (export)	C00014	134821
+Production (export)	C00014	2130
+Production (export)	C00014	844
+Consumption (import)	C00014	2371
+Production (export)	C00153, C00253	186490
+Consumption (import)	C00153, C00253	235
+Consumption (import)	C00153, C00253	29459
+Consumption (import)	C00153, C00253	29461
+Consumption (import)	C00153, C00253	1513
+Consumption (import)	C00153, C00253	 
+Consumption (import)	C00153, C00253	1717
+Consumption (import)	C00153, C00253	1299
+Consumption (import) & production (export)	C00153, C00253	562
+Consumption (import)	C00153, C00253	573
+Consumption (import)	C00153, C00253	1582
+Consumption (import)	C00153, C00253	1245
+Consumption (import)	C00153, C00253	485
+Consumption (import)	C00153, C00253	1464
+Consumption (import)	C00153, C00253	622
+Consumption (import)	C00153, C00253	624
+Consumption (import)	C00153, C00253	1280
+Consumption (import)	C00153, C00253	1335
+Consumption (import)	C00153, C00253	1304
+Consumption (import)	C00244	72556
+Consumption (import)	C00244	80867
+Consumption (import)	C00244	47920
+Consumption (import)	C00244	358
+Consumption (import)	C00244	179636
+Consumption (import)	C00244	1390
+Consumption (import)	C00244	1392
+Consumption (import)	C00244	1452
+Consumption (import)	C00244	1413
+Consumption (import)	C00244	1396
+Consumption (import)	C00244	79880
+Consumption (import)	C00244	1398
+Consumption (import)	C00244	408580
+Consumption (import)	C00244	86665
+Consumption (import)	C00244	1402
+Consumption (import)	C00244	1404
+Consumption (import)	C00244	1405
+Consumption (import)	C00244	79885
+Consumption (import)	C00244	64104
+Consumption (import)	C00244	1408
+Consumption (import)	C00244	85683
+Consumption (import)	C00244	1423
+Consumption (import)	C00244	1428
+Consumption (import)	C00244	1405
+Consumption (import)	C00244	35833
+Consumption (import)	C00244	375
+Consumption (import)	C00244	477976
+Consumption (import)	C00244	291048
+Consumption (import)	C00244	536
+Consumption (import)	C00244	1718
+Consumption (import)	C00244	118000
+Consumption (import)	C00244	562
+Consumption (import)	C00244	33940
+Consumption (import)	C00244	28232
+Consumption (import)	C00244	35554
+Consumption (import)	C00244	53399
+Consumption (import)	C00244	43674
+Consumption (import)	C00244	502
+Consumption (import)	C00244	573
+Consumption (import)	C00244	359408
+Consumption (import)	C00244	1525
+Consumption (import)	C00244	480
+Consumption (import)	C00244	1773
+Consumption (import)	C00244	484
+Consumption (import)	C00244	488
+Production (export)	C00244	912
+Production (export)	C00244	913
+Production (export)	C00244	35797
+Consumption (import)	C00244	266
+Consumption (import)	C00244	287
+Consumption (import)	C00244	312306
+Consumption (import)	C00244	294
+Consumption (import)	C00244	300
+Consumption (import)	C00244	303
+Consumption (import)	C00244	29438
+Consumption (import)	C00244	316
+Consumption (import)	C00244	317
+Consumption (import)	C00244	13773
+Consumption (import)	C00244	181486
+Consumption (import)	C00244	329
+Consumption (import)	C00244	2434
+Consumption (import)	C00244	192073
+Consumption (import)	C00244	39766
+Consumption (import)	C00244	36861
+Consumption (import)	C00244	844
+Consumption (import)	C00533	 
+Production (export)	C00533	133539
+Production (export)	C00533	1229
+Production (export)	C00533	473531
+Production (export)	C00533	915
+Production (export)	C00533	916
+Production (export)	C00533	338192
+Production (export)	C00533	1231
+Consumption (import)	C00088	912
+Consumption (import)	C00088	913
+Consumption (import)	C00088	35797
+Consumption (import)	C06423	 
+Consumption (import)	C00712	1513
+Consumption (import)	C00712	 
+Consumption (import)	C00712	1717
+Consumption (import)	C00712	1648
+Consumption (import)	C00295	 
+Consumption (import)	C00295	1582
+Consumption (import)	C00209	1525
+Consumption (import)	C00209	847
+Consumption (import)	C00036	29466
+Production (export)	C01468	1496
+Consumption (import)	C01468	 
+Consumption (import)	C01468	28232
+Consumption (import)	C00249	 
+Consumption (import)	C00249	863
+Production (export)	C00864	186490
+Consumption (import)	C00864	235
+Consumption (import)	C00864	29459
+Consumption (import)	C00864	29461
+Consumption (import)	C00864	1488
+Consumption (import)	C00864	333367
+Consumption (import)	C00864	261299
+Consumption (import)	C00864	1520
+Consumption (import)	C00864	208479
+Consumption (import)	C00864	1491
+Consumption (import)	C00864	1492
+Consumption (import)	C00864	217159
+Consumption (import)	C00864	1521
+Consumption (import)	C00864	1493
+Consumption (import)	C00864	 
+Consumption (import)	C00864	1496
+Consumption (import)	C00864	154046
+Consumption (import)	C00864	89152
+Consumption (import)	C00864	89153
+Consumption (import)	C00864	1534
+Consumption (import)	C00864	1535
+Consumption (import)	C00864	1538
+Consumption (import)	C00864	84026
+Consumption (import)	C00864	29361
+Consumption (import)	C00864	1542
+Consumption (import)	C00864	29362
+Consumption (import)	C00864	1502
+Consumption (import)	C00864	66219
+Consumption (import)	C00864	84030
+Consumption (import)	C00864	29347
+Consumption (import)	C00864	1509
+Consumption (import)	C00864	1511
+Consumption (import)	C00864	1512
+Consumption (import)	C00864	1513
+Consumption (import)	C00864	1515
+Consumption (import)	C00864	 
+Consumption (import)	C00864	1717
+Consumption (import)	C00864	1579
+Consumption (import)	C00864	83683
+Consumption (import)	C00864	1604
+Consumption (import)	C00864	227943
+Consumption (import)	C00864	1580
+Consumption (import)	C00864	1581
+Consumption (import)	C00864	1582
+Consumption (import)	C00864	181675
+Consumption (import)	C00864	47770
+Consumption (import)	C00864	1584
+Consumption (import)	C00864	1613
+Consumption (import)	C00864	1596
+Consumption (import)	C00864	1587
+Consumption (import)	C00864	1588
+Consumption (import)	C00864	147802
+Consumption (import)	C00864	109790
+Consumption (import)	C00864	33959
+Consumption (import)	C00864	1632
+Consumption (import)	C00864	1597
+Consumption (import)	C00864	1590
+Consumption (import)	C00864	1598
+Consumption (import)	C00864	47715
+Consumption (import)	C00864	1623
+Consumption (import)	C00864	1599
+Consumption (import)	C00864	1624
+Consumption (import)	C00864	227945
+Consumption (import)	C00864	1633
+Consumption (import)	C00864	1358
+Consumption (import)	C00864	1245
+Consumption (import)	C00864	2110
+Consumption (import)	C00864	47687
+Consumption (import)	C00864	2111
+Consumption (import)	C00864	28903
+Consumption (import)	C00864	2095
+Consumption (import)	C00864	45361
+Consumption (import)	C00864	50052
+Consumption (import)	C00864	2115
+Consumption (import)	C00864	2096
+Consumption (import)	C00864	2097
+Consumption (import)	C00864	29501
+Consumption (import)	C00864	2098
+Consumption (import)	C00864	2099
+Consumption (import)	C00864	2100
+Consumption (import)	C00864	2105
+Consumption (import)	C00864	2118
+Consumption (import)	C00864	2102
+Consumption (import)	C00864	28227
+Consumption (import)	C00864	2104
+Consumption (import)	C00864	2107
+Consumption (import)	C00864	2109
+Consumption (import)	C00864	485
+Consumption (import)	C00864	1464
+Consumption (import)	C00864	40518
+Consumption (import)	C00864	1311
+Consumption (import)	C00864	1328
+Consumption (import)	C00864	113107
+Consumption (import)	C00864	1335
+Consumption (import)	C00864	45634
+Consumption (import)	C00864	1317
+Consumption (import)	C00864	1334
+Consumption (import)	C00864	1336
+Consumption (import)	C00864	315405
+Consumption (import)	C00864	1302
+Consumption (import)	C00864	102684
+Consumption (import)	C00864	68892
+Consumption (import)	C00864	28037
+Consumption (import)	C00864	1309
+Consumption (import)	C00864	1303
+Consumption (import)	C00864	1318
+Consumption (import)	C00864	68891
+Consumption (import)	C00864	1313
+Consumption (import)	C00864	361101
+Consumption (import)	C00864	1314
+Consumption (import)	C00864	1304
+Consumption (import)	C00864	1305
+Consumption (import)	C00864	1307
+Consumption (import)	C00864	1308
+Consumption (import)	C00864	1349
+Consumption (import)	C00864	1343
+Macromolecule degradation	C00714	438
+Macromolecule degradation	C00714	103618
+Macromolecule degradation	C00714	1660
+Macromolecule degradation	C00714	544580
+Macromolecule degradation	C00714	103621
+Macromolecule degradation	C00714	1656
+Macromolecule degradation	C00714	40567
+Macromolecule degradation	C00714	47678
+Macromolecule degradation	C00714	817
+Macromolecule degradation	C00714	28116
+Macromolecule degradation	C00714	818
+Macromolecule degradation	C00714	821
+Macromolecule degradation	C00714	1681
+Macromolecule degradation	C00714	1685
+Macromolecule degradation	C00714	1686
+Macromolecule degradation	C00714	831
+Macromolecule degradation	C00714	43305
+Macromolecule degradation	C00714	1521
+Macromolecule degradation	C00714	74426
+Macromolecule degradation	C00714	39485
+Macromolecule degradation	C00714	853
+Macromolecule degradation	C00714	833
+Macromolecule degradation	C00714	839
+Macromolecule degradation	C00714	1265
+Macromolecule degradation	C00714	1938
+Consumption (import)	C01601	863
+Production (export)	C16834	562
+Consumption (import)	C16834	110500
+Consumption (import)	C00146	 
+Consumption (import)	C00146	182210
+Consumption (import)	C00146	876
+Consumption (import)	C00146	878
+Consumption (import)	C00146	184917
+Consumption (import)	C00146	901
+Consumption (import)	C00146	880
+Consumption (import)	C00146	881
+Consumption (import)	C00146	28232
+Production (export)	C07086	818
+Production (export)	C07086	1491
+Production (export)	C07086	1511
+Consumption (import)	C07086	 
+Consumption (import)	C07086	28232
+Consumption (import)	C07086	114616
+Production (export)	C07086	638849
+Production (export)	C02455	28116
+Production (export)	C02455	818
+Production (export)	C02455	216816
+Consumption (import)	C02059	 
+Consumption (import)	C02656	80867
+Consumption (import)	C02656	47920
+Consumption (import)	C02656	1717
+Consumption (import)	C02656	1085
+Macromolecule degradation	C00403	817
+Macromolecule degradation	C00403	818
+Macromolecule degradation	C00403	821
+Macromolecule degradation	C00403	831
+Macromolecule degradation	C00403	43305
+Macromolecule degradation	C00403	1491
+Macromolecule degradation	C00403	1502
+Macromolecule degradation	C00403	1509
+Macromolecule degradation	C00403	1351
+Macromolecule degradation	C00403	1584
+Macromolecule degradation	C00403	839
+Macromolecule degradation	C00403	1747
+Macromolecule degradation	C00403	1335
+Macromolecule degradation	C00403	29466
+Production (export)	C00479	1492
+Production (export)	C00163	905
+Production (export)	C00163	28117
+Production (export)	C00163	105841
+Production (export)	C00163	47678
+Production (export)	C00163	246787
+Production (export)	C00163	310298
+Production (export)	C00163	387090
+Production (export)	C00163	357276
+Production (export)	C00163	28111
+Production (export)	C00163	338188
+Production (export)	C00163	817
+Production (export)	C00163	290053
+Production (export)	C00163	329854
+Production (export)	C00163	28116
+Production (export)	C00163	384638
+Production (export)	C00163	310297
+Production (export)	C00163	376805
+Production (export)	C00163	46506
+Production (export)	C00163	818
+Production (export)	C00163	820
+Production (export)	C00163	821
+Production (export)	C00163	371601
+Production (export)	C00163	216816
+Consumption (import)	C00163	45851
+Consumption (import)	C00163	831
+Consumption (import)	C00163	43305
+Production (export)	C00163	1534
+Production (export)	C00163	1502
+Production (export)	C00163	1511
+Consumption (import)	C00163	 
+Consumption (import)	C00163	285
+Production (export)	C00163	116085
+Production (export)	C00163	410072
+Consumption (import) & production (export)	C00163	894
+Consumption (import)	C00163	182210
+Consumption (import)	C00163	876
+Consumption (import)	C00163	878
+Consumption (import)	C00163	184917
+Consumption (import)	C00163	901
+Consumption (import)	C00163	880
+Consumption (import)	C00163	881
+Production (export)	C00163	218538
+Production (export)	C00163	1351
+Production (export)	C00163	39491
+Production (export)	C00163	853
+Production (export)	C00163	833
+Consumption (import)	C00163	28232
+Production (export)	C00163	158847
+Production (export)	C00163	187326
+Production (export)	C00163	28118
+Production (export)	C00163	29543
+Consumption (import)	C00163	110500
+Production (export)	C00163	28123
+Production (export)	C00163	419005
+Production (export)	C00163	242750
+Production (export)	C00163	28125
+Production (export)	C00163	77095
+Production (export)	C00163	28126
+Production (export)	C00163	28127
+Production (export)	C00163	165179
+Production (export)	C00163	28130
+Production (export)	C00163	189722
+Production (export)	C00163	28132
+Production (export)	C00163	282402
+Production (export)	C00163	28134
+Production (export)	C00163	28135
+Consumption (import) & production (export)	C00163	839
+Production (export)	C00163	228604
+Production (export)	C00163	76122
+Production (export)	C00163	386414
+Production (export)	C00163	28137
+Production (export)	C00163	1747
+Production (export)	C00163	1744
+Production (export)	C00163	638849
+Production (export)	C00163	166486
+Production (export)	C00163	360807
+Production (export)	C00163	40520
+Production (export)	C00163	28901
+Production (export)	C00163	671224
+Production (export)	C00163	135080
+Production (export)	C00163	135083
+Production (export)	C00163	69823
+Consumption (import)	C00163	119484
+Consumption (import)	C00163	51197
+Consumption (import) & production (export)	C00163	863
+Consumption (import)	C00163	86170
+Consumption (import)	C00163	316277
+Production (export)	C00163	39777
+Production (export)	C00163	39778
+Production (export)	C00163	29466
+Consumption (import)	C05979 	35833
+Consumption (import)	C05979 	1534
+Consumption (import)	C05979 	28232
+Consumption (import)	C05979 	1525
+Consumption (import)	C05979 	19
+Consumption (import)	C05979 	29543
+Consumption (import)	C05979 	110500
+Production (export)	C05979 	360807
+Production (export)	C05979 	28901
+Production (export)	C00134	817
+Production (export)	C00134	28116
+Production (export)	C00134	818
+Production (export)	C00134	197
+Production (export)	C00134	84030
+Consumption (import)	C00134	 
+Production (export)	C00134	550
+Production (export)	C00134	562
+Production (export)	C00134	1579
+Consumption (import)	C00134	287
+Production (export)	C00134	2287
+Production (export)	C00134	311400
+Production (export)	C00134	274
+Production (export)	C00250, C00314, C00534	1423
+Production (export)	C00250, C00314, C00534	186490
+Production (export)	C00250, C00314, C00534	1680
+Production (export)	C00250, C00314, C00534	1681
+Production (export)	C00250, C00314, C00534	1685
+Production (export)	C00250, C00314, C00534	216816
+Consumption (import)	C00250, C00314, C00534	1513
+Consumption (import)	C00250, C00314, C00534	 
+Production (export)	C00250, C00314, C00534	382
+Consumption (import)	C00250, C00314, C00534	1351
+Consumption (import)	C00250, C00314, C00534	562
+Consumption (import)	C00250, C00314, C00534	1582
+Consumption (import)	C00250, C00314, C00534	1584
+Production (export)	C00250, C00314, C00534	1587
+Consumption (import)	C00250, C00314, C00534	1358
+Consumption (import)	C00250, C00314, C00534	1245
+Consumption (import)	C00250, C00314, C00534	485
+Consumption (import)	C00250, C00314, C00534	1464
+Consumption (import)	C00250, C00314, C00534	1264
+Consumption (import)	C00250, C00314, C00534	40518
+Consumption (import)	C00250, C00314, C00534	624
+Production (export)	C00250, C00314, C00534	2057
+Production (export)	C00250, C00314, C00534	1308
+Consumption (import)	C00022	28187
+Consumption (import)	C00022	219314
+Consumption (import)	C00022	169435
+Production (export)	C00022	818
+Consumption (import)	C00022	35833
+Consumption (import)	C00022	53443
+Consumption (import)	C00022	1488
+Production (export)	C00022	1521
+Consumption (import)	C00022	 
+Consumption (import)	C00022	182210
+Consumption (import)	C00022	876
+Consumption (import)	C00022	878
+Consumption (import)	C00022	184917
+Consumption (import)	C00022	901
+Consumption (import)	C00022	880
+Consumption (import)	C00022	881
+Consumption (import)	C00022	39486
+Consumption (import)	C00022	28232
+Consumption (import)	C00022	2214
+Consumption (import)	C00022	2208
+Consumption (import)	C00022	2209
+Consumption (import)	C00022	1525
+Consumption (import)	C00022	29543
+Consumption (import)	C00022	110500
+Consumption (import)	C00022	29292
+Consumption (import)	C00022	2261
+Consumption (import)	C00022	24
+Consumption (import)	C00022	119484
+Consumption (import)	C00022	29466
+Consumption (import)	C00022	339
+Consumption (import)	C00492	644
+Consumption (import)	C00492	328814
+Consumption (import)	C00492	33029
+Consumption (import)	C00492	33034
+Consumption (import)	C00492	817
+Consumption (import)	C00492	818
+Consumption (import)	C00492	371601
+Consumption (import)	C00492	1680
+Consumption (import)	C00492	1683
+Consumption (import)	C00492	28025
+Consumption (import)	C00492	1681
+Consumption (import)	C00492	1685
+Consumption (import)	C00492	1686
+Consumption (import)	C00492	1689
+Consumption (import)	C00492	78342
+Consumption (import)	C00492	216816
+Consumption (import)	C00492	28026
+Consumption (import)	C00492	1322
+Consumption (import)	C00492	53443
+Consumption (import)	C00492	831
+Consumption (import)	C00492	43305
+Consumption (import)	C00492	1496
+Consumption (import)	C00492	74426
+Consumption (import)	C00492	410072
+Consumption (import)	C00492	33043
+Consumption (import)	C00492	39491
+Consumption (import)	C00492	61171
+Consumption (import)	C00492	573
+Consumption (import)	C00492	1579
+Consumption (import)	C00492	40542
+Consumption (import)	C00492	168384
+Consumption (import)	C00492	158847
+Consumption (import)	C00492	823
+Consumption (import)	C00492	46503
+Consumption (import)	C00492	165179
+Consumption (import)	C00492	166486
+Consumption (import)	C00492	40520
+Consumption (import)	C00492	214851
+Consumption (import)	C00777	 
+Consumption (import)	C00473	 
+Consumption (import)	C00474	 
+Consumption (import) & production (export)	C00255 	1423
+Production (export)	C00255 	186490
+Consumption (import)	C00255 	1681
+Consumption (import)	C00255 	9
+Consumption (import)	C00255 	1513
+Consumption (import)	C00255 	 
+Consumption (import)	C00255 	1648
+Production (export)	C00255 	562
+Consumption (import)	C00255 	853
+Production (export)	C00255 	573
+Consumption (import)	C00255 	1579
+Consumption (import)	C00255 	1582
+Consumption (import)	C00255 	1584
+Production (export)	C00255 	1613
+Consumption (import)	C00255 	1587
+Consumption (import) & production (export)	C00255 	1590
+Consumption (import) & production (export)	C00255 	1358
+Consumption (import) & production (export)	C00255 	1245
+Consumption (import)	C00255 	1639
+Production (export)	C00255 	2190
+Consumption (import)	C00255 	1464
+Production (export)	C00255 	1744
+Consumption (import)	C00255 	40518
+Consumption (import)	C00255 	1314
+Consumption (import)	C00255 	1304
+Consumption (import)	C00255 	1308
+Consumption (import)	C00493	1404
+Production (export)	C00315	818
+Consumption (import) & production (export)	C00315	197
+Production (export)	C00315	84030
+Consumption (import)	C00315	 
+Consumption (import)	C00315	839
+Production (export)	C00315	311400
+Production (export)	C00315	274
+Production (export)	C00750	197
+Production (export)	C00750	84030
+Consumption (import)	C00750	 
+Consumption (import)	C01613	1496
+Consumption (import)	C01613	573
+Consumption (import)	C01613	168384
+Macromolecule degradation	C00317, C00369, C00480, C00718	28111
+Macromolecule degradation	C00317, C00369, C00480, C00718	817
+Macromolecule degradation	C00317, C00369, C00480, C00718	28116
+Macromolecule degradation	C00317, C00369, C00480, C00718	818
+Macromolecule degradation	C00317, C00369, C00480, C00718	821
+Macromolecule degradation	C00317, C00369, C00480, C00718	1680
+Macromolecule degradation	C00317, C00369, C00480, C00718	1683
+Macromolecule degradation	C00317, C00369, C00480, C00718	28025
+Macromolecule degradation	C00317, C00369, C00480, C00718	1681
+Macromolecule degradation	C00317, C00369, C00480, C00718	1685
+Macromolecule degradation	C00317, C00369, C00480, C00718	1686
+Macromolecule degradation	C00317, C00369, C00480, C00718	1689
+Macromolecule degradation	C00317, C00369, C00480, C00718	78342
+Macromolecule degradation	C00317, C00369, C00480, C00718	216816
+Macromolecule degradation	C00317, C00369, C00480, C00718	28026
+Macromolecule degradation	C00317, C00369, C00480, C00718	45851
+Macromolecule degradation	C00317, C00369, C00480, C00718	831
+Macromolecule degradation	C00317, C00369, C00480, C00718	43305
+Macromolecule degradation	C00317, C00369, C00480, C00718	100886
+Macromolecule degradation	C00317, C00369, C00480, C00718	1492
+Macromolecule degradation	C00317, C00369, C00480, C00718	74426
+Macromolecule degradation	C00317, C00369, C00480, C00718	33043
+Macromolecule degradation	C00317, C00369, C00480, C00718	39491
+Macromolecule degradation	C00317, C00369, C00480, C00718	39492
+Macromolecule degradation	C00317, C00369, C00480, C00718	986
+Macromolecule degradation	C00317, C00369, C00480, C00718	61171
+Macromolecule degradation	C00317, C00369, C00480, C00718	823
+Macromolecule degradation	C00317, C00369, C00480, C00718	839
+Macromolecule degradation	C00317, C00369, C00480, C00718	166486
+Macromolecule degradation	C00317, C00369, C00480, C00718	360807
+Macromolecule degradation	C00317, C00369, C00480, C00718	40518
+Macromolecule degradation	C00317, C00369, C00480, C00718	1335
+Production (export)	C01530	43305
+Consumption (import)	C01530	453230
+Consumption (import)	C01530	863
+Production (export)	C00042	67854
+Consumption (import)	C00042	219314
+Production (export)	C00042	28117
+Production (export)	C00042	328814
+Production (export)	C00042	105841
+Consumption (import)	C00042	1423
+Production (export)	C00042	47678
+Production (export)	C00042	246787
+Production (export)	C00042	310298
+Production (export)	C00042	387090
+Production (export)	C00042	357276
+Production (export)	C00042	28111
+Production (export)	C00042	338188
+Production (export)	C00042	817
+Production (export)	C00042	290053
+Production (export)	C00042	329854
+Production (export)	C00042	28116
+Production (export)	C00042	384638
+Production (export)	C00042	310297
+Production (export)	C00042	376805
+Production (export)	C00042	46506
+Production (export)	C00042	818
+Production (export)	C00042	820
+Production (export)	C00042	821
+Production (export)	C00042	371601
+Production (export)	C00042	1680
+Production (export)	C00042	1683
+Production (export)	C00042	28025
+Production (export)	C00042	1681
+Production (export)	C00042	1685
+Production (export)	C00042	1686
+Production (export)	C00042	1689
+Production (export)	C00042	78342
+Production (export)	C00042	216816
+Production (export)	C00042	28026
+Consumption (import)	C00042	35833
+Production (export)	C00042	53443
+Production (export)	C00042	1488
+Production (export)	C00042	1520
+Consumption (import)	C00042	1534
+Production (export)	C00042	1502
+Consumption (import)	C00042	 
+Consumption (import)	C00042	1718
+Consumption (import)	C00042	894
+Consumption (import)	C00042	182210
+Consumption (import)	C00042	876
+Consumption (import)	C00042	878
+Consumption (import)	C00042	184917
+Consumption (import)	C00042	901
+Consumption (import)	C00042	880
+Consumption (import)	C00042	881
+Consumption (import)	C00042	382
+Production (export)	C00042	208962
+Consumption (import) & production (export)	C00042	562
+Production (export)	C00042	564
+Production (export)	C00042	39492
+Production (export)	C00042	833
+Production (export)	C00042	35554
+Production (export)	C00042	61171
+Consumption (import)	C00042	573
+Production (export)	C00042	1590
+Production (export)	C00042	168384
+Production (export)	C00042	158847
+Production (export)	C00042	28118
+Production (export)	C00042	387661
+Production (export)	C00042	46503
+Production (export)	C00042	110500
+Production (export)	C00042	419005
+Production (export)	C00042	242750
+Production (export)	C00042	28125
+Production (export)	C00042	77095
+Production (export)	C00042	28126
+Production (export)	C00042	28127
+Production (export)	C00042	165179
+Production (export)	C00042	28130
+Production (export)	C00042	189722
+Production (export)	C00042	28132
+Production (export)	C00042	282402
+Production (export)	C00042	28134
+Production (export)	C00042	28135
+Production (export)	C00042	839
+Production (export)	C00042	228604
+Production (export)	C00042	76122
+Production (export)	C00042	386414
+Production (export)	C00042	28137
+Production (export)	C00042	106588
+Consumption (import)	C00042	287
+Production (export)	C00042	638849
+Consumption (import)	C00042	384
+Consumption (import)	C00042	1061
+Production (export)	C00042	40518
+Production (export)	C00042	1265
+Production (export)	C00042	214851
+Consumption (import)	C00042	29466
+Production (export)	C00042	844
+Consumption (import)	C00042	339
+Consumption (import)	C00089	1423
+Consumption (import)	C00089	371601
+Consumption (import)	C00089	1685
+Consumption (import)	C00089	831
+Consumption (import)	C00089	43305
+Consumption (import)	C00089	100886
+Consumption (import)	C00089	1488
+Consumption (import)	C00089	1520
+Consumption (import)	C00089	74426
+Consumption (import)	C00089	410072
+Consumption (import)	C00089	33043
+Consumption (import)	C00089	901
+Consumption (import)	C00089	88431
+Consumption (import)	C00089	39491
+Consumption (import)	C00089	850
+Consumption (import)	C00089	61171
+Consumption (import)	C00089	573
+Consumption (import)	C00089	1582
+Consumption (import)	C00089	40542
+Consumption (import)	C00089	168384
+Consumption (import)	C00089	823
+Consumption (import)	C00089	46503
+Consumption (import)	C00089	165179
+Consumption (import)	C00089	166486
+Consumption (import)	C00089	1335
+Consumption (import)	C00089	1309
+Consumption (import)	C00089	214851
+Consumption (import)	C00089	2287
+Consumption (import)	C00089	339
+Production (export)	C00059	33059
+Production (export)	C00059	1049
+Production (export)	C00059	63363
+Consumption (import)	C00059	2234
+Consumption (import)	C00059	84156
+Consumption (import)	C00059	186490
+Consumption (import)	C00059	35833
+Consumption (import)	C00059	9
+Consumption (import)	C00059	76887
+Production (export)	C00059	337090
+Production (export)	C00059	84205
+Production (export)	C00059	1092
+Production (export)	C00059	1096
+Production (export)	C00059	1098
+Consumption (import)	C00059	 
+Consumption (import)	C00059	1299
+Consumption (import)	C00059	453230
+Consumption (import)	C00059	259354
+Consumption (import)	C00059	2296
+Consumption (import)	C00059	894
+Consumption (import)	C00059	181663
+Consumption (import)	C00059	45663
+Consumption (import)	C00059	899
+Consumption (import)	C00059	488939
+Consumption (import)	C00059	84980
+Consumption (import)	C00059	58138
+Consumption (import)	C00059	1565
+Consumption (import)	C00059	59610
+Consumption (import)	C00059	182210
+Consumption (import)	C00059	876
+Consumption (import)	C00059	878
+Consumption (import)	C00059	184917
+Consumption (import)	C00059	901
+Consumption (import)	C00059	880
+Consumption (import)	C00059	881
+Consumption (import)	C00059	562
+Consumption (import)	C00059	2214
+Consumption (import)	C00059	2208
+Consumption (import)	C00059	2209
+Production (export)	C00059	408
+Production (export)	C00059	266
+Consumption (import)	C00059	638849
+Production (export)	C00059	1061
+Production (export)	C00059	1063
+Production (export)	C00059	1076
+Consumption (import)	C00059	40518
+Production (export)	C00059	921
+Production (export)	C00059	2285
+Production (export)	C00059	43080
+Production (export)	C00059	2287
+Production (export)	C00059	111955
+Consumption (import)	C00059	119484
+Consumption (import)	C00059	28262
+Production (export)	C00059	36861
+Production (export)	C00059	39765
+Production (export)	C00059	844
+Production (export)	C00059	280
+Consumption (import)	C00087	33059
+Consumption (import)	C00087	1049
+Consumption (import)	C00087	63363
+Consumption (import)	C00087	337090
+Consumption (import)	C00087	84205
+Consumption (import)	C00087	1092
+Consumption (import)	C00087	1096
+Consumption (import)	C00087	1098
+Consumption (import)	C00087	408
+Consumption (import)	C00087	266
+Consumption (import)	C00087	1061
+Consumption (import)	C00087	1063
+Consumption (import)	C00087	1076
+Consumption (import)	C00087	921
+Consumption (import)	C00087	2285
+Consumption (import)	C00087	43080
+Consumption (import)	C00087	2287
+Consumption (import)	C00087	111955
+Consumption (import)	C00087	36861
+Consumption (import)	C00087	39765
+Consumption (import)	C00087	844
+Consumption (import)	C00087	280
+Consumption (import)	C00245	35833
+Consumption (import)	C00245	 
+Consumption (import)	C05465	817
+Consumption (import)	C05465	821
+Consumption (import)	C05465	1680
+Consumption (import)	C05465	28025
+Consumption (import)	C05465	1681
+Consumption (import)	C05465	1685
+Consumption (import)	C05465	216816
+Consumption (import)	C05465	35833
+Consumption (import)	C05465	1502
+Production (export)	C05465	 
+Consumption (import)	C05465	1579
+Consumption (import)	C05465	1580
+Consumption (import)	C05465	1581
+Consumption (import)	C05465	1596
+Consumption (import)	C05465	1588
+Consumption (import)	C05465	33959
+Consumption (import)	C05465	1590
+Consumption (import)	C05465	1639
+Consumption (import)	C05122	817
+Consumption (import)	C05122	821
+Consumption (import)	C05122	1680
+Consumption (import)	C05122	28025
+Consumption (import)	C05122	1681
+Consumption (import)	C05122	1685
+Consumption (import)	C05122	216816
+Consumption (import)	C05122	35833
+Consumption (import)	C05122	1496
+Consumption (import)	C05122	1502
+Production (export)	C05122	 
+Consumption (import)	C05122	1579
+Consumption (import)	C05122	1580
+Consumption (import)	C05122	1581
+Consumption (import)	C05122	1596
+Consumption (import)	C05122	1588
+Consumption (import)	C05122	33959
+Consumption (import)	C05122	1590
+Consumption (import)	C05122	1639
+Consumption (import)	C05463	817
+Consumption (import)	C05463	821
+Consumption (import)	C05463	1680
+Consumption (import)	C05463	28025
+Consumption (import)	C05463	1681
+Consumption (import)	C05463	1685
+Consumption (import)	C05463	216816
+Consumption (import)	C05463	35833
+Consumption (import)	C05463	1502
+Consumption (import)	C05463	1579
+Consumption (import)	C05463	1580
+Consumption (import)	C05463	1581
+Consumption (import)	C05463	1596
+Consumption (import)	C05463	1588
+Consumption (import)	C05463	33959
+Consumption (import)	C05463	1590
+Consumption (import)	C05463	1639
+Consumption (import)	C02592	1680
+Consumption (import)	C02592	28025
+Consumption (import)	C02592	1681
+Consumption (import)	C02592	1685
+Consumption (import)	C02592	216816
+Consumption (import)	C02592	35833
+Consumption (import)	C02592	1502
+Consumption (import)	C02592	1579
+Consumption (import)	C02592	1580
+Consumption (import)	C02592	1581
+Consumption (import)	C02592	1596
+Consumption (import)	C02592	1588
+Consumption (import)	C02592	1590
+Consumption (import)	C02592	1639
+Consumption (import)	C00378	1423
+Production (export)	C00378	186490
+Production (export)	C00378	1681
+Production (export)	C00378	1685
+Production (export)	C00378	216816
+Consumption (import)	C00378	235
+Consumption (import)	C00378	29459
+Consumption (import)	C00378	29461
+Consumption (import)	C00378	1520
+Consumption (import)	C00378	1513
+Consumption (import)	C00378	 
+Consumption (import) & production (export)	C00378	562
+Consumption (import)	C00378	1582
+Production (export)	C00378	1587
+Consumption (import)	C00378	1358
+Consumption (import)	C00378	1245
+Consumption (import)	C00378	1639
+Consumption (import)	C00378	485
+Consumption (import)	C00378	1464
+Consumption (import)	C00378	384
+Consumption (import)	C00378	63612
+Production (export)	C00378	2057
+Consumption (import)	C00378	1280
+Consumption (import)	C00378	1335
+Consumption (import)	C00378	1304
+Consumption (import) & production (export)	C00378	1308
+Production (export)	C00378	51229
+Consumption (import)	C00320	33059
+Consumption (import)	C00320	35833
+Consumption (import)	C00320	 
+Consumption (import)	C00320	562
+Consumption (import)	C00320	638849
+Consumption (import)	C00320	40518
+Consumption (import)	C00320	119484
+Consumption (import)	C00214	169435
+Consumption (import)	C00178	 
+Consumption (import)	C01455	28232
+Consumption (import)	C01083	219314
+Consumption (import)	C01083	169435
+Consumption (import)	C01083	28116
+Consumption (import)	C01083	818
+Consumption (import)	C01083	371601
+Consumption (import)	C01083	1685
+Consumption (import)	C01083	53443
+Consumption (import)	C01083	831
+Consumption (import)	C01083	43305
+Consumption (import)	C01083	74426
+Consumption (import)	C01083	147206
+Consumption (import)	C01083	61171
+Consumption (import)	C01083	168384
+Consumption (import)	C01083	823
+Consumption (import)	C01083	46503
+Consumption (import)	C01083	2261
+Consumption (import)	C01083	621
+Consumption (import)	C01083	214851
+Consumption (import)	C01083	2287
+Consumption (import)	C01083	2336
+Macromolecule degradation	C00422	471
+Macromolecule degradation	C00422	40216
+Macromolecule degradation	C00422	1402
+Macromolecule degradation	C00422	1404
+Macromolecule degradation	C00422	1408
+Macromolecule degradation	C00422	1423
+Macromolecule degradation	C00422	152480
+Macromolecule degradation	C00422	95486
+Macromolecule degradation	C00422	292
+Macromolecule degradation	C00422	337
+Macromolecule degradation	C00422	87883
+Macromolecule degradation	C00422	60552
+Macromolecule degradation	C00422	1491
+Macromolecule degradation	C00422	1509
+Macromolecule degradation	C00422	1351
+Macromolecule degradation	C00422	1590
+Macromolecule degradation	C00422	1270
+Macromolecule degradation	C00422	1747
+Macromolecule degradation	C00422	287
+Macromolecule degradation	C00422	294
+Macromolecule degradation	C00422	300
+Macromolecule degradation	C00422	303
+Macromolecule degradation	C00422	329
+Macromolecule degradation	C00422	1280
+Macromolecule degradation	C00422	274
+Consumption (import)	C00565	28187
+Production (export)	C00565	818
+Production (export)	C00565	1351
+Production (export)	C00565	562
+Production (export)	C00565	853
+Production (export)	C00565	573
+Consumption (import)	C00565	2176
+Consumption (import)	C00565	2214
+Consumption (import)	C00565	2208
+Consumption (import)	C00565	2209
+Consumption (import)	C00565	2317
+Production (export)	C00565	287
+Production (export)	C00565	1280
+Production (export)	C00565	1318
+Production (export)	C00565	1313
+Production (export)	C01104	853
+Production (export)	C00398	1579
+Consumption (import)	C00398	839
+Production (export)	C00483	28116
+Production (export)	C00483	818
+Production (export)	C00483	1351
+Production (export)	C00483	1352
+Consumption (import)	C00483	573
+Production (export)	C00483	1597
+Production (export)	C00483	47715
+Consumption (import)	C00106	 
+Consumption (import)	C00086	33029
+Consumption (import)	C00086	33032
+Consumption (import)	C00086	33034
+Consumption (import)	C00086	33036
+Production (export)	C00086	818
+Consumption (import)	C00086	1680
+Consumption (import)	C00086	1683
+Consumption (import)	C00086	28025
+Consumption (import)	C00086	1681
+Consumption (import)	C00086	1685
+Consumption (import)	C00086	1686
+Consumption (import)	C00086	1689
+Consumption (import)	C00086	78342
+Consumption (import)	C00086	216816
+Consumption (import)	C00086	28026
+Consumption (import)	C00086	1488
+Consumption (import)	C00086	333367
+Consumption (import)	C00086	261299
+Consumption (import)	C00086	1520
+Consumption (import)	C00086	208479
+Consumption (import)	C00086	1491
+Consumption (import)	C00086	1492
+Consumption (import)	C00086	217159
+Consumption (import)	C00086	1521
+Consumption (import)	C00086	1493
+Consumption (import)	C00086	 
+Consumption (import)	C00086	1496
+Consumption (import)	C00086	154046
+Consumption (import)	C00086	89152
+Consumption (import)	C00086	89153
+Consumption (import)	C00086	1534
+Consumption (import)	C00086	1535
+Consumption (import)	C00086	1538
+Consumption (import)	C00086	84026
+Consumption (import)	C00086	29361
+Consumption (import)	C00086	1542
+Consumption (import)	C00086	29362
+Consumption (import)	C00086	1502
+Consumption (import)	C00086	66219
+Consumption (import)	C00086	84030
+Consumption (import)	C00086	29347
+Consumption (import)	C00086	1509
+Consumption (import)	C00086	1511
+Consumption (import)	C00086	1512
+Consumption (import)	C00086	1513
+Consumption (import)	C00086	1515
+Production (export)	C00086	 
+Consumption (import)	C00086	901
+Consumption (import)	C00086	210
+Consumption (import)	C00086	573
+Consumption (import)	C00086	244366
+Consumption (import)	C00086	584
+Consumption (import)	C00086	102862
+Consumption (import)	C00086	311400
+Consumption (import)	C00086	134821
+Consumption (import)	C00086	2130
+Consumption (import)	C00299	169435
+Consumption (import)	C00299	 
+Consumption (import)	C00803	72556
+Production (export)	C00803	105841
+Production (export)	C00803	817
+Production (export)	C00803	818
+Consumption (import)	C00803	45851
+Consumption (import)	C00803	831
+Consumption (import)	C00803	43305
+Production (export)	C00803	1534
+Consumption (import)	C00803	 
+Consumption (import)	C00803	58138
+Consumption (import)	C00803	833
+Consumption (import)	C00803	28232
+Production (export)	C00803	187326
+Consumption (import)	C00803	839
+Consumption (import)	C00803	119484
+Consumption (import)	C00803	51197
+Consumption (import)	C00803	863
+Consumption (import)	C00803	86170
+Consumption (import)	C00803	316277
+Consumption (import)	C00385	 
+Consumption (import)	c2	105841
+Consumption (import)	c2	817
+Consumption (import)	c2	818
+Consumption (import)	c2	821
+Consumption (import)	c2	1680
+Consumption (import)	c2	1685
+Consumption (import)	c2	216816
+Consumption (import)	c2	39491
+Consumption (import)	c2	573
+Consumption (import)	c2	1579
+Consumption (import)	c2	1590
+Consumption (import)	c2	1358
+Consumption (import)	c2	166486
+Consumption (import)	c2	360807
+Consumption (import)	C00379	 
+Production (export)	C00379	1772
+Consumption (import)	C00379	1309
+Consumption (import)	C00038	 
