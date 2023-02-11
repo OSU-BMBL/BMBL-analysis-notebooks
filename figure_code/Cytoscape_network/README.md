@@ -1,10 +1,10 @@
-# Visualize Networks using R and Cytoscape (Only in Windows)
+## Visualizing Networks using R and Cytoscape (Windows Only)
 
-Note: The visualization code was created and tested using R and Cytoscape in Windows OS. Not supported in terminal environment.
+**Important Note:** The visualization code was created and tested using R and Cytoscape on Windows operating systems and is not compatible with terminal environments.
 
-## Installation
+### Installation
 
-The following packages were used for development:
+The following packages are required for development:
 
 - R: 4.2.1
 - Cytoscape: 3.9.1
@@ -14,28 +14,36 @@ The following packages were used for development:
 - reshape2: 1.4.4
 - qs: 0.25.4
 
-## How to use
+### How to Use
 
-1. You need to open Cytoscape desktop version first. The code requires Rcy3 package to build API conenction with the desktop Cytoscape. 
+1. Open the desktop version of Cytoscape. The code requires the Rcy3 package to establish an API connection with the desktop Cytoscape.
 
-2. It is recomended to run the following code line-by-line in Rstudio since it is easier to adjust network parameters.
+2. It is recommended to run the code line by line in **Rstudio** for ease of adjusting network parameters.
 
-## Plot all cancer types
+### Plotting All Cancer Types
 
-Check ```plot_all_cancer.r```
+Refer to the file `plot_all_cancer.r`
 
-Example output:
+**Example Output:**
 
-![](./img/example_all_cancer.png)
+![Example Output: All Cancer Types](./img/example_all_cancer.png)
 
-## Plot one cancer with metabolic edge
+### Plotting One Cancer with Metabolic Edge
 
-Check ```plot_one_cancer_with_metabolic_edge.r```
+Refer to the file `plot_one_cancer_with_metabolic_edge.r`
 
-![](./img/example_metabolic_edge.png)
+**Example Output:**
 
-## Plot one cancer with phylogenetic edge
+![Example Output: One Cancer with Metabolic Edge](./img/example_metabolic_edge.png)
 
-Check ```plot_one_cancer_with_phylogenetic_edge.r```
+### Plotting One Cancer with Phylogenetic Edge
 
-![](./img/example_phylogenetic_edge.png)
+Refer to the file `plot_one_cancer_with_phylogenetic_edge.r`
+
+**Example Output:**
+
+![Example Output: One Cancer with Phylogenetic Edge](./img/example_phylogenetic_edge.png)
+
+**Sources:**
+- R: https://en.wikipedia.org/wiki/R_(programming_language)
+- Cytoscape: https://en.wikipedia.org/wiki/Cytoscape

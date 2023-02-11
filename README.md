@@ -1,36 +1,36 @@
-# BMBL-analysis-notebooks
+# BMBL Data Analysis Notebooks
 
 ![LOGO](https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/0/72768/files/2020/07/bmbl_logo1-300x124.png)
 
-**Warning: This repository is under heavy development and the content is not final yet. If you have early feedback feel free to open issues and get in touch with us.**
+**Important Note: This repository is still under development and the information contained within it may change. If you have any feedback or suggestions, feel free to open an issue or reach out to us.**
 
-## Mission
+## Purpose
 
-We are making a series of bioinformatics data analysis notebooks on the current single-cell analysis best practices with data and code examples.
+This repository contains a collection of bioinformatics data analysis notebooks focused on providing examples of current best practices in single-cell analysis. The notebooks include both data and code.
 
-## What this repository is for
+## Who this repository is for
 
-The repository is for anyone who wants to:
+This repository is intended for anyone who wants to:
 
-1. Apply current best-practices analysis using real data.
-2. Generate detailed reports to your biological background collaborators.
-3. Look for code snippets to quickly generate some results and figures.
+1. Apply current best practices in single-cell analysis using real data.
+2. Generate comprehensive reports to share with biological collaborators.
+3. Find code snippets to quickly produce results and figures.
 
-## What this repository is NOT
+## Who this repository is NOT for
 
-The repository is NOT an introduction to data analysis. There are many courses and resources available, such as [Bioinformatics Training at the Harvard Chan Bioinformatics Core](https://hbctraining.github.io/main/), and [Single-cell best practices from Theis lab](https://www.sc-best-practices.org/preamble.html). Therefore, this repository shies away from these concepts to focus on practical aspects of analysis. To be specific, the repository assumes that users have a basic understanding of the following topics:
+This repository is NOT an introduction to data analysis. There are many available courses and resources, such as [Bioinformatics Training at the Harvard Chan Bioinformatics Core](https://hbctraining.github.io/main/) and [Single-cell best practices from Theis lab](https://www.sc-best-practices.org/preamble.html), that provide such introductions. The focus of this repository is on the practical aspects of analysis and assumes that users already have a basic understanding of:
 
-1. R, Python, and Unix programming.
-2. R markdown settings.
+1. Programming in R, Python, and Unix.
+2. R markdown.
 3. Assays such as RNA-seq, single-cell RNA-seq, and Spatial transcriptomics.
 
-## Table of contents
+## Table of Contents
 
-1. Single-cell RNA seq general preprocessing workflow: `/scRNAseq_preprocess_main`
-2. A branch of scRNAseq on Immune data analysis: `/scRNAseq_immune_branch`
-3. Code Snippets to generate publication level figure: `/figure_code`
+1. Single-cell RNA-seq general preprocessing workflow: `/scRNAseq_preprocess_main`
+2. Analysis of immune system data with scRNA-seq: `/scRNAseq_immune_branch`
+3. Code for generating publication-ready figures: `/figure_code`
 
-In case of questions or problems, please get in touch by posting an issue in this repository or contact me via cankun.wang@osumc.edu
+If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Cankun Wang at cankun.wang@osumc.edu.
 
 ## Acknowledgements
 
