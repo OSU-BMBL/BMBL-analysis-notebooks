@@ -1,0 +1,110 @@
+---
+title: "4. Cell type annotation"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+here::i_am("2_cell_type_annotation.Rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r}
+source("functions.R")
+combined <- qs::qread('combined.qsave')
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+```
+
+
+```{r, fig.width=10, fig.height=8}
+
+DimPlot(
+  combined,
+  reduction = "umap",
+  cols = cell_type_color,
+  label = T,
+  pt.size = 0.4,
+  repel = T,
+  label.box = T
+)
+
+```
+# Cluster specific genes and annotate manually
+
+```{r, fig.height=6}
+Idents(combined) <- combined$seurat_clusters
+
+deg_filename <- paste0("./cts_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(combined,
+                   only.pos = T,
+                   logfc.threshold = 0.25) %>%
+    filter(pct.1 > 0.25)
+  write.csv(cts_markers,
+            paste0("./cts_marker.csv"))
+}
+
+
+# Create a tmp idents to store cell type annotations
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels[c(1, 2, 5)] <- "Cardiac mesoderm"
+tmp_levels[c(3, 6, 8, 9)] <- "Differentiating iPSCs"
+tmp_levels[c(4)] <- "SHF progenitor"
+levels(tmp_ident) <- tmp_levels
+
+combined <-
+  AddMetaData(combined, tmp_ident, col.name = "cell_type")
+
+
+
+# Save object once all annotation is complete
+qs::qsave(combined,'combined_with_cell_type.qsave')
+table(combined$cell_type) / sum(as.numeric(table(combined$cell_type)))
+
+```
+
+# Check cell type umap
+
+```{r,eval=T,message=T,warning=F,error=F}
+
+Idents(combined) <- this_combined$cell_type
+DimPlot(combined, reduction = "umap")
+```
+

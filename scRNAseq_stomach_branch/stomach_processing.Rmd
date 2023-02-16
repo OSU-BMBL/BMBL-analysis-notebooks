@@ -1,0 +1,530 @@
+---
+title: 'Stomach processing'
+output:
+  html_document:
+    df_print: paged
+date: '2023-01-03'
+author: 'Hao Cheng'
+---
+
+```{r,include=FALSE,collapse=TRUE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(scater)
+
+# devtools::install_github("GreenleafLab/ArchR", ref="master", repos = BiocManager::repositories())
+source("functions.R")
+here::i_am("stomach_processing.Rmd")
+print(paste("Current working directory:", here::here()))
+```
+
+## Reading data
+
+We start by reading in the data. The programs reads in the output h5 file `filtered_feature_bc_matrix.h5` of the cellranger pipeline from 10X, returning a unique molecular identified (UMI) count matrix. The values in this matrix represent the number of molecules for each feature (i.e. gene; row) that are detected in each cell (column). To improve the quality of data, we include features detected in at least 3 cells and include cells where at least 200 features are detected. Other features and cells will be dropped. Finally, we get 18746 features and 7530 cells.
+
+```{r message=FALSE, warning=FALSE}
+A1.data <-
+  Read10X_h5("stomach_filtered_feature_bc_matrix.h5")
+
+combined <-
+  CreateSeuratObject(
+    A1.data,
+    project = "stomach",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+combined
+```
+
+```{r eval=FALSE, include=FALSE}
+# don't run
+A1.data <-Read10X_h5("stomach_raw_feature_bc_matrix.h5")
+
+combined <-
+  CreateSeuratObject(
+    A1.data,
+    project = "stomach",
+    assay = "RNA",
+    min.cells = 0,
+    min.features = 1
+  )
+combined
+
+# all.genes<-rownames(combined)
+# fileConn<-file("output.txt")
+# writeLines(all.genes, fileConn)
+# close(fileConn)
+print("Gene Count")
+print(paste("Drd1",length(which(combined@assays$RNA@counts["Drd1",]>0))))
+print(paste("Drd2",length(which(combined@assays$RNA@counts["Drd2",]>0))))
+print(paste("Drd3",length(which(combined@assays$RNA@counts["Drd3",]>0))))
+print(paste("Drd4",length(which(combined@assays$RNA@counts["Drd4",]>0))))
+print(paste("Drd5",length(which(combined@assays$RNA@counts["Drd5",]>0))))
+```
+
+## QC and selecting cells for further analysis
+
+Before analysing the single-cell gene expression data, we must ensure that all cellular barcode data correspond to viable cells. Cell quality control is performed based on four QC covariates:
+
+1.  The number of unique genes detected in each cell (`nFeature_RNA`). Low-quality cells or empty droplets will often have very few genes. Cell doublets or multiplets may exhibit an aberrantly high gene count.
+
+2.  The total number of genes detected within a cell (correlates strongly with unique genes) (`nCount_RNA`)
+
+3.  The percentage of reads that map to the mitochondrial genome (`percent.mito`). Low-quality / dying cells often exhibit extensive mitochondrial contamination. We use the set of all genes starting with `MT-` as a set of mitochondrial genes
+
+4.  The percentage of reads that map to the ribosomal genome (`percent.ribo`).
+
+The violin plot for those four QC metrics was shown below:
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=6, fig.width=10}
+rb.genes <-
+  rownames(combined)[grep("^Rp[sl][[:digit:]]", rownames(combined))]
+
+percent.ribo <-
+  colSums(combined[rb.genes, ]) / Matrix::colSums(combined) * 100
+
+combined <-
+  AddMetaData(combined, percent.ribo, col.name = "percent.ribo")
+
+combined <- PercentageFeatureSet(combined, "^mt-", col.name = "percent.mito")
+
+mito_genes <- rownames(combined)[grep("^mt-", rownames(combined))]
+# head(combined@meta.data, 5)
+
+VlnPlot(
+  combined,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 4,
+  pt.size = 0.1
+)
+```
+
+Then we filter cells that have unique feature counts over 7500, genes detected within a cell more than 70000. We filter cells that have \>15% mitochondrial counts and \>20% ribosomal counts.
+
+**Note: we observed the high percentage of the mitochondrial counts, which may indicate the potential issues in sequencing, such as the poor sample quality, leading to a high fraction of apoptotic or lysing cells.**
+
+After filtering, the number of cells and violin plot is as follows:
+
+```{r warning=FALSE}
+#Similar to [Single cell transcriptomic analysis of cardiac differentiation from human PSCs reveals HOPX-dependent cardiomyocyte maturation](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6220122/).
+
+# We first filtered out cells that detected less than 200 genes and genes detected in fewer than 3 cells. We also filtered outlier cells which were outside the range of 5x median absolute deviation (MAD) of the in that cell due to sequencing depth, number of detected genes, percentage of mitochondrial genes, and percentage of mitochondrial genes.
+
+# MAD filtering for n_Features, n_Count, pct_Ribo, pct_Mito
+combined_qc <- combined
+feature.mad.higher <-
+  isOutlier(combined_qc$percent.ribo, nmads = 5, type = "higher")
+
+count.mad.lower <-
+  isOutlier(
+    combined_qc$nCount_RNA,
+    nmads = 5,
+    log = T,
+    type = "lower"
+  )
+
+count.mad.higher <-
+  isOutlier(combined_qc$nCount_RNA, nmads = 5, type = "higher")
+mito.mad.higher <-
+  isOutlier(combined_qc$percent.mito, nmads = 5, type = "higher")
+ribo.mad.higher <-
+  isOutlier(combined_qc$percent.ribo, nmads = 5, type = "higher")
+
+combined_qc <-
+  AddMetaData(combined_qc, feature.mad.higher, col.name = "feature.mad.higher")
+
+combined_qc <-
+  AddMetaData(combined_qc, count.mad.lower, col.name = "count.mad.lower")
+
+combined_qc <-
+  AddMetaData(combined_qc, count.mad.higher, col.name = "count.mad.higher")
+combined_qc <-
+  AddMetaData(combined_qc, mito.mad.higher, col.name = "mito.mad.higher")
+combined_qc <-
+  AddMetaData(combined_qc, ribo.mad.higher, col.name = "ribo.mad.higher")
+
+combined_qc <-
+  subset(
+    combined_qc,
+    subset =
+      #count.mad.lower == F &
+      #count.mad.higher == F &
+      #mito.mad.higher == F &
+      #ribo.mad.higher == F &
+      #feature.mad.higher == F,
+      nFeature_RNA < 7500 &
+      nCount_RNA < 70000 &
+      percent.ribo < 20 &
+      percent.mito < 15
+  )
+
+freq1 <- rbind(ncol(combined), as.data.frame(table(combined$orig.ident)))
+freq2 <- rbind(ncol(combined_qc), as.data.frame(table(combined_qc$orig.ident)))
+freq_df <- freq1 %>%
+  left_join(freq2, by="Var1") %>%
+  mutate(
+    Var1 = as.character(Var1)
+  )
+colnames(freq_df) <- c("sample","before_qc","after_qc")
+freq_df[1,1] <- "Total"
+
+knitr::kable(freq_df)
+
+VlnPlot(
+  combined_qc,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 4,
+  pt.size = 0.1
+)
+```
+
+## Normalizing the data
+
+After removing unwanted cells from the dataset, the next step is to normalize the data. By default, we employ a global-scaling normalization method "LogNormalize" that normalizes the feature expression measurements for each cell by the total expression, multiplies this by a scale factor (10,000 by default), and log-transforms the result.
+
+## Identification of highly variable features (feature selection)
+
+We next calculate a subset of features that exhibit high cell-to-cell variation in the dataset (i.e, they are highly expressed in some cells, and lowly expressed in others). Focusing on these genes in downstream analysis helps to highlight biological signal in single-cell datasets. The figure below labled the top-10 highly variable features.
+
+```{r message=FALSE, warning=FALSE}
+
+combined_qc <- NormalizeData(combined_qc, normalization.method = "LogNormalize", scale.factor = 10000)
+combined_qc <- FindVariableFeatures(combined_qc, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(combined_qc), 10)
+
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(combined_qc)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot2
+```
+
+## Scaling the data
+
+Next, we apply a linear transformation ('scaling') that is a standard pre-processing step prior to dimensional reduction techniques like PCA. This step:
+
+1.  Shifts the expression of each gene, so that the mean expression across cells is 0
+2.  Scales the expression of each gene, so that the variance across cells is 1 This step gives equal weight in downstream analyses, so that highly-expressed genes do not dominate
+
+```{r message=FALSE}
+all.genes <- rownames(combined_qc)
+combined_qc <- ScaleData(combined_qc, features = all.genes)
+```
+
+## Clustering the cells
+
+Here we apply a graph-based clustering approach, building upon initial strategies in (Macosko et al). Briefly, these methods embed cells in a graph structure - for example a K-nearest neighbor (KNN) graph, with edges drawn between cells with similar feature expression patterns, and then attempt to partition this graph into highly interconnected 'quasi-cliques' or 'communities'.
+
+We first construct a KNN graph based on the euclidean distance in PCA space, and refine the edge weights between any two cells based on the shared overlap in their local neighborhoods (Jaccard similarity). To cluster the cells, we next apply modularity optimization techniques(Louvain algorithm) to iteratively group cells together, with the goal of optimizing the standard modularity function.
+
+After clustering, we get 9 clusters. Then we use UMAP to visualize and explore these clusters The goal of UMAP is to learn the underlying manifold of the data in order to place similar cells together in low-dimensional space. Cells within the graph-based clusters determined above should co-localize on these dimension reduction plots.
+
+```{r message=FALSE, warning=FALSE,results = FALSE}
+combined_qc <- RunPCA(combined_qc, npcs = 15, verbose = FALSE)
+# DimPlot(combined_qc, reduction = "pca")
+combined_qc <- FindNeighbors(combined_qc, graph.name = "test",dims = 1:15)
+combined_qc <- FindClusters(combined_qc, graph.name = "test",resolution = 0.1)
+
+combined_qc <- RunUMAP(combined_qc, dims = 1:15)
+DimPlot(combined_qc, reduction = "umap")
+```
+
+The cell number of each cluster listed below:
+
+```{r}
+table(combined_qc$seurat_clusters)
+```
+
+
+```{r eval=FALSE, include=FALSE}
+# DEG, don't run
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 2)
+head(cluster2.markers, n = 5)
+
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 0)
+write.csv(cluster2.markers,'0.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 1)
+write.csv(cluster2.markers,'1.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 2)
+write.csv(cluster2.markers,'2.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 3)
+write.csv(cluster2.markers,'3.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 4)
+write.csv(cluster2.markers,'4.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 5)
+write.csv(cluster2.markers,'5.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 6)
+write.csv(cluster2.markers,'6.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 7)
+write.csv(cluster2.markers,'7.csv')
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 8)
+write.csv(cluster2.markers,'8.csv')
+```
+
+```{r eval=FALSE, include=FALSE}
+cluster2.markers <- FindMarkers(combined_qc, ident.1 = 5)
+write.csv(cluster2.markers,'5.csv')
+
+```
+
+
+## Visualizing marker expression
+
+Here we use violin plot to show expression probability distributions across clusters. Note that the marker 'Car1' was not found in the features.
+
+The following violin plots and feature plots of three groups genes from 'Basu_Expectation.pdf'.
+
+#### Group 1
+
+```{r,fig.height=6, fig.width=10}
+# VlnPlot(combined, features = c("Drd1","Drd2","Drd3","Drd4","Drd5"))
+VlnPlot(combined_qc, features = c("Atp4a", "Muc6","Muc5ac","Lgr5", "Msi1", "Sox9"),ncol=3)
+VlnPlot(combined_qc, features = c("Aqp8", "Ceacam1", "Krt20", "Slc26a3"),ncol=3)
+FeaturePlot(combined_qc, features = c("Atp4a", "Muc6","Muc5ac","Lgr5", "Msi1", "Sox9"),ncol=3)
+FeaturePlot(combined_qc, features = c("Aqp8", "Ceacam1", "Krt20", "Slc26a3"),ncol=3)
+```
+
+#### Group 2
+
+```{r,fig.height=6, fig.width=10}
+VlnPlot(combined_qc, features = c("Pecam1", "Cdh5", "Fabp4", "Nkx2-3", "Scgb3a1", "Sox17" ),ncol=3)
+VlnPlot(combined_qc, features = c("Vwf", "Cd300lg", "Ramp3", "Kcne3", "Nid2", "Dll4", "Selp"),ncol=3)
+FeaturePlot(combined_qc, features = c("Pecam1", "Cdh5", "Fabp4", "Nkx2-3", "Scgb3a1", "Sox17" ),ncol=3)
+FeaturePlot(combined_qc, features = c("Vwf", "Cd300lg", "Ramp3", "Kcne3", "Nid2", "Dll4", "Selp"),ncol=3)
+```
+
+#### Group 3
+
+```{r,fig.height=6, fig.width=10}
+VlnPlot(combined_qc, features = c("Flt4", "Prox1", "Pdpn", "Lyve1", "Mmrn1"),ncol=3)
+FeaturePlot(combined_qc, features = c("Flt4", "Prox1", "Pdpn", "Lyve1", "Mmrn1"),ncol=3)
+```
+
+#### Appended
+
+The plots for Kdr gene were required in the email on December 28.
+
+```{r,fig.height=6, fig.width=10}
+VlnPlot(combined_qc, features = c("Kdr"))
+FeaturePlot(combined_qc, features = c("Kdr"))
+```
+
+
+The plots for Drd1, Drd2, Drd3, Drd4 and Drd5 genes were required in the email on November 4.
+
+The dopamine and dopamine receptors (D1, D2, D3, D4 and D5) expressed in few cells. In stomach, the Drd1 expressed in 2 cells, Drd2 expressed in 2 cells, Drd3 expressed in 1 cell, Drd4 and Drd5 have no expression. In colon, the Drd1 expressed in 1 cell, Drd2 expressed in 0 cell, Drd3 expressed in 1 cell, Drd4 expressed in 54 cells, and Drd5 have no expression. In the QC part, they were filtered. We can’t get the violin plots for them.
+
+```{r eval=FALSE, include=FALSE}
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd4=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+rownames(combined_qc)[1]
+
+FeaturePlot(combined_qc,features = "Drd4",cols=c("grey","grey"))
+```
+
+The plots for Th gene were required in the email on October 24.
+
+```{r,fig.height=6, fig.width=10}
+VlnPlot(combined_qc, features = c("Th"))
+FeaturePlot(combined_qc, features = c("Th"))
+```
+
+#### The markers for annotation
+
+1. Epithelial cluster : EPCAM and panCK (KRT4, KRT6, KRT7, KRT8, KRT10, KRT17, KRT18, KRT19 and KRT20)
+
+```{r,fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+VlnPlot(combined_qc, features = c("Epcam","Krt4", "Krt6", "Krt7", "Krt8", "Krt10", "Krt17","Krt18","Krt19","Krt20"),ncol=3)
+FeaturePlot(combined_qc, features = c("Epcam","Krt4", "Krt6", "Krt7", "Krt8", "Krt10", "Krt17","Krt18","Krt19","Krt20"),ncol=3)
+
+```
+
+2. Blood Vessel Endothelial cells(BEC): PECAM-1/CD31, Tie2/TEK and Kdr/FLK-1
+
+```{r,fig.height=3, fig.width=10, message=FALSE, warning=FALSE}
+VlnPlot(combined_qc, features = c("Pecam1", "Cd31", "Tie2", "Tek","Kdr" ),ncol=3)
+FeaturePlot(combined_qc, features = c("Pecam1", "Cd31", "Tie2", "Tek","Kdr" ),ncol=3)
+
+```
+
+3. Lymphatic Endothelial cells(LEC) : LYVE-1, PROX1 and Flt4
+
+
+```{r,fig.height=3, fig.width=10, message=FALSE, warning=FALSE}
+VlnPlot(combined_qc, features = c("Lyve1","Prox1","Flt4" ),ncol=3)
+FeaturePlot(combined_qc, features = c("Lyve1","Prox1","Flt4" ),ncol=3)
+```
+
+## Subclustering
+
+In stomach Annotations: 
+
+Epithelial Cluster: Cluster 0
+
+BEC Cluster: Cluster 2
+
+LEC Cluster : Cluster 5 
+
+#### UMAP plots for those three clusters
+
+```{r,fig.height=6, fig.width=10}
+combined_qc<-RenameIdents(object = combined_qc, `0` = "Epithelial", `2` = "BEC", `5` = "LEC")
+subclusters<-subset(x = combined_qc, idents = c("Epithelial","BEC","LEC"))
+DimPlot(subclusters, reduction = "umap",label = TRUE, label.size = 6)
+# ggsave(p1,filename = paste0('./stomach_subclusters', '.svg'), width =10, height = 6)
+
+```
+
+### Subclustering for those three clusters
+
+#### Epithelial subclustering
+
+Epithelial Cluster: EPCAM and panCK (KRT4, KRT6, KRT7, KRT8, KRT10, KRT17, KRT18, KRT19 and KRT20)
+```{r,fig.height=9, fig.width=10, message=FALSE, warning=FALSE,results = FALSE}
+sub_cluster<-FindSubCluster(combined_qc,"Epithelial","test",subcluster.name = "Epithelial",resolution=0.1)
+sub_cluster<-FindSubCluster(sub_cluster,"BEC","test",subcluster.name = "BEC",resolution=0.3)
+sub_cluster<-FindSubCluster(sub_cluster,"LEC","test",subcluster.name = "LEC",resolution=0.1)
+cluster0<-subset(x = sub_cluster, idents = "Epithelial")
+DimPlot(cluster0, reduction = "umap", group.by = "Epithelial", label = TRUE, label.size = 6)
+
+VlnPlot(cluster0, group.by = "Epithelial",features = c("Atp4a","Muc6","Muc5ac","Gif","Lgr5","Msi1","Sox9","Aqp8","Ceacam1","Krt20","Slc26a3"),ncol=3)
+FeaturePlot(cluster0,features = c("Atp4a","Muc6","Muc5ac","Gif","Lgr5","Msi1","Sox9","Aqp8","Ceacam1","Krt20","Slc26a3"),ncol=3)
+# DimPlot(sub_cluster, reduction = "umap", group.by = "Epithelial", label = TRUE, label.size = 6)
+# DimPlot(sub_cluster, reduction = "umap", group.by = "BEC", label = TRUE, label.size = 6)
+# DimPlot(sub_cluster, reduction = "umap", group.by = "LEC", label = TRUE, label.size = 6)
+
+VlnPlot(cluster0, group.by = "Epithelial",features = c("Th"))
+FeaturePlot(cluster0,features = c("Th"))
+```
+
+#### BEC subclustering
+
+BEC Cluster: PECAM-1/CD31, Tie2/TEK and Kdr/FLK-1
+
+```{r,fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+cluster2<-subset(x = sub_cluster, idents = "BEC")
+DimPlot(cluster2, reduction = "umap", group.by = "BEC", label = TRUE, label.size = 6)
+```
+
+```{r,fig.height=9, fig.width=10, message=FALSE, warning=FALSE}
+VlnPlot(cluster2,  group.by = "BEC", features = c("Pecam1", "Cdh5","Fabp4","Nkx23","Sox17","Vwf","Cd300lg","Ramp3","Kcne3","Nid2","Dll4","Selp" ),ncol=3)
+FeaturePlot(cluster2, features = c("Pecam1", "Cdh5","Fabp4","Nkx23","Sox17","Vwf","Cd300lg","Ramp3","Kcne3","Nid2","Dll4","Selp" ),ncol=3)
+VlnPlot(cluster2, group.by = "BEC",features = c("Th"))
+FeaturePlot(cluster2,features = c("Th"))
+```
+
+#### LEC subclustering
+
+LEC Cluster : LYVE-1, PROX1 and Flt4
+
+To show significant results, we don't find subclusters for cluster LEC because of the low number of cells.
+```{r,fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+cluster5<-subset(x = sub_cluster, idents = "LEC")
+DimPlot(cluster5, reduction = "umap", group.by = "LEC", label = TRUE, label.size = 6)
+```
+
+```{r,fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+VlnPlot(cluster5, group.by = "LEC",features = c("Flt4","Prox1","Pdpn","Lyve1","Mmrn1","Ackr4","Madcam1","Mrc1" ),ncol=3)
+FeaturePlot(cluster5, features = c("Flt4","Prox1","Pdpn","Lyve1","Mmrn1","Ackr4","Madcam1","Mrc1" ),ncol=3)
+VlnPlot(cluster5, group.by = "LEC",features = c("Th"))
+FeaturePlot(cluster5,features = c("Th"))
+```
+
+## Dot plots
+
+```{r include=FALSE}
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd1=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd2=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd3=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd4=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+
+matrix<-as.matrix(combined_qc@assays$RNA@data)
+add_df<-t(data.frame(Drd5=rep(0,ncol(matrix))))
+# add_df[1,1]<-1
+matrix2<-rbind(add_df,matrix)
+rownames(matrix2)[1:10]
+combined_qc@assays$RNA@data<-matrix2
+#rownames(combined_qc)[1]
+
+#FeaturePlot(combined_qc,features = "Drd4",cols=c("grey","grey"))
+```
+
+```{r,fig.height=6,fig.width=20, message=FALSE, warning=FALSE}
+cd_genes <- c("Epcam","Krt4", "Krt6", "Krt7", "Krt8", "Krt10", "Krt17","Krt18","Krt19","Krt20","Pecam1", "Cd31", "Tie2", "Tek","Kdr" ,"Lyve1","Prox1","Flt4" ,"Drd1","Drd2","Drd3","Drd4","Drd5")
+DotPlot(object = combined_qc, features = cd_genes,idents=c("Epithelial","BEC","LEC"))
+```
+
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+# DimPlot(cluster0, reduction = "umap", group.by = "Epithelial", label = TRUE, label.size = 6)
+
+# DEG, don't run
+cluster2.markers <- FindMarkers(cluster0, ident.1 = "Epithelial_0",group.by = "Epithelial")
+head(cluster2.markers, n = 5)
+
+cluster2.markers <- FindMarkers(cluster0, ident.1 = "Epithelial_0",group.by = "Epithelial")
+write.csv(cluster2.markers,'0.csv')
+cluster2.markers <- FindMarkers(cluster0, ident.1 = "Epithelial_1",group.by = "Epithelial")
+write.csv(cluster2.markers,'1.csv')
+cluster2.markers <- FindMarkers(cluster0, ident.1 = "Epithelial_2",group.by = "Epithelial")
+write.csv(cluster2.markers,'2.csv')
+
+```
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+
+cluster2.markers <- FindMarkers(cluster2, ident.1 = "BEC_0",group.by = "BEC")
+write.csv(cluster2.markers,'0.csv')
+cluster2.markers <- FindMarkers(cluster2, ident.1 = "BEC_1",group.by = "BEC")
+write.csv(cluster2.markers,'1.csv')
+cluster2.markers <- FindMarkers(cluster2, ident.1 = "BEC_2",group.by = "BEC")
+write.csv(cluster2.markers,'2.csv')
+cluster2.markers <- FindMarkers(cluster2, ident.1 = "BEC_3",group.by = "BEC")
+write.csv(cluster2.markers,'3.csv')
+```
+
