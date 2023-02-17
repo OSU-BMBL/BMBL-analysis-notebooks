@@ -1,0 +1,580 @@
+---
+title: "Spatial transcriptomics data analysis using Rmarkdown"
+author: "Jiaxin Yang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+---
+
+# Introduction
+
+## Source
+This pipeline is mainly used "Giotto: a toolbox for integrative analysis and visualization of spatial expression data" published on ~Genome Biology~ and its Github guideline. 
+
+
+## Abstract
+~Spatial transcriptomic~ and proteomic technologies have provided new opportunities to investigate cells in their native microenvironment. Here we present Giotto, a comprehensive and open-source toolbox for spatial data analysis and visualization. The analysis module provides end-to-end analysis by implementing a wide range of algorithms for characterizing tissue composition, spatial expression patterns, and cellular interactions. Furthermore, single-cell RNAseq data can be integrated for spatial cell-type enrichment analysis. The visualization module allows users to interactively visualize analysis outputs and imaging features. To demonstrate its general applicability, we apply Giotto to a wide range of datasets encompassing diverse technologies and platforms. In this pipeline, we will focus on exploring 'mini seqFISH' datasets.
+
+
+## Data format of spatial transcriptomics 
+
+* A matrix of gene expression per spot  
+
+* A matirx of spot coordination  
+
+* image (optional)  
+
+#![](./img/diagram_giotto_workflow.png)
+
+
+
+## Pipeline Directory
+1. Create a Giotto object
+2. Process and filter a Giotto object
+3. Dimension reduction
+4. clustering
+5. differential expression
+6. cell type annotation
+7. spatial grid
+8. spatial network
+9. spatial genes
+10. spatial co-expression patterns
+11. spatial HMRF domains
+12. cell neighborhood: cell-type/cell-type interactions
+13. cell neighborhood: interaction changed genes
+14. cell neighborhood:  ligand-receptor cell-cell communication
+
+
+# Create a Giotto object
+
+```{r setup, include=FALSE}
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- res
+    }
+  }
+}))
+knitr::opts_chunk$set(
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 95),
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  time_it = TRUE
+)
+```
+
+```{r}
+library(Giotto)
+```
+
+## (optional) set giotto instructions
+```{r eval=T}
+# to automatically save figures in save_dir set save_plot to TRUE
+temp_dir = getwd()
+temp_dir = '~/Temp/'
+myinstructions = createGiottoInstructions(save_dir = temp_dir,
+                                          save_plot = FALSE, 
+                                          show_plot = F)
+```
+
+## Create a Giotto object  
+minimum requirements:  
+- matrix with expression information (or path to)  
+- x,y(,z) coordinates for cells or spots (or path to)
+
+```{r eval=T}
+my_working_dir = '/data'
+# getSpatialDataset(dataset = 'seqfish_SS_cortex', directory = my_working_dir)
+
+# giotto object 
+expr_path = "/data/data/seqfish_field_expr.txt.gz"
+loc_path = "/data/data/seqfish_field_locs.txt"
+seqfish_mini <- createGiottoObject(raw_exprs = expr_path,
+                                      spatial_locs = loc_path)
+```
+
+
+How to work with Giotto instructions that are part of your Giotto object:  
+- show the instructions associated with your Giotto object with **showGiottoInstructions**  
+- change one or more instructions with **changeGiottoInstructions**  
+- replace all instructions at once with **replaceGiottoInstructions**  
+- read or get a specific giotto instruction with **readGiottoInstructions**  
+Of note, the python path can only be set once in an R session. See the reticulate package for more information.  
+```{r eval=T}
+# show instructions associated with giotto object (seqfish_mini)
+showGiottoInstructions(seqfish_mini)
+```
+
+
+
+# Process and filter a Giotto object
+- filter genes and cells based on detection frequencies  
+- normalize expression matrix (log transformation, scaling factor and/or z-scores) 
+- add cell and gene statistics (optional)  
+- adjust expression matrix for technical covariates or batches (optional). These results will be stored in the *custom* slot. 
+
+```{r eval=TRUE}
+seqfish_mini <- filterGiotto(gobject = seqfish_mini, 
+                             expression_threshold = 0.5, 
+                             gene_det_in_min_cells = 20, 
+                             min_det_genes_per_cell = 0)
+seqfish_mini <- normalizeGiotto(gobject = seqfish_mini, scalefactor = 6000, verbose = T)
+seqfish_mini <- addStatistics(gobject = seqfish_mini)
+seqfish_mini <- adjustGiottoMatrix(gobject = seqfish_mini, 
+                                   expression_values = c('normalized'),
+                                   covariate_columns = c('nr_genes', 'total_expr'))
+```
+
+
+
+# dimension reduction
+- identify highly variable genes (HVG)  
+- perform PCA  
+- identify number of significant prinicipal components (PCs)  
+- run UMAP and/or TSNE on PCs  (or directly on matrix)  
+```{r eval=TRUE}
+seqfish_mini <- calculateHVG(gobject = seqfish_mini)
+seqfish_mini <- runPCA(gobject = seqfish_mini)
+screePlot(seqfish_mini, ncp = 20)
+jackstrawPlot(seqfish_mini, ncp = 20)
+plotPCA(seqfish_mini)
+seqfish_mini <- runUMAP(seqfish_mini, dimensions_to_use = 1:5, n_threads = 2)
+plotUMAP(gobject = seqfish_mini)
+seqfish_mini <- runtSNE(seqfish_mini, dimensions_to_use = 1:5)
+plotTSNE(gobject = seqfish_mini)
+```
+
+
+# clustering
+- create a shared (default) nearest network in PCA space (or directly on matrix)  
+- cluster on nearest network with Leiden or Louvan (kmeans and hclust are alternatives) 
+
+```{r }
+seqfish_mini <- createNearestNetwork(gobject = seqfish_mini, dimensions_to_use = 1:5, k = 5)
+seqfish_mini <- doLeidenCluster(gobject = seqfish_mini, resolution = 0.4, n_iterations = 1000)
+# visualize UMAP cluster results
+plotUMAP(gobject = seqfish_mini, cell_color = 'leiden_clus', show_NN_network = T, point_size = 2.5)
+# visualize UMAP and spatial results
+spatDimPlot(gobject = seqfish_mini, cell_color = 'leiden_clus', spat_point_shape = 'voronoi')
+# heatmap and dendrogram
+showClusterHeatmap(gobject = seqfish_mini, cluster_column = 'leiden_clus')
+showClusterDendrogram(seqfish_mini, h = 0.5, rotate = T, cluster_column = 'leiden_clus')
+```
+
+
+# differential expression
+```{r }
+gini_markers = findMarkers_one_vs_all(gobject = seqfish_mini,
+                                                  method = 'gini',
+                                                  expression_values = 'normalized',
+                                                  cluster_column = 'leiden_clus',
+                                                  min_genes = 20,
+                                                  min_expr_gini_score = 0.5,
+                                                  min_det_gini_score = 0.5)
+# get top 2 genes per cluster and visualize with violinplot
+topgenes_gini = gini_markers[, head(.SD, 2), by = 'cluster']
+violinPlot(seqfish_mini, genes = topgenes_gini$genes, cluster_column = 'leiden_clus')
+# get top 6 genes per cluster and visualize with heatmap
+topgenes_gini2 = gini_markers[, head(.SD, 6), by = 'cluster']
+plotMetaDataHeatmap(seqfish_mini, selected_genes = topgenes_gini2$genes,
+                    metadata_cols = c('leiden_clus'))
+```
+
+
+
+# cell type annotation
+```{r }
+clusters_cell_types = c('cell A', 'cell B', 'cell C', 'cell D',
+                        'cell E', 'cell F', 'cell G', 'cell H')
+names(clusters_cell_types) = 1:8
+seqfish_mini = annotateGiotto(gobject = seqfish_mini, 
+                              annotation_vector = clusters_cell_types, 
+                              cluster_column = 'leiden_clus', 
+                              name = 'cell_types')
+# check new cell metadata
+pDataDT(seqfish_mini)
+# visualize annotations
+spatDimPlot(gobject = seqfish_mini, cell_color = 'cell_types', 
+            spat_point_size = 3, dim_point_size = 3)
+```
+
+
+
+# spatial grid
+Create a grid based on defined stepsizes in the x,y(,z) axes.  
+```{r }
+seqfish_mini <- createSpatialGrid(gobject = seqfish_mini,
+                              sdimx_stepsize = 300,
+                              sdimy_stepsize = 300,
+                              minimum_padding = 50)
+showGrids(seqfish_mini)
+# visualize grid
+spatPlot(gobject = seqfish_mini, show_grid = T, point_size = 1.5)
+```
+
+
+
+# spatial network
+- visualize information about the default Delaunay network  
+- create a spatial Delaunay network (default)  
+- create a spatial kNN network   
+```{r }
+plotStatDelaunayNetwork(gobject = seqfish_mini, maximum_distance = 400)
+seqfish_mini = createSpatialNetwork(gobject = seqfish_mini, minimum_k = 2, 
+                                    maximum_distance_delaunay = 400)
+seqfish_mini = createSpatialNetwork(gobject = seqfish_mini, minimum_k = 2, 
+                                    method = 'kNN', k = 10)
+showNetworks(seqfish_mini)
+# visualize the two different spatial networks  
+spatPlot(gobject = seqfish_mini, show_network = T,
+         network_color = 'blue', spatial_network_name = 'Delaunay_network',
+         point_size = 2.5, cell_color = 'leiden_clus')
+spatPlot(gobject = seqfish_mini, show_network = T,
+         network_color = 'blue', spatial_network_name = 'kNN_network',
+         point_size = 2.5, cell_color = 'leiden_clus')
+```
+
+
+
+# spatial genes
+Identify spatial genes with 3 different methods:  
+- binSpect with kmeans binarization (default)  
+- binSpect with rank binarization  
+- silhouetteRank  
+
+Visualize top 4 genes per method.  
+```{r , fig.width=10, fig.height=10}
+km_spatialgenes = binSpect(seqfish_mini)
+spatGenePlot(seqfish_mini, expression_values = 'scaled', 
+             genes = km_spatialgenes[1:4]$genes,
+             point_shape = 'border', point_border_stroke = 0.1,
+             show_network = F, network_color = 'lightgrey', point_size = 2.5,
+             cow_n_col = 2)
+rank_spatialgenes = binSpect(seqfish_mini, bin_method = 'rank')
+spatGenePlot(seqfish_mini, expression_values = 'scaled', 
+             genes = rank_spatialgenes[1:4]$genes,
+             point_shape = 'border', point_border_stroke = 0.1,
+             show_network = F, network_color = 'lightgrey', point_size = 2.5,
+             cow_n_col = 2)
+silh_spatialgenes = silhouetteRank(gobject = seqfish_mini) # TODO: suppress print output
+spatGenePlot(seqfish_mini, expression_values = 'scaled', 
+             genes = silh_spatialgenes[1:4]$genes,
+             point_shape = 'border', point_border_stroke = 0.1,
+             show_network = F, network_color = 'lightgrey', point_size = 2.5,
+             cow_n_col = 2)
+```
+
+
+# spatial co-expression patterns
+Identify robust spatial co-expression patterns using the spatial network or grid 
+and a subset of individual spatial genes.  
+1. calculate spatial correlation scores  
+2. cluster correlation scores
+```{r , fig.width=10, fig.height=10}
+# 1. calculate spatial correlation scores 
+ext_spatial_genes = km_spatialgenes[1:500]$genes
+spat_cor_netw_DT = detectSpatialCorGenes(seqfish_mini,
+                                         method = 'network', 
+                                         spatial_network_name = 'Delaunay_network',
+                                         subset_genes = ext_spatial_genes)
+# 2. cluster correlation scores
+spat_cor_netw_DT = clusterSpatialCorGenes(spat_cor_netw_DT, 
+                                          name = 'spat_netw_clus', k = 8)
+heatmSpatialCorGenes(seqfish_mini, spatCorObject = spat_cor_netw_DT, 
+                     use_clus_name = 'spat_netw_clus')
+netw_ranks = rankSpatialCorGroups(seqfish_mini, 
+                                  spatCorObject = spat_cor_netw_DT, 
+                                  use_clus_name = 'spat_netw_clus')
+top_netw_spat_cluster = showSpatialCorGenes(spat_cor_netw_DT, 
+                                            use_clus_name = 'spat_netw_clus',
+                                            selected_clusters = 6, 
+                                            show_top_genes = 1)
+cluster_genes_DT = showSpatialCorGenes(spat_cor_netw_DT, 
+                                       use_clus_name = 'spat_netw_clus',
+                                       show_top_genes = 1)
+cluster_genes = cluster_genes_DT$clus; names(cluster_genes) = cluster_genes_DT$gene_ID
+seqfish_mini = createMetagenes(seqfish_mini, gene_clusters = cluster_genes, name = 'cluster_metagene')
+spatCellPlot(seqfish_mini,
+             spat_enr_names = 'cluster_metagene',
+             cell_annotation_values = netw_ranks$clusters,
+             point_size = 1.5, cow_n_col = 3)
+```
+
+
+
+# spatial HMRF domains
+```{r }
+hmrf_folder = paste0(temp_dir,'/','11_HMRF/')
+if(!file.exists(hmrf_folder)) dir.create(hmrf_folder, recursive = T)
+# perform hmrf
+my_spatial_genes = km_spatialgenes[1:100]$genes
+HMRF_spatial_genes = doHMRF(gobject = seqfish_mini,
+                            expression_values = 'scaled',
+                            spatial_genes = my_spatial_genes,
+                            spatial_network_name = 'Delaunay_network',
+                            k = 9,
+                            betas = c(28,2,2),
+                            output_folder = paste0(hmrf_folder, '/', 'Spatial_genes/SG_top100_k9_scaled'))
+# check and select hmrf
+for(i in seq(28, 30, by = 2)) {
+  viewHMRFresults2D(gobject = seqfish_mini,
+                    HMRFoutput = HMRF_spatial_genes,
+                    k = 9, betas_to_view = i,
+                    point_size = 2)
+}
+seqfish_mini = addHMRF(gobject = seqfish_mini,
+                  HMRFoutput = HMRF_spatial_genes,
+                  k = 9, betas_to_add = c(28),
+                  hmrf_name = 'HMRF')
+# visualize selected hmrf result
+giotto_colors = Giotto:::getDistinctColors(9)
+names(giotto_colors) = 1:9
+spatPlot(gobject = seqfish_mini, cell_color = 'HMRF_k9_b.28',
+         point_size = 3, coord_fix_ratio = 1, cell_color_code = giotto_colors)
+```
+
+                 edge_weight_range_enrichment = c(2,5))
+
+
+
+# cell neighborhood: interaction changed genes
+```{r }
+## select top 25th highest expressing genes
+gene_metadata = fDataDT(seqfish_mini)
+plot(gene_metadata$nr_cells, gene_metadata$mean_expr)
+plot(gene_metadata$nr_cells, gene_metadata$mean_expr_det)
+quantile(gene_metadata$mean_expr_det)
+high_expressed_genes = gene_metadata[mean_expr_det > 4]$gene_ID
+## identify genes that are associated with proximity to other cell types
+CPGscoresHighGenes =  findCPG(gobject = seqfish_mini,
+                              selected_genes = high_expressed_genes,
+                              spatial_network_name = 'Delaunay_network',
+                              cluster_column = 'cell_types',
+                              diff_test = 'permutation',
+                              adjust_method = 'fdr',
+                              nr_permutations = 500,
+                              do_parallel = T, cores = 2)
+## visualize all genes
+plotCellProximityGenes(seqfish_mini, cpgObject = CPGscoresHighGenes, method = 'dotplot')
+## filter genes
+CPGscoresFilt = filterCPG(CPGscoresHighGenes, min_cells = 2, min_int_cells = 2, min_fdr = 0.1,
+                          min_spat_diff = 0.1, min_log2_fc = 0.1, min_zscore = 1)
+## visualize subset of interaction changed genes (ICGs)
+ICG_genes = c('Cpne2', 'Scg3', 'Cmtm3', 'Cplx1', 'Lingo1')
+ICG_genes_types = c('cell E', 'cell D', 'cell D', 'cell G', 'cell E')
+names(ICG_genes) = ICG_genes_types
+plotICG(gobject = seqfish_mini,
+        cpgObject = CPGscoresHighGenes,
+        source_type = 'cell A',
+        source_markers = c('Csf1r', 'Laptm5'),
+        ICG_genes = ICG_genes)
+```
+
+
+
+# cell neighborhood:  ligand-receptor cell-cell communication
+```{r message=FALSE}
+LR_data = data.table::fread(system.file("extdata", "mouse_ligand_receptors.txt", package = 'Giotto'))
+LR_data[, ligand_det := ifelse(mouseLigand %in% seqfish_mini@gene_ID, T, F)]
+LR_data[, receptor_det := ifelse(mouseReceptor %in% seqfish_mini@gene_ID, T, F)]
+LR_data_det = LR_data[ligand_det == T & receptor_det == T]
+select_ligands = LR_data_det$mouseLigand
+select_receptors = LR_data_det$mouseReceptor
+## get statistical significance of gene pair expression changes based on expression ##
+expr_only_scores = exprCellCellcom(gobject = seqfish_mini,
+                                   cluster_column = 'cell_types',
+                                   random_iter = 500,
+                                   gene_set_1 = select_ligands,
+                                   gene_set_2 = select_receptors)
+## get statistical significance of gene pair expression changes upon cell-cell interaction
+spatial_all_scores = spatCellCellcom(seqfish_mini,
+                                     spatial_network_name = 'Delaunay_network',
+                                     cluster_column = 'cell_types',
+                                     random_iter = 500,
+                                     gene_set_1 = select_ligands,
+                                     gene_set_2 = select_receptors,
+                                     adjust_method = 'fdr',
+                                     do_parallel = T,
+                                     cores = 4,
+                                     verbose = 'none')
+## * plot communication scores ####
+## select top LR ##
+selected_spat = spatial_all_scores[p.adj <= 0.5 & abs(log2fc) > 0.1 & lig_nr >= 2 & rec_nr >= 2]
+data.table::setorder(selected_spat, -PI)
+top_LR_ints = unique(selected_spat[order(-abs(PI))]$LR_comb)[1:33]
+top_LR_cell_ints = unique(selected_spat[order(-abs(PI))]$LR_cell_comb)[1:33]
+plotCCcomHeatmap(gobject = seqfish_mini,
+                 comScores = spatial_all_scores,
+                 selected_LR = top_LR_ints,
+                 selected_cell_LR = top_LR_cell_ints,
+                 show = 'LR_expr')
+plotCCcomDotplot(gobject = seqfish_mini,
+                 comScores = spatial_all_scores,
+                 selected_LR = top_LR_ints,
+                 selected_cell_LR = top_LR_cell_ints,
+                 cluster_on = 'PI')
+## * spatial vs rank ####
+comb_comm = combCCcom(spatialCC = spatial_all_scores,
+                      exprCC = expr_only_scores)
+# top differential activity levels for ligand receptor pairs
+plotRankSpatvsExpr(gobject = seqfish_mini,
+                   comb_comm,
+                   expr_rnk_column = 'exprPI_rnk',
+                   spat_rnk_column = 'spatPI_rnk',
+                   midpoint = 10)
+## * recovery ####
+## predict maximum differential activity
+plotRecovery(gobject = seqfish_mini,
+             comb_comm,
+             expr_rnk_column = 'exprPI_rnk',
+             spat_rnk_column = 'spatPI_rnk',
+             ground_truth = 'spatial')
+```
+
+
+# Spatial Variable Gene
+Giotto supports multiple ways for searching for spatially variable genes. Currently we have incorporated SpatialDE, trendceek, Spark, as well as two methods that we have developed binSpect and silhouetteRank. The common goal is to score genes in the spatial transcriptomic dataset based on the extent to which individual genes' expression values form a spatially coherent pattern (or whether there is a dependence of expression on spatial locations). The methods achieve this goal through various algorithms and statistical tests.
+
+## SpatialDE
+The method uses Gaussian process regression to decompose expression variability into a spatial covariance term and nonspatial variance term. The spatial covariance term assumes a linear trend and periodic pattern of gene expression variation. Multiple different spatial covariance functions are tested including: (1) null model, (2) general Gaussian covariance (squared exponential), (3) linear covariance, and (4) periodic covariance functions. A suitable model is selected using Bayes information criterion.
+
+
+### dataframe
+km_spatialgenes <- spatialDE(gobject = seqfish_mini, expression_values = c('raw', 'normalized', 'scaled', 'custom'), size = c(4,2,1), color = c("blue", "green", "red"), sig_alpha = 0.5, unsig_alpha = 0.5, python_path = NULL, show_plot = NA, return_plot = NA, save_plot = NA, save_param = list(), default_save_name = 'SpatialDE')
+km_spatialgenes
+
+  
+The input is a gene expression matrix. There are 4 version of expression matrix (indicated by expression_values). Raw version (in counts) is recommended. SpatialDE performs library size normalization (by default) if raw expression is used. Otherwise, one can also use “normalized” and skip SpatialDE normalization step.
+
+There are no other parameters required. The parameters color, sig_alpha, unsig_alpha are used for plotting the Fraction spatial variance vs Adj. P-value https://github.com/Teichlab/SpatialDE, and is optional. To disable this FSV vs. Adj P-value plot, show_plot is set to NA (default). The parameters return_plot, save_plot, save_param are for saving the results automatically to disk (default values are NA). They are attached to every function (see CreateGiottoInstructions()).
+
+### Outputs
+A data frame with the results. There are 3 fields reported per gene: LLR, pval, qval. LLR is log-likelihood of model, useful for creating a whole ranking of genes unambiguously. P-val, Q-val are useful for cut-off based approach to filtering the spatial genes.
+
+
+
+# Cell-cell interaction analysis and visualization
+## processing steps
+
+```{r}
+library(Giotto)
+
+path_to_matrix = system.file("extdata", "seqfish_field_expr.txt", package = 'Giotto')
+path_to_locations = system.file("extdata", "seqfish_field_locs.txt", package = 'Giotto')
+
+my_giotto_object = createGiottoObject(raw_exprs = path_to_matrix,
+                                      spatial_locs = path_to_locations)
+
+# processing
+my_giotto_object <- filterGiotto(gobject = seqfish_mini, 
+                             expression_threshold = 0.5, 
+                             gene_det_in_min_cells = 20, 
+                             min_det_genes_per_cell = 0)
+my_giotto_object <- normalizeGiotto(gobject = my_giotto_object)
+
+# dimension reduction
+my_giotto_object <- calculateHVG(gobject = my_giotto_object)
+my_giotto_object <- runPCA(gobject = my_giotto_object)
+my_giotto_object <- runUMAP(my_giotto_object, dimensions_to_use = 1:5)
+
+# leiden clustering
+my_giotto_object = doLeidenCluster(my_giotto_object, name = 'leiden_clus')
+
+# annotate
+metadata = pDataDT(my_giotto_object)
+uniq_clusters = length(unique(metadata$leiden_clus))
+
+clusters_cell_types = paste0('cell ', LETTERS[1:uniq_clusters])
+names(clusters_cell_types) = 1:uniq_clusters
+
+my_giotto_object = annotateGiotto(gobject = my_giotto_object, 
+                              annotation_vector = clusters_cell_types, 
+                              cluster_column = 'leiden_clus', 
+                              name = 'cell_types')
+
+# create network (required for binSpect methods)
+my_giotto_object = createSpatialNetwork(gobject = my_giotto_object, minimum_k = 2)
+
+# identify genes with a spatial coherent expression profile
+km_spatialgenes = binSpect(my_giotto_object, bin_method = 'kmeans')
+ 
+```
+
+
+## Run Cell-cell interaction
+
+```{r}
+set.seed(seed = 2841)
+cell_proximities = cellProximityEnrichment(gobject = my_giotto_object,
+                                           cluster_column = 'cell_types',
+                                           spatial_network_name = 'Delaunay_network',
+                                           adjust_method = 'fdr',
+                                           number_of_simulations = 1000)
+``` 
+
+
+## Visualize Cell-cell interaction
+```{r}
+# barplot
+cellProximityBarplot(gobject = my_giotto_object, 
+                     CPscore = cell_proximities, 
+                     min_orig_ints = 3, min_sim_ints = 3)
+
+# heatmap
+cellProximityHeatmap(gobject = my_giotto_object, 
+                     CPscore = cell_proximities, 
+                     order_cell_types = T, scale = T,
+                     color_breaks = c(-1.5, 0, 1.5), 
+                     color_names = c('blue', 'white', 'red'))
+
+# network
+cellProximityNetwork(gobject = my_giotto_object, 
+                     CPscore = cell_proximities, 
+                     remove_self_edges = T, only_show_enrichment_edges = T)
+
+
+# network with self-edges
+cellProximityNetwork(gobject = my_giotto_object, 
+                     CPscore = cell_proximities,
+                     remove_self_edges = F, self_loop_strength = 0.3,
+                     only_show_enrichment_edges = F,
+                     rescale_edge_weights = T,
+                     node_size = 8,
+                     edge_weight_range_depletion = c(1, 2),
+                     edge_weight_range_enrichment = c(2,5))
+```
+
+## visualize interactions at the spatial level
+```{r}
+# Option 1
+spec_interaction = "cell D--cell F"
+cellProximitySpatPlot2D(gobject = my_giotto_object,
+                        interaction_name = spec_interaction,
+                        show_network = T,
+                        cluster_column = 'cell_types',
+                        cell_color = 'cell_types',
+                        cell_color_code = c('cell D' = 'lightblue', 'cell F' = 'red'),
+                        point_size_select = 4, point_size_other = 2)
+
+
+# Option 2: create additional metadata
+my_giotto_object = addCellIntMetadata(my_giotto_object,
+                             spatial_network = 'Delaunay_network',
+                             cluster_column = 'cell_types',
+                             cell_interaction = spec_interaction,
+                             name = 'D_F_interactions')
+spatPlot(my_giotto_object, cell_color = 'D_F_interactions', legend_symbol_size = 3,
+         select_cell_groups =  c('other_cell D', 'other_cell F', 'select_cell D', 'select_cell F'))
+```
+
