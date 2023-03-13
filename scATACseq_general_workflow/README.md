@@ -28,6 +28,28 @@ wget https://www.dropbox.com/s/3f3p5nxrn5b3y4y/pbmc_10k_v3.rds?dl=1
 3. If your data is stored in a folder other than `Data`, make sure the path to the files is noted correctly when reading in the data.
 4. In `Step 6: Integrating with scRNA-seq data`, we use a pre-processed Seurat object provided above. If using your own scRNA-seq data, you will need to pre-process the data before integrating it into this analysis.
 
+# Installing hdf5r in OSC
+If you are doing your analysis in OSC, you may have difficulties installing hdf5r to open HDF5 files. If this is the case, try running the following code within Rstudio:
+
+Installation:
+```
+source(file.path(Sys.getenv("LMOD_PKG"), "init/R"))
+module("load", "gnu/9.1.0  openmpi/4.0.3-hpcx hdf5-serial/1.12.0")
+install.packages("hdf5r")
+```
+
+Load:
+```
+library(hdf5r)
+```
+
+If you have issues with loading hdf5r, try run any of the code before loading: 
+```
+module("load", "gnu/9.1.0  openmpi/4.0.3-hpcx hdf5-serial/1.12.0")
+dyn.load('/apps/hdf5/gnu/9.1/openmpi/4.0/1.12.0/lib/libhdf5_hl.so.200')
+```
+
+
 ## Outputs
 
 Running `Signac_study.RMD` will generate an HTML file. This file will contain the following:

@@ -1,6 +1,6 @@
 ---
 title: "Spatial transcriptomics data analysis using BayesSpace"
-author: "Jiaxin Yang"
+author: "Your Name"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
   html_document:
@@ -20,6 +20,14 @@ knitr::opts_chunk$set(
   dpi=300, fig.path="figures/BayesSpace-",
   message=FALSE, warning=FALSE, error=FALSE
 )
+```
+
+# Install pre-dependencies
+```{r setup}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+(!require("BayesSpace", quietly = TRUE))
+    BiocManager::install("BayesSpace")
 ```
 
 
