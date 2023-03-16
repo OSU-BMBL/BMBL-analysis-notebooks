@@ -9,13 +9,21 @@ This folder is a branch of the complete analysis workflow for scRNAseq data rela
 ## Workflow
 
 In this notebook, the standard pipeline for scRNAseq data was provided. It includes 8 steps: 
+
 (1) Loading data.
+
 (2) QC and selecting cells for further analysis. 
+
 (3) Normalizing the data. 
+
 (4) Scaling the data. 
+
 (5) Clustering the cells. 
+
 (6) Visualizing marker expression (UMAP, feature plot, violin plot, dot plot and heatmap). 
+
 (7) Subclustering.  
+
 (8) DEG analysis
 
 The html file provides the results of the RMD file.
