@@ -1,0 +1,506 @@
+---
+title: "scMult-omcs (RNA+ATAC) integrated analyses"
+author: "Qi Guo"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#--------------load packages
+#BiocManager::install("GenomeInfoDb")
+library(Signac)
+library(Seurat)
+#BiocManager::install("EnsDb.Hsapiens.v86")
+library(EnsDb.Hsapiens.v86)
+library("dplyr")
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(hdf5r)
+library(GenomicRanges)
+library(GenomeInfoDb)
+library(qs)
+library(sctransform)
+library(ggplot2)
+set.seed(123)
+#change work directory for all code chunks
+knitr::opts_knit$set(root.dir ="/bmbl_data/qiguo/AD/multiomics8/rawdata/Primary_data_processing/")
+```
+
+# Integration of snATAC-seq
+
+We choose 18-64, which have the largest numbers of features, as the reference sample to ensure that there are common features across the eight datasets since it has the most features. So we can identify as much ATAC features as possible
+
+## 18-64 preprocessing
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+counts <- Read10X_h5("18-64_results/filtered_feature_bc_matrix.h5")
+fragpath <- "18-64_results/atac_fragments.tsv.gz"
+
+# create a Seurat object containing the RNA adata
+multi <- CreateSeuratObject(counts = counts$`Gene Expression`, assay = "RNA")
+
+# Get annotation information
+annotation <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v86)
+seqlevelsStyle(annotation) <- "UCSC"
+
+# Create ATAC assay and add it to the object
+  multi[["peaks"]] <- CreateChromatinAssay(
+    counts = counts$Peaks,
+    sep = c(":", "-"),
+    fragments = fragpath,
+    annotation = annotation
+  )
+```
+### QC
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+DefaultAssay(multi) <- "peaks"
+multi <- NucleosomeSignal(multi)
+multi <- TSSEnrichment(multi)
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#--Before QC
+VlnPlot(
+  object = multi,
+  features = c(
+    "nCount_RNA",
+    "nCount_peaks",
+    "TSS.enrichment",
+    "nucleosome_signal"
+    ),
+  ncol = 4,
+  pt.size = 0
+)
+```
+
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#----After QC
+  multi <- subset(
+    x = multi,
+    subset = nCount_peaks < 40000 &
+      nCount_RNA < 75000 &
+      nCount_peaks > 1000 &
+      nCount_RNA > 1000 &
+      nucleosome_signal < 2.5 &
+      TSS.enrichment > 1
+  )
+VlnPlot(
+    object = multi,
+    features = c(
+      "nCount_RNA",
+      "nCount_peaks",
+      "TSS.enrichment",
+      "nucleosome_signal"
+    ),
+    ncol = 4,
+    pt.size = 0
+  )
+
+  # ggsave(
+  #   plot = p1,
+  #   filename = "18-64_results-qc_ed_-vlnplot.png",
+  #   device = "png",
+  #   dpi = 150,
+  #   width = 12,
+  #   height = 10,
+  #   units = "in"
+  # )
+
+```
+
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+  # Normalization  
+  DefaultAssay(multi) <- "RNA"
+  multi <- SCTransform(multi)
+  multi <- RunPCA(multi)
+  DefaultAssay(multi) <- "peaks"
+  multi <- RunTFIDF(multi)
+  multi <- FindTopFeatures(multi, min.cutoff = 5)
+  multi <- RunSVD(multi)
+  #qsave(multi, "/fs/ess/PCON0022/guoqi/NC-snrna/atac_output/reference-18_64.qs")
+```
+
+## Preprocess other seven data
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results="hide"}
+# load data function
+pre_integration <- function(fragpath) {
+  fragcounts <- CountFragments(fragments = fragpath)
+  atac.cells <- fragcounts[fragcounts$frequency_count > 2000, "CB"]
+  # create the fragment object
+  atac.frags <-
+    CreateFragmentObject(path = fragpath, cells = atac.cells)
+  # quantify multiome peaks in the scATAC-seq dataset
+  counts <- FeatureMatrix(fragments = atac.frags,
+                          features = granges(multi),
+                          cells = atac.cells)
+  # create object
+  atac.assay <- CreateChromatinAssay(counts = counts,
+                                     min.features = 1000,
+                                     fragments = atac.frags)
+  pbmc.atac <-
+    CreateSeuratObject(counts = atac.assay, assay = "peaks")
+  return(pbmc.atac)
+}
+# input fragment path, output-target object before filtering and LSI
+target_list<-list()
+all_file_name<-list.files(".")
+
+# choose one sample 1-7 in late AD as example
+target_file<-all_file_name[2]
+for(i in 1:length(target_file)){
+  fragpath<-paste(target_file[i],"atac_fragments.tsv.gz",sep = "/")
+  target_list[[i]]<-pre_integration(fragpath)
+}
+names(target_list)[1]<-target_file
+```
+
+### QC
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#1-7 Before qc
+VlnPlot(
+  object = target_list[[1]],
+  features = c("nCount_peaks", "nFeature_peaks"),
+  ncol = 2,
+  pt.size = 0
+)
+target_list[[1]] <- subset(target_list[[1]], nCount_peaks > 1000 & nCount_peaks < 30000)
+```
+
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#1-7 After qc
+VlnPlot(
+  object = target_list[[1]],
+  features = c("nCount_peaks", "nFeature_peaks"),
+  ncol = 2,
+  pt.size = 0
+)
+```
+
+## Add meta data
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#---------add meta data
+#id
+#target_list[[1]]$orig.ident<-"1-1"
+target_list[[1]]$orig.ident<-"1-7"
+# target_list[[3]]$orig.ident<-"2-10"
+# target_list[[4]]$orig.ident<-"2-3"
+# target_list[[5]]$orig.ident<-"2-5"
+# target_list[[6]]$orig.ident<-"2-8"
+# target_list[[7]]$orig.ident<-"T4857"
+#stage
+#target_list[[1]]$stage<-"Control"
+target_list[[1]]$stage<-"Late_AD"
+# target_list[[3]]$stage<-"Late_AD"
+# target_list[[4]]$stage<-"Mid-AD"
+# target_list[[5]]$stage<-"Control"
+# target_list[[6]]$stage<-"Mid-AD"
+# target_list[[7]]$stage<-"Mid-AD"
+#condition
+#target_list[[1]]$condition<-"Control"
+target_list[[1]]$condition<-"AD"
+# target_list[[3]]$condition<-"AD"
+# target_list[[4]]$condition<-"AD"
+# target_list[[5]]$condition<-"Control"
+# target_list[[6]]$condition<-"AD"
+# target_list[[7]]$condition<-"AD"
+#18-64
+#multi<-qread("newreference-18_64.qs")
+multi$condition<-"Control"
+multi$stage<-"Control"
+multi$orig.ident<-"18-64"
+target_list<-append(target_list,multi)
+target_list<-lapply(target_list,function(x){RenameCells(x,add.cell.id = x$orig.ident[1])})
+```
+
+## Integration
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results="hide"}
+#------------Integration function
+#------ATAC_Function
+ATAC_integration<-function(obj.list,k_weight){
+  for(i in 1:length(obj.list)){
+    DefaultAssay(obj.list[[i]])<-"peaks"
+    obj.list[[i]]<-FindTopFeatures(obj.list[[i]], min.cutoff = 10)
+    obj.list[[i]] <- RunTFIDF(obj.list[[i]])
+    obj.list[[i]] <- RunSVD(obj.list[[i]])
+  }
+  integration.anchors <- FindIntegrationAnchors(
+    object.list = obj.list,
+    anchor.features = rownames(obj.list[["18-64"]]),
+    reduction = "rlsi",
+    dims = 2:30
+  )
+  # merge
+    # combined <- merge(obj.list[[1]],c(obj.list[[2]],obj.list[[3]],obj.list[[4]], obj.list[[5]],
+    #                                   obj.list[[6]],obj.list[[7]],obj.list[[8]]))
+  combined <- merge(obj.list[[1]],obj.list[[2]])
+  combined <- FindTopFeatures(combined, min.cutoff = 10)
+  combined <- RunTFIDF(combined)
+  combined <- RunSVD(combined)
+  atac_int <- IntegrateEmbeddings(
+    anchorset = integration.anchors,
+    reductions = combined[["lsi"]],
+    new.reduction.name = "integrated_lsi",
+    #dims.to.integrate = 1:30,
+    k.weight = k_weight
+  )
+  atac_int <- RunUMAP(atac_int, reduction = "integrated_lsi", dims = 2:30)
+  DefaultAssay(atac_int) <- "peaks"
+  atac_int <- FindTopFeatures(atac_int, min.cutoff = 5)
+  atac_int <- RunTFIDF(atac_int)
+  atac_int <- RunSVD(atac_int)
+  return(atac_int)
+}
+#output
+atac_int<-ATAC_integration(target_list,50)
+```
+
+
+
+# Integration of snRNA-seq
+
+## Load and preprocessing
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+#choose 1-7 and 18-64 as example
+all_file_name<-all_file_name[2:3]
+rna_list <- list()
+for(i in 1:length(all_file_name)){
+  a <-
+    Read10X_h5(paste0(all_file_name[i], "/filtered_feature_bc_matrix.h5"))
+  x <-
+    CreateSeuratObject(counts = a[[1]],project =strsplit(all_file_name[i],"_",)[[1]][1] ,min.cells = 3, min.features = 200)
+  x[["percent.mt"]] <- PercentageFeatureSet(x, pattern = "^MT-")
+  rna_list[i]<-x
+}
+names(rna_list)<-all_file_name
+```
+
+## Add meta infor
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+rna_list[[1]]$orig.ident<-"1-7"
+rna_list[[2]]$orig.ident<-"18-64"
+rna_list[[1]]$stage<-"Late-AD"
+rna_list[[2]]$stage<-"Control"
+rna_list[[1]]$condition<-"AD"
+rna_list[[2]]$condition<-"Control"
+```
+
+## QC
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+# Before qc 1-7
+VlnPlot(rna_list[[1]], features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+rna_list[[1]] <- subset(rna_list[[1]], subset = nFeature_RNA > 200 & nFeature_RNA < 10000 & percent.mt < 15)
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+# After qc 1-7
+VlnPlot(rna_list[[1]], features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#Before qc 18-64
+VlnPlot(rna_list[[2]], features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+rna_list[[2]] <- subset(rna_list[[2]], subset = nFeature_RNA > 200 & nFeature_RNA < 12000 & percent.mt < 15)
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+#After qc 18-64
+VlnPlot(rna_list[[2]], features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+## Integration
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+#---RNA integration
+RNA_integration<-function(obj.list,k_weight){
+  for(i in 1:length(obj.list)){
+    DefaultAssay(obj.list[[i]])<-"RNA"
+  }
+  obj.list <- lapply(X = obj.list, FUN = SCTransform)
+  features <- SelectIntegrationFeatures(object.list = obj.list, nfeatures = 3000)
+  obj.list <- PrepSCTIntegration(object.list = obj.list, anchor.features = features)
+  anchors <- FindIntegrationAnchors(object.list = obj.list, normalization.method = "SCT",
+                                    anchor.features = features)
+  combined.sct <- IntegrateData(anchorset = anchors, normalization.method = "SCT", k.weight = k_weight)
+  combined.sct <- RunPCA(combined.sct, verbose = FALSE)
+  return(combined.sct)
+}
+rna_list<-lapply(rna_list,function(x){RenameCells(x,add.cell.id = x$orig.ident[1])})
+rna_int<-RNA_integration(rna_list,50)
+```
+
+# Integration of snRNA-seq and snATAC-seq
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+#------Function_multi-integration
+multi_integration<-function(object_rna,object_atac){
+  object_rna<-subset(object_rna,cells=intersect(colnames(object_rna),colnames(object_atac)))
+object_atac<-subset(object_atac,cells=intersect(colnames(object_rna),colnames(object_atac)))
+  object_rna[["peaks"]]<-object_atac@assays$peaks
+  DefaultAssay(object_rna) <- "peaks"
+  object_rna@reductions$lsi<-object_atac@reductions$integrated_lsi
+  object_rna@reductions$umap.atac<-object_atac@reductions$umap
+  object_rna <- FindMultiModalNeighbors(object_rna, reduction.list = list("pca", "lsi"), dims.list = list(1:50, 2:50))
+  object_rna <- RunUMAP(object_rna, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_")
+  return(object_rna)
+}
+
+#apply
+integrate<-multi_integration(rna_int,atac_int)
+integrate<-FindClusters(integrate,resolution = 0.2, graph.name = "wsnn", algorithm = 3)#resolution depend on heatmap
+```
+
+## Dimplot visualization
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+DimPlot(integrate, reduction = "wnn.umap", group.by = "wsnn_res.0.2", label = TRUE, label.size = 6, repel = TRUE) + ggtitle("WNN_clusters")
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+DimPlot(integrate, reduction = "wnn.umap", group.by = "stage", label.size = 6, repel = TRUE) + ggtitle("stage")
+```
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+DimPlot(integrate, reduction = "wnn.umap", group.by = "orig.ident", label.size = 6, repel = TRUE) + ggtitle("sampleID")
+```
+
+
+# Annotation for major cell types using markers
+
+## load packages and path
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+library("readxl")
+library(reshape)
+```
+
+## load data
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+setwd("/bmbl_data/qiguo/AD/AD_home/rawdata/temp/temp")
+# marker list
+int<-integrate
+marker <- read_excel("7 Cell types markers in scREADs,  ATAC UMAP.xlsx", sheet = 1)
+marker<-as.data.frame(marker)
+marker_f<-melt(marker,measure.vars = colnames(marker),variable_name = "Celltype",value.name="marker")
+marker_f<-na.omit(marker_f)
+temp<-rbind(marker_f[which(marker_f$Celltype=="Astrocytes"),],
+            marker_f[which(marker_f$Celltype=="Endothelial cells"),],
+            marker_f[which(marker_f$Celltype=="Pericytes"),],
+            marker_f[which(marker_f$Celltype=="Excitatory neurons"),],
+            marker_f[which(marker_f$Celltype=="Inhibitory neurons"),],
+            marker_f[which(marker_f$Celltype=="Microglia"),],
+            marker_f[which(marker_f$Celltype=="Oligodendrocytes"),],
+            marker_f[which(marker_f$Celltype=="Oligodendrocyte precursor cells"),])
+marker_f<-temp
+```
+
+
+
+```{r echo = T, eval = T, message = F, warning = F, error = F,results='hide'}
+#create expression matrix
+avg_data<-data.frame(rep(0,length(intersect(marker_f$value,rownames(rna_int@assays$SCT)))))
+Idents(int)<-int$wsnn_res.0.2
+DefaultAssay(int)<-"SCT"
+for(i in sort(unique(int$wsnn_res.0.2))){
+  object<-subset(int,idents=i)
+  df<-AverageExpression(object, assays = "SCT",features = marker_f$value)
+  df<-as.data.frame(df$SCT)
+  avg_data<-cbind(avg_data,df)
+}
+avg_data<-avg_data[,-1]
+colnames(avg_data)<-sort(unique(int$wsnn_res.0.2))
+```
+
+## Heatmap
+
+For better visualization, column should be reorder and recombination.
+
+```{r echo = T, eval = T, message = F, warning = F, error = F}
+
+#create pheatmap data
+sample = data.frame(sample = marker_f$Celltype)
+color = sample
+#install.packages("Polychrome")
+levels(color) <- Polychrome::dark.colors(8)
+color <- list(sample = levels(color))
+names(color$sample)<- levels(sample$sample)
+
+marker_f<-marker_f[-match(setdiff(marker_f$value,rownames(int)),marker_f$value),]
+marker_f$Celltype<-factor(marker_f$Celltype,levels = unique(marker_f$Celltype))
+separation_sequence <- cumsum(table(marker_f$Celltype))
+gaps_row = separation_sequence
+
+library(pheatmap)
+pheatmap(avg_data,
+              color = colorRampPalette(c("blue","white","red"))(100),
+              cluster_rows = F,
+              annotation_row = sample,
+              annotation_colors = color,
+              cluster_cols = F,
+              scale = "row",border_color = "NA",
+              gaps_row = separation_sequence,fontsize = 13
+)
+
+# pheatmap(avg_data[,c("2","19","1","4","11","12","13","16","17","6","8","10","14","15","18","7","0","3","9","5")],
+#               color = colorRampPalette(c("blue","white","red"))(100),
+#               cluster_rows = F,
+#               annotation_row = sample,
+#               annotation_colors = color,
+#               cluster_cols = F,
+#               scale = "row",border_color = "NA",
+#               gaps_row = separation_sequence,fontsize = 13
+# )
+```
+
+## Validate and annotation
+
+As we showcase an example here, we will not annotate.
+
+```{r echo = T, eval = F, message = F, warning = F, error = F}
+FeaturePlot(int,features = c("NKAIN4","VCAN","SOX8"),reduction = "wnn.umap")
+integrate$celltype<-"unkown"
+integrate$celltype[which(integrate$wsnn_res.0.2==2)]<-"Astrocytes"
+integrate$celltype[which(integrate$wsnn_res.0.2==19)]<-"Endothelial cells&Pericytes"
+integrate$celltype[which(integrate$wsnn_res.0.2==16)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==17)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==1)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==4)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==11)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==12)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==13)]<-"Excitatory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==6)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==8)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==10)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==14)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==15)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==18)]<-"Inhibitory neurons"
+integrate$celltype[which(integrate$wsnn_res.0.2==7)]<-"Microglia"
+integrate$celltype[which(integrate$wsnn_res.0.2==0)]<-"Oligodendrocytes&OPC"
+integrate$celltype[which(integrate$wsnn_res.0.2==3)]<-"Oligodendrocytes&OPC"
+integrate$celltype[which(integrate$wsnn_res.0.2==9)]<-"Oligodendrocytes"
+integrate$celltype[which(integrate$wsnn_res.0.2==5)]<-"OPC"
+DimPlot(integrate,reduction = "wnn.umap", group.by = "celltype",label = T,label.size = 4)+ theme_classic(base_size = 12)
+```
+
+# Session Infomation
+
+Please note that real package versions for analyses can be obtained by OSC.
+
+```{r, echo = F, eval = T, message = F, warning = F, error = F}
+sessionInfo()
+```
