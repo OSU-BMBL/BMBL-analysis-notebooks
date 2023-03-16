@@ -40,3 +40,7 @@ Contributors:
 
 - [Cankun Wang](https://github.com/Wang-Cankun)
 - [Yuzhou Chang](https://github.com/BMEngineeR)
+- [Qi Guo](https://github.com/1QiGuo)
+- [Hao Cheng](https://github.com/chthub)
+- [Yingjie Li](https://github.com/Rockiki)
+- [Megan McNutt](https://github.com/meganmcnutt)
