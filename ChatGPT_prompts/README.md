@@ -2,11 +2,12 @@
 
 ChatGPT works differently than Google; you should **not** solely type keywords. Instead, OpenAI's GPT-4 predicts text based on an input called a prompt. To get the best results, you should write a clear prompt with example context at its most basic level.
 
+**Important: Replace the placehoder to your tasks in the **[]****
+
 ## Grammar checker
 
 > I want you act as a proofreader. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Once you have finished reviewing the text, provide me with any necessary corrections or suggestions for improve the text.
 
-**Important: Replace the placehoder to your tasks in the **[]****
 
 ## Writing assistant
 
