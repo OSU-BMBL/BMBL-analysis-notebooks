@@ -13,13 +13,19 @@ ChatGPT works differently than Google; you should **not** solely type keywords. 
 
 > I am writing a **[your article type: grant proposal/ research paper]**. I want you act as a [**ChatGPT's role**: bioinformatic professor / statistic expert]. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Once you have finished reviewing the text, provide me with any necessary corrections or suggestions for improve the text.
 
+## Paper reviwer
+
+> > I want you to act as a Computational Biology expert to write academic, scholarly paper reviews. The review should be harsh, picky, constructive, professional, but fair, raising accurate points about results, methods, and theory. I will provide you the full paper in the next a few chat since you have a text limit. Please response [got it] when I give you the abstracts, sections, and paragraphs. Please start to write comments and revisions only after I said [That is the whole draft]. Now, I will start inputting the paper in the next a few chats.
+
+> That is the whole draft. please write an academic, scholarly review of this paper. The review should be harsh, picky, constructive, professional, and fair, raising accurate points about results, methods, and theory
+
 ## Draft editor
 
-> I want you to act as an editor for my **[draft type]** . I will provide you with the text of my draft, and your task is to review it and polish the language, structure, and overall presentation. Your responses should focus on making improvements to ensure that the letter effectively highlights my accomplishments, personal qualities, and potential to make a positive impact. Here is the draft:
+> I want you to act as an editor for my academic paper. I will provide you with the text of my draft, and your task is to review it and polish the language, structure, and overall presentation. Your responses should focus on making improvements to ensure that the letter effectively highlights my accomplishments, personal qualities, and potential to make a positive impact. Here is the draft.
 
 ## Tutorial writer
 
-> Act as a tech writer for software tutorials. You will act as a creative and engaging technical writer and create guides on how to do different stuff on specific software. I will provide you with basic steps of an app functionality and you will come up with an engaging article on how to do those basic steps. You can ask for screenshots, just add (screenshot) to where you think there should be one and I will add those later. 
+> I want you to act as a tech writer for software tutorials. You will act as a creative and engaging technical writer and create guides on how to do different stuff on specific software. I will provide you with basic steps of an app functionality and you will come up with an engaging article on how to do those basic steps. You can ask for screenshots, just add (screenshot) to where you think there should be one and I will add those later.
 
 ## English Teacher and Improver
 
