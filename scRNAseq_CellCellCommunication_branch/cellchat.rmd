@@ -1,4 +1,5 @@
----
+-=-=-]'
+]']']'---
 title: "Inference and analysis of cell-cell communication using CellChat"
 author: "YOUR_NAME"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
@@ -32,6 +33,7 @@ Upon infering the intercellular communication network, CellChat provides functio
 ```{r message=FALSE,warning=FALSE}
 library(CellChat)
 library(patchwork)
+library(ggplot2)
 options(stringsAsFactors = FALSE)
 ```
 
@@ -79,7 +81,7 @@ Users can update CellChatDB by adding their own curated ligand-receptor pairs.Pl
 
 ```{r, fig.width=6,fig.height = 2.5, fig.wide = TRUE, fig.align = "center"}
 CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
-showDatabaseCategory(CellChatDB)
+#showDatabaseCategory(CellChatDB)
 # Show the structure of the database
 dplyr::glimpse(CellChatDB$interaction)
 # use a subset of CellChatDB for cell-cell communication analysis
@@ -98,7 +100,7 @@ We also provide a function to project gene expression data onto protein-protein 
 ```{r}
 # subset the expression data of signaling genes for saving computation cost
 cellchat <- subsetData(cellchat) # This step is necessary even if using the whole database
-future::plan("multisession", workers = 4) # do parallel
+#future::plan("multisession", workers = 4) # do parallel
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 # project gene expression data onto PPI network (optional)
@@ -207,7 +209,7 @@ netVisual_chord_cell(cellchat, signaling = pathways.show, group = group.cellType
 ```
 
 
-### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communication mediated by a single ligand-receptor pair
+### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communicsation mediated by a single ligand-receptor pair
 ```{r, fig.width=3,fig.height = 2, fig.wide = TRUE, fig.align = "center"}
 netAnalysis_contribution(cellchat, signaling = pathways.show)
 ```
@@ -391,9 +393,9 @@ Further, CellChat is able to quantify the similarity between all significant sig
 **Structural similarity**: A structural similarity was used to compare their signaling network structure, without considering the similarity of senders and receivers.
 
 ### Identify signaling groups based on their functional similarity
-```{r, fig.wide = TRUE, fig.align = "center"}
-cellchat <- computeNetSimilarity(cellchat, type = "functional")
-cellchat <- netEmbedding(cellchat, type = "functional")
+```{rl[[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'*-]]]]]]]]]]]]]]]]]]], fig.wide = TRUE, fig.align = "center"}
+lkkkkcellchat <- computeNetSimilarity(cellchat, type = "functional")
+cellchat <- netEmbedding(cellchat, type = "functional", umap.method = c("uwot"))
 cellchat <- netClustering(cellchat, type = "functional")
 # Visualization in 2D-space
 netVisual_embedding(cellchat, type = "functional", label.size = 3.5)
@@ -403,7 +405,7 @@ netVisual_embedding(cellchat, type = "functional", label.size = 3.5)
 ### Identify signaling groups based on structure similarity
 ```{r, fig.wide = TRUE, fig.align = "center"}
 cellchat <- computeNetSimilarity(cellchat, type = "structural")
-cellchat <- netEmbedding(cellchat, type = "structural")
+cellchat <- netEmbedding(cellchat, type = "structural", umap.method = c("uwot"))
 cellchat <- netClustering(cellchat, type = "structural")
 # Visualization in 2D-space
 netVisual_embedding(cellchat, type = "structural", label.size = 3.5)

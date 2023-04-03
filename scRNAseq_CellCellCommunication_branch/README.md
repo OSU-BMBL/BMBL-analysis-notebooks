@@ -1,11 +1,6 @@
 # scRNAseq Cell-Cell Communication Branch Tutorial
 
-This tutorial will assist users with analyzing scRNAseq data using CellChat. R and miniconda are required for this analysis. You may download miniconda [here](https://docs.conda.io/en/latest/miniconda.html) or by running the following code in R Studio.
-
-```
-install.packages("remotes")
-remotes::install_github("hafen/rminiconda")
-```
+This tutorial will assist users with analyzing scRNAseq data using CellChat. R is required for this analysis. Rather than using miniconda, this tutorial uses the `uwot` UMAP method.
 
 ## Data Download
 The data required for the analysis done in this tutorial is included in the `data` folder of this directory. 
@@ -22,10 +17,18 @@ The data required for the analysis done in this tutorial is included in the `dat
    - Install NMF (>= 0.23.0) using `install.packages('NMF')`.
    - Install circlize (>= 0.4.12) using `devtools::install_github("jokergoo/circlize")` .
    - Install ComplexHeatmap using `devtools::install_github("jokergoo/ComplexHeatmap")`.
-   - Install UMAP python package for dimension reduction: `pip install umap-learn`
 
 2. It is recommended to run `cellchat.rmd` chunk-by-chunk to ensure all dependencies are properly installed.
-   
+
+### Modfy the internal netClustering function
+This workflow was written using the old way of implementing parallel processing, causing an issue when the software package version was updated. To check the netClustering function follow these steps:
+1. type the function name and R will print out the source code of the function.
+2. you can find the parallel function was enabled by default
+3. Setting the parameter to false so the use of the parallel processing package is skipped.
+```
+do.parallel = FALSE
+```
+
 ## Outputs
 
 Running `cellchat.rmd` will generate an HTML file. This file will contain the following figures:
