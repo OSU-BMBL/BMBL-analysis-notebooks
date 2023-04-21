@@ -20,11 +20,11 @@ The data required for the analysis done in this tutorial is included in the `dat
 
 2. It is recommended to run `cellchat.rmd` chunk-by-chunk to ensure all dependencies are properly installed.
 
-### Modfy the internal netClustering function
+### Modify the internal netClustering function
 This workflow was written using the old way of implementing parallel processing, causing an issue when the software package version was updated. To check the netClustering function follow these steps:
-1. type the function name and R will print out the source code of the function.
-2. you can find the parallel function was enabled by default
-3. Setting the parameter to false so the use of the parallel processing package is skipped.
+1. Type the function name and R will print out the source code of the function.
+2. You can find if the parallel function was enabled by default
+3. Set the parameter to false in the netClustering function so the use of the parallel processing package is skipped.
 ```
 do.parallel = FALSE
 ```

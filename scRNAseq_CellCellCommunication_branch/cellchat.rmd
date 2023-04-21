@@ -100,7 +100,7 @@ We also provide a function to project gene expression data onto protein-protein 
 ```{r}
 # subset the expression data of signaling genes for saving computation cost
 cellchat <- subsetData(cellchat) # This step is necessary even if using the whole database
-#future::plan("multisession", workers = 4) # do parallel
+future::plan("multisession", workers = 4) # do parallel
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 # project gene expression data onto PPI network (optional)
@@ -393,10 +393,10 @@ Further, CellChat is able to quantify the similarity between all significant sig
 **Structural similarity**: A structural similarity was used to compare their signaling network structure, without considering the similarity of senders and receivers.
 
 ### Identify signaling groups based on their functional similarity
-```{rl[[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'[;'*-]]]]]]]]]]]]]]]]]]], fig.wide = TRUE, fig.align = "center"}
-lkkkkcellchat <- computeNetSimilarity(cellchat, type = "functional")
+```{r, fig.wide = TRUE, fig.align = "center"}
+cellchat <- computeNetSimilarity(cellchat, type = "functional")
 cellchat <- netEmbedding(cellchat, type = "functional", umap.method = c("uwot"))
-cellchat <- netClustering(cellchat, type = "functional")
+cellchat <- netClustering(cellchat, type = "functional", do.parallel = FALSE, nCores = 1)
 # Visualization in 2D-space
 netVisual_embedding(cellchat, type = "functional", label.size = 3.5)
 # netVisual_embeddingZoomIn(cellchat, type = "functional", nCol = 2)
@@ -406,7 +406,7 @@ netVisual_embedding(cellchat, type = "functional", label.size = 3.5)
 ```{r, fig.wide = TRUE, fig.align = "center"}
 cellchat <- computeNetSimilarity(cellchat, type = "structural")
 cellchat <- netEmbedding(cellchat, type = "structural", umap.method = c("uwot"))
-cellchat <- netClustering(cellchat, type = "structural")
+cellchat <- netClustering(cellchat, type = "structural", do.parallel = FALSE, nCores = 1)
 # Visualization in 2D-space
 netVisual_embedding(cellchat, type = "structural", label.size = 3.5)
 netVisual_embeddingZoomIn(cellchat, type = "structural", nCol = 2)

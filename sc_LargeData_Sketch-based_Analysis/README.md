@@ -1,0 +1,4 @@
+# Sketch-based analysis
+This sketch-based analysis workflow is used to analyze a 1.3 million cell dataset of the developing mouse brain, freely available from 10x Genomics. To analyze large datasets like this, a standard workflow is challenging, slow, and requires a significant amount of memory. This workflow is highly scalable to extremely large datasets.
+
+For more information, find more resources [here](https://satijalab.org/seurat/articles/seurat5_sketch_analysis.html#intro-sketch-based-analysis-in-seurat-v5). Additionally, to learn more about using BPCells with Seurat Objects, use this [resource](https://satijalab.org/seurat/articles/seurat5_bpcells_interaction_vignette.html).
