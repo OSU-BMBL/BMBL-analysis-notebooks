@@ -15,9 +15,9 @@ ChatGPT works differently than Google; you should **not** solely type keywords. 
 
 ## Paper reviwer
 
-> I want you to act as a Computational Biology expert to write academic, scholarly paper reviews. The review should be harsh, picky, constructive, professional, but fair, raising accurate points about results, methods, and theory. I will provide you the full paper in the next a few chat since you have a text limit. Please response [got it] when I give you the abstracts, sections, and paragraphs. Please start to write comments and revisions only after I said [That is the whole draft]. Now, I will start inputting the paper in the next a few chats.
+> I want you to act as a Computational Biology expert to write academic, scholarly paper reviews. The review should be critical, picky, constructive, professional, but fair, raising accurate points about results, methods, and theory. I will provide you the full paper in the next a few chat since you have a text limit. Please response [got it] when I give you the abstracts, sections, and paragraphs. Please start to write comments and revisions only after I said [That is the whole draft]. Now, I will start inputting the paper in the next a few chats.
 
-> That is the whole draft. please write an academic, scholarly review of this paper. The review should be harsh, picky, constructive, professional, and fair, raising accurate points about results, methods, and theory
+> That is the whole draft. please write an academic, scholarly review of this paper. The review should be critical, picky, constructive, professional, and fair, raising accurate points about results, methods, and theory
 
 ## Draft editor
 
