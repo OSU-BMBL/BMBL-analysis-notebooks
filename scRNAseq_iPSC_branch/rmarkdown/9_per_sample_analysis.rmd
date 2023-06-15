@@ -1,0 +1,224 @@
+---
+title: "Subpopulation analysis by sample"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(fgsea)
+library(monocle3)
+library(batchelor)
+library(Matrix.utils)
+library(tidyverse)
+library(SeuratWrappers)
+library(enrichR)
+library(dittoSeq)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+here::i_am("9_subpopulation_analysis_by_sample.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("functions.R")
+
+combined <- qs::qread('combined.qsave')
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$seurat_clusters
+#custom_color <-
+#  as.character(palette36.colors(36)[-2])[1:length(levels(Idents(combined)))]
+
+custom_color <-
+  as.character(Polychrome::glasbey.colors()[-1])
+
+two_color <- c('#C0C0C0', '#B00D23')
+
+provided_marker <- read.csv("provided_marker_manual.csv", header = T)
+provided_marker$cell_type <- as.factor(provided_marker$cell_type)
+
+Idents(combined) <- combined$orig.ident
+DefaultAssay(combined) <- "RNA"
+
+
+i = 1
+j = 1
+k = 1
+idx = 1
+
+
+days <- levels(combined$orig.ident)
+
+
+dbs <-
+  c(
+    "GO_Molecular_Function_2018",
+    "GO_Cellular_Component_2018",
+    "GO_Biological_Process_2018",
+    "KEGG_2019_Human"
+  )
+  
+```
+
+
+# Analysis by each sample 
+
+```{r,echo=F,eval=F,message=FALSE,warning=F}
+dir.create('result')
+dir.create('result/subpopulation')
+
+Idents(combined) <- combined$orig.ident
+DefaultAssay(combined) <- "RNA"
+
+# seq_along(levels(provided_marker$cell_type))
+day <- days[[2]]
+for (day in days) {
+  RESULT_DIR <-
+    paste0("./result/subpopulation/",
+           day,
+           "/")
+  dir.create(RESULT_DIR)
+  dir.create(paste0(RESULT_DIR, "/umap"))
+  dir.create(paste0(RESULT_DIR, "/marker"))
+  
+  Idents(combined) <- combined$orig.ident
+  
+  
+  sub_combined <- subset(combined, idents = day)
+  Idents(sub_combined) <- sub_combined$orig.ident
+  
+  DefaultAssay(sub_combined) <- "integrated"
+  sub_combined <- RunPCA(sub_combined, npcs = 20, verbose = FALSE)
+  sub_combined <-
+    RunUMAP(sub_combined, reduction = "pca", dims = 1:10)
+  sub_combined <-
+    FindNeighbors(sub_combined, reduction = "pca", dims = 1:10)
+  sub_combined <- FindClusters(sub_combined, resolution = 0.2)
+  DefaultAssay(sub_combined) <- "RNA"
+  #sub_combined <- ScaleData(sub_combined, verbose = FALSE)
+  DimPlot(sub_combined, reduction = 'umap')
+  Idents(sub_combined) <- sub_combined$tmp_ct
+  p1 <-
+    DimPlot(sub_combined, reduction = 'umap', cols = custom_color)
+  
+  png(
+    paste(RESULT_DIR, "umap/combined_cell_type.png",
+          sep = ""),
+    width = 2500,
+    height = 1500,
+    res = 300
+  )
+  print(p1)
+  dev.off()
+  
+  Idents(sub_combined) <- sub_combined$seurat_clusters
+  
+  p1 <-
+    DimPlot(sub_combined, reduction = 'umap', cols = custom_color)
+  
+  png(
+    paste(RESULT_DIR, "umap/cluster.png",
+          sep = ""),
+    width = 1800,
+    height = 1500,
+    res = 300
+  )
+  print(p1)
+  dev.off()
+  #idx=7
+  for (idx in seq_along(levels(provided_marker$cell_type))) {
+    this_ct <- levels(provided_marker$cell_type)[idx]
+    this_ct_ident <- gsub(" ", "_", this_ct)
+    this_ct_index <-
+      which(colnames(combined@meta.data) == this_ct_ident)
+    Idents(sub_combined) <-
+      as.factor(sub_combined@meta.data[, this_ct_index])
+    
+    p1 <-
+      DimPlot(sub_combined, reduction = 'umap', cols = two_color) + ggtitle(this_ct)
+    
+    png(
+      paste(RESULT_DIR, "umap/", this_ct_ident, ".png",
+            sep = ""),
+      width = 1800,
+      height = 1500,
+      res = 300
+    )
+    print(p1)
+    dev.off()
+  }
+  
+  # Marker gene UMAP plot
+  for (i in seq_along(provided_marker$gene)) {
+    this_gene <- provided_marker$gene[i]
+    this_ct <- as.character(provided_marker$cell_type[i])
+    p1 <-
+      FeaturePlot(sub_combined,
+                  this_gene,
+                  pt.size = 0.4,
+                  cols = two_color)
+    
+    png(
+      paste(
+        RESULT_DIR,
+        "marker/",
+        this_gene,
+        "_",
+        this_ct,
+        "_umap.png",
+        sep = ""
+      ),
+      width = 2000,
+      height = 1800,
+      res = 300
+    )
+    print(p1)
+    dev.off()
+  }
+  
+}
+
+
+```
+
+```{r,echo=F,eval=F,message=FALSE,warning=F}
+
+
+
+
+```
+
+
+
+
+
+```{r}
+
+```
+
+

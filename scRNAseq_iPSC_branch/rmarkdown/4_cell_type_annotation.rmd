@@ -1,0 +1,1242 @@
+---
+title: "4. Cell type annotation"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+here::i_am("4_cell_type_annotation.Rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r}
+source("functions.R")
+dir.create('../sample_obj', showWarnings = F)
+combined <- qs::qread('combined.qsave')
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+sample_color <-
+  as.character(glasbey.colors()[-1])
+
+cell_type_color <-
+  as.character(palette36.colors(36)[-2])
+two_color <- c('#C0C0C0', '#B00D23')
+
+provided_marker <- read_csv("../marker/marker_by_day.csv") %>%
+  mutate(cell_type = factor(cell_type))
+
+provided_marker
+```
+
+
+```{r, fig.width=10, fig.height=8}
+
+DimPlot(
+  combined,
+  reduction = "umap",
+  cols = cell_type_color,
+  label = T,
+  pt.size = 0.4,
+  repel = T,
+  label.box = T
+)
+
+```
+
+# Annotate by each sample
+
+## Con0
+
+Con0: all iPSCs
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con0"
+this_day <- "day0"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 0.2)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 1,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+```
+
+
+```{r, fig.height=6}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+levels(tmp_ident) <- rep("iPSCs", length(levels(tmp_ident)))
+this_combined <- AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+VlnPlot(this_combined,
+        features = unique(this_markers),
+        ncol = 1)
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+  
+
+## N1KO0
+
+N1KO0: all iPSCs
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO0"
+this_day <- "day0"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if (file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 0.2)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 1,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+```
+
+
+```{r, fig.height=6}
+
+
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+levels(tmp_ident) <- rep("iPSCs", length(levels(tmp_ident)))
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+VlnPlot(this_combined,
+        features = unique(this_markers),
+        ncol = 1)
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+
+## Con2
+
+Con2: iPSCs, Mesoderm, Cardiac mesoderm
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con2"
+this_day <- "day2"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if (file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+  
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <-
+    FindClusters(this_combined, resolution = 2.6, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+```
+
+```{r, fig.height = 6, fig.width=10}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+#VlnPlot(this_combined, features = this_markers, ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Mesoderm", 19)
+tmp_levels[c(8, 11, 14, 16, 17, 19)] <- "iPSCs"
+tmp_levels[c(7, 15)] <- "Cardiac mesoderm"
+
+levels(tmp_ident) <- tmp_levels
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+VlnPlot(this_combined,
+        features = unique(this_markers),
+        ncol = 3)
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+
+```
+  
+
+## N1KO2
+
+N1KO2: iPSCs, Mesoderm, Cardiac mesoderm
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO2"
+this_day <- "day2"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if (file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <-
+    FindClusters(this_combined, resolution = 0.3, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+```
+
+```{r, fig.height = 6, fig.width = 10}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+#VlnPlot(this_combined, features = this_markers, ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+
+tmp_levels <- rep("Mesoderm", 4)
+tmp_levels[c(4)] <- "iPSCs"
+#tmp_levels[c(3)] <- "Cardiac mesoderm"
+
+levels(tmp_ident) <- tmp_levels
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+VlnPlot(this_combined,
+        features = unique(this_markers),
+        ncol = 3)
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+
+## Con5
+
+Con5: iPSCs, Mesoderm, Cardiac mesoderm, SHF progenitor, FHF progenitor, Epicardial progenitor
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con5"
+this_day <- "day5"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if (file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <-
+    FindClusters(this_combined, resolution = 1.2, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+```
+
+```{r, fig.width=10, fig.height = 8}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+
+```
+
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3) %>%
+    filter(pct.1 > 0.25)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+
+tmp_levels <- rep("Cardiac mesoderm", length(levels(tmp_ident)))
+tmp_levels[c(3, 6, 8, 9)] <- "Differentiating iPSCs"
+tmp_levels[c(4)] <- "SHF progenitor"
+levels(tmp_ident) <- tmp_levels
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+
+## N1KO5
+
+N1KO5: Differentiating iPSCs, Mesoderm, Cardiac mesoderm, SHF progenitor, FHF progenitor, Epicardial progenitor
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO5"
+this_day <- "day5"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 2, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+```
+
+```{r, fig.width=10, fig.height = 8}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Cardiac mesoderm", length(levels(tmp_ident)))
+tmp_levels[c(14)] <- "Differentiating iPSCs"
+tmp_levels[c(12, 13)] <- "SHF progenitor"
+levels(tmp_ident) <- tmp_levels
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+
+## Con10
+ 
+Con10: Cardiac mesoderm, SHF progenitor, FHF progenitor, Epicardial progenitor, Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast, Early cardiomyocytes
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con10"
+this_day <- "day10"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 0.8, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+```
+
+```{r, fig.width=10, fig.height = 16}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.8,
+  cols = two_color
+)
+
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Early cardiomyocytes", length(levels(tmp_ident)))
+tmp_levels[c(9, 11, 14)] <- "FHF progenitor"
+tmp_levels[c(3, 5)] <- "SHF progenitor"
+tmp_levels[c(6)] <- "Epicardial progenitor"
+tmp_levels[c(1, 7, 8, 12, 13)] <- "Unidentified"
+levels(tmp_ident) <- tmp_levels
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+#Con10
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 20}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+## N1KO10
+ 
+N1KO10: Cardiac mesoderm, SHF progenitor, FHF progenitor, Epicardial progenitor, Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast, Early cardiomyocytes
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO10"
+this_day <- "day10"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 1, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+
+```
+
+```{r, fig.width=10, fig.height = 16}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Epicardial progenitor", length(levels(tmp_ident)))
+tmp_levels[c(12, 13)] <- "FHF progenitor"
+tmp_levels[c(2, 7, 8)] <- "SHF progenitor"
+tmp_levels[c(3, 5, 9, 14)] <- "Early cardiomyocytes"
+
+
+
+
+levels(tmp_ident) <- tmp_levels
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+#N1KO10
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 20}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+
+## Con14
+ 
+Con14: SHF progenitor, FHF progenitor, Epicardial progenitor, Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast
+
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con14"
+this_day <- "day14"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 1, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Early cardiomyocytes", length(levels(tmp_ident)))
+tmp_levels[c(1, 7, 9)] <- "Cardiac fibroblast"
+tmp_levels[c(3, 8, 11, 13 )] <- "Unidentified"
+levels(tmp_ident) <- tmp_levels
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 20}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+
+## N1KO14
+ 
+N1KO14: SHF progenitor, FHF progenitor, Epicardial progenitor, Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast
+
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO14"
+this_day <- "day14"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 1, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Early cardiomyocytes", length(levels(tmp_ident)))
+tmp_levels[c(5, 8, 12, 16)] <- "Cardiac fibroblast"
+levels(tmp_ident) <- tmp_levels
+
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 20}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+
+## Con30
+ 
+Con30: Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast
+
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "Con30"
+this_day <- "day30"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if(file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <- FindClusters(this_combined, resolution = 2.6, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+
+
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Ventricular cardiomyocytes", length(levels(tmp_ident)))
+tmp_levels[c(4)] <- "Atrial cardiomyocytes"
+tmp_levels[c(11)] <- "Pacemaker cell"
+tmp_levels[c(12)] <- "Cardiac fibroblast"
+
+levels(tmp_ident) <- tmp_levels
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 16}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+## N1KO30
+ 
+N1KO30: Atrial cardiomyocytes, Ventricular cardiomyocytes, Pacemaker cells, Vascular smooth muscle cells, Cardiac fibroblast
+
+```{r, fig.height = 6}
+# Settings
+this_sample_name <- "N1KO30"
+this_day <- "day30"
+
+this_markers <- provided_marker %>%
+  filter(str_detect(day, this_day)) %>%
+  pull(gene)
+
+Idents(combined) <- combined$orig.ident
+
+# Load pre-computed object if exist
+obj_filename <- paste0("../sample_obj/", this_sample_name, ".qsave")
+if (file.exists(obj_filename)) {
+  this_combined <- qs::qread(obj_filename)
+} else {
+  this_combined <- subset(combined, idents = this_sample_name)
+  this_combined <- FindVariableFeatures(this_combined, verbose = F)
+  this_combined <- RunPCA(this_combined, verbose = F)
+  this_combined <- RunUMAP(this_combined, dims = 1:20, verbose = F)
+  this_combined <- FindNeighbors(this_combined, verbose = F)
+  this_combined <-
+    FindClusters(this_combined, resolution = 2, verbose = F)
+}
+
+
+Idents(this_combined) <- this_combined$seurat_clusters
+DimPlot(this_combined, reduction = "umap", label = T, label.box = T)
+
+
+
+```
+
+```{r, fig.width=10, fig.height = 12}
+
+FeaturePlot(
+  this_combined,
+  features = unique(this_markers),
+  ncol = 3,
+  keep.scale = NULL,
+  pt.size = 0.6,
+  cols = two_color
+)
+#VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+```{r, fig.height=6}
+
+deg_filename <- paste0("../sample_obj/", this_sample_name, "_marker.csv")
+if (!file.exists(deg_filename)) {
+  cts_markers <-
+    FindAllMarkers(this_combined,
+                   only.pos = T,
+                   min.pct = 0.5,
+                   logfc.threshold = 0.3)
+  write.csv(cts_markers,
+            paste0("../sample_obj/", this_sample_name, "_marker.csv"))
+}
+
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+tmp_levels <- rep("Atrial cardiomyocytes", length(levels(tmp_ident)))
+tmp_levels[c(8, 12, 13, 14)] <- "Ventricular cardiomyocytes"
+tmp_levels[c(11)] <- "Pacemaker cell"
+tmp_levels[c(2)] <- "Cardiac fibroblast"
+tmp_levels[c(10)] <- "Vascular smooth muscle cells"
+
+levels(tmp_ident) <- tmp_levels
+
+
+
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+
+Idents(this_combined) <- this_combined$cell_type
+DimPlot(this_combined, reduction = "umap")
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_sample_name, ".qsave"))
+
+table(this_combined$cell_type)
+table(this_combined$cell_type) / sum(as.numeric(table(this_combined$cell_type)))
+
+```
+
+```{r, fig.width=10, fig.height = 20}
+
+VlnPlot(this_combined, features = unique(this_markers), ncol = 3)
+
+```
+
+
+# UMAP of cell types using all samples
+  
+```{r, eval=T, fig.width=10, fig.height=6}
+obj1 <- qread("../sample_obj/Con0.qsave")
+obj2 <- qread("../sample_obj/Con2.qsave")
+obj3 <- qread("../sample_obj/Con5.qsave")
+obj4 <- qread("../sample_obj/Con10.qsave")
+obj5 <- qread("../sample_obj/Con14.qsave")
+obj6 <- qread("../sample_obj/Con30.qsave")
+obj7 <- qread("../sample_obj/N1KO0.qsave")
+obj8 <- qread("../sample_obj/N1KO2.qsave")
+obj9 <- qread("../sample_obj/N1KO5.qsave")
+obj10 <- qread("../sample_obj/N1KO10.qsave")
+obj11 <- qread("../sample_obj/N1KO14.qsave")
+obj12 <- qread("../sample_obj/N1KO30.qsave")
+
+
+obj <-
+  merge(
+    x = obj1,
+    y = c(obj2,
+          obj3,
+          obj4,
+          obj5,
+          obj6,
+          obj7,
+          obj8,
+          obj9,
+          obj10,
+          obj11,
+          obj12)
+  )
+
+combined <- AddMetaData(combined, obj$cell_type, col.name = "cell_type")
+
+tmp_ident <- as.factor(combined$orig.ident)
+levels(tmp_ident) <- c(rep("Con",6), rep("KO",6))
+combined <- AddMetaData(combined, tmp_ident, col.name = "condition")
+
+```
+
+
+```{r fig.width=10, fig.height=6}
+
+
+Idents(combined) <- combined$cell_type
+DimPlot(combined,
+        reduction = "umap",
+        cols = cell_type_color,
+        pt.size = 0.8)
+
+```
+
+
+```{r fig.width=10, fig.height=4}
+
+Idents(combined) <- combined$cell_type
+
+p1 <- DimPlot(
+  combined,
+  reduction = "umap",
+  split.by = "condition",
+  cols = cell_type_color,
+  pt.size = 0.8,
+  ncol = 6
+)
+
+print(p1)
+
+```
+
+
+```{r fig.width=10, fig.height=4}
+
+Idents(combined) <- combined$cell_type
+
+p1 <- DimPlot(
+  combined,
+  reduction = "umap",
+  split.by = "orig.ident",
+  cols = cell_type_color,
+  pt.size = 0.8,
+  ncol = 6
+)
+
+print(p1)
+
+```
+
+
+```{r,eval=T,message=T,warning=F,error=F}
+qs::qsave(combined,'combined.qsave')
+```
+

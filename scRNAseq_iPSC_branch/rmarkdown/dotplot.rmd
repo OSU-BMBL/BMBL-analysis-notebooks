@@ -1,0 +1,48 @@
+---
+title: "dotplot"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+
+```{r, fig.width=8, fig.height=5}
+obj <- sub_combined
+DefaultAssay(obj) <- "RNA"
+two_color <- c('#C0C0C0', '#B00D23')
+Idents(obj) <- obj$seurat_clusters
+this_genes <-
+  c(
+    "Mafb",
+    "Itgam",
+    "Ccr2",
+    "Lyz2",
+    "Csf3r",
+    "Ly6g",
+    "Cxcr2",
+    "CD3d",
+    "Cd4",
+    "Cd19",
+    "CD79a",
+    "Klrb1c",
+    "Gzma",
+    "Nkg7",
+    "Cx3cr1",
+    "P2ry12",
+    "Tmem119",
+    "Cpa3",
+    "Mcpt8",
+    "Ccr7",
+    "CD74"
+  )
+
+p1 <-
+  DotPlot(obj, features = this_genes, cols = two_color) + coord_flip()
+
+print(p1)
+```

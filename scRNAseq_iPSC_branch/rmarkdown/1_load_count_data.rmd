@@ -1,0 +1,220 @@
+---
+title: "1. Load count data"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("1_load_count_data.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data and create objects for each dataset
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+A1.data <-
+  Read10X_h5("10x_count/Con0_CKDL200167803-1a-SI_GA_D3_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A2.data <-
+  Read10X_h5("10x_count/Con2_CKDL210000544-1a-SI_GA_B6_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A3.data <-
+  Read10X_h5("10x_count/Con5_CKDL200167807-1a-SI_GA_A3_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A4.data <-
+  Read10X_h5("10x_count/Con10_CKDL200167809-1a-SI_GA_A7_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A5.data <-
+  Read10X_h5("10x_count/Con14_CKDL200167811-1a-SI_GA_A9_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A6.data <-
+  Read10X_h5(
+    "10x_count/Con30_CKDL200167813-1a-SI_GA_A11_HNNKFDSXY/filtered_feature_bc_matrix.h5"
+  )
+A7.data <-
+  Read10X_h5("10x_count/N1KO0_CKDL200167804-1a-SI_GA_E3_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A8.data <-
+  Read10X_h5("10x_count/N1KO2_CKDL210000545-1a-SI_GA_B7_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A9.data <-
+  Read10X_h5("10x_count/N1KO5_CKDL200167808-1a-SI_GA_A4_HNNKFDSXY/filtered_feature_bc_matrix.h5")
+A10.data <-
+  Read10X_h5(
+    "10x_count/N1KO10_CKDL200167810-1a-SI_GA_A8_HNNKFDSXY/filtered_feature_bc_matrix.h5"
+  )
+A11.data <-
+  Read10X_h5(
+    "10x_count/N1KO14_CKDL200167812-1a-SI_GA_A10_HNNKFDSXY/filtered_feature_bc_matrix.h5"
+  )
+A12.data <-
+  Read10X_h5(
+    "10x_count/N1KO30_CKDL200167814-1a-SI_GA_A12_HNNKFDSXY/filtered_feature_bc_matrix.h5"
+  )
+
+
+A1 <-
+  CreateSeuratObject(
+    A1.data,
+    project = "Con0",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A2 <-
+  CreateSeuratObject(
+    A2.data,
+    project = "Con2",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A3 <-
+  CreateSeuratObject(
+    A3.data,
+    project = "Con5",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A4 <-
+  CreateSeuratObject(
+    A4.data,
+    project = "Con10",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A5 <-
+  CreateSeuratObject(
+    A5.data,
+    project = "Con14",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A6 <-
+  CreateSeuratObject(
+    A6.data,
+    project = "Con30",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A7 <-
+  CreateSeuratObject(
+    A7.data,
+    project = "N1KO0",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A8 <-
+  CreateSeuratObject(
+    A8.data,
+    project = "N1KO2",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A9 <-
+  CreateSeuratObject(
+    A9.data,
+    project = "N1KO5",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A10 <-
+  CreateSeuratObject(
+    A10.data,
+    project = "N1KO10",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A11 <-
+  CreateSeuratObject(
+    A11.data,
+    project = "N1KO14",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+A12 <-
+  CreateSeuratObject(
+    A12.data,
+    project = "N1KO30",
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+
+
+
+
+
+```
+
+# Merge all 12 datasets
+
+```{r,echo=F,eval=T,message=FALSE,warning=F}
+combined <- merge(
+  A1,
+  y = c(A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12),
+  add.cell.ids = c(
+    "Con0",
+    "Con2",
+    "Con5",
+    "Con10",
+    "Con14",
+    "Con30",
+    "N1KO0",
+    "N1KO2",
+    "N1KO5",
+    "N1KO10",
+    "N1KO14",
+    "N1KO30"
+  ),
+  project = "Zhao_NOTCH1"
+)
+
+
+```
+
+
+# Save Seurat object
+
+qs::qsave is much faster than save RDS
+
+```{r,echo=F,eval=T,message=FALSE,warning=F}
+qs::qsave(combined, "combined_raw.qsave") 
+#combined <- qs::qread('combined_raw.qsave')
+
+```
+
+# Session info
+
+```{r,echo=F,eval=T,message=FALSE,warning=F}
+sessionInfo()
+```
+

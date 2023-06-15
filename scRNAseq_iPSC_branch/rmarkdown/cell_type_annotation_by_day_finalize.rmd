@@ -1,0 +1,605 @@
+---
+title: "Cell type annotation for project 2 by day"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: false
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(knitr)
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+here::i_am("cell_type_annotation_by_day_finalize.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+set.seed(42)
+```
+
+# Load data
+
+```{r}
+
+source("../shared/functions.R")
+dir.create('../annotation_obj', showWarnings = F)
+
+
+provided_marker <- read_csv("../marker/marker_by_day.csv") %>%
+  mutate(cell_type = factor(cell_type))
+
+provided_marker
+
+
+```
+
+```{r, eval=T,echo=F}
+print_total_pct <- function(cat1, cat2) {
+  total_cells <- as.numeric(colSums(table(cat1, cat2)))
+
+  total_pct <-
+    matrix(nrow = nrow(
+      table(cat1, cat2)
+    ))
+  pct_cells <- for (i in 1:length(total_cells)) {
+    this_sample <-
+      colnames(table(cat1, cat2))[i]
+    this_pct <-
+      as.data.frame(round(table(cat1, cat2)[, i] / total_cells[i], 3))  # added round function here
+    colnames(this_pct) <- this_sample
+    total_pct <- cbind(total_pct, this_pct)
+  }
+  
+  total_pct <- total_pct[, -1]
+  return (total_pct)
+}
+
+
+```
+
+
+# Annotate by each day
+
+Control Day10, Control Day14,  Control Day5,  Control Day8,      HG Day10,      HG Day14,       HG Day5,       HG Day8 
+
+## Day5
+
+```{r day5wt, fig.height=8, fig.width=10}
+
+this_day <- "day5"
+
+this_combined <- qs::qread(paste0("../integration/", this_day, "_seurat.qsave"))
+Idents(this_combined) <- this_combined$seurat_clusters
+
+p1 <- DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "seurat_clusters",
+  label = T,
+  pt.size = 0.5
+)+ theme(legend.position = "top")
+
+print(p1)
+
+
+```
+
+
+```{r, fig.height=7, fig.width=10, eval=T}
+
+# Cell type with marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type_with_marker")
+
+Idents(this_combined) <- this_combined$cell_type_with_marker
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Stem Cell (SOX1, NES)",
+                              "1" = "Neural Stem Cell (SOX1, NES)",
+                              "2" = "Neural Progenitor Cell (NES, PAX6)",
+                              "3" = "Cardiac mesoderm (MESP1)",
+                              "4" = "iPSC (POU5F1)",
+                              "5" = "Endoderm (SOX17, EPCAM)",
+                              "6" = "Unknown",
+                              "7" = "Differentiated neural lineage (TUBB3, DLL3)"
+                              )
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type_with_marker")
+
+# Cell type without marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+Idents(this_combined) <- this_combined$cell_type
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Stem Cell",
+                              "1" = "Neural Stem Cell",
+                              "2" = "Neural Progenitor Cell",
+                              "3" = "Cardiac mesoderm",
+                              "4" = "iPSC",
+                              "5" = "Endoderm",
+                              "6" = "Unknown",
+                              "7" = "Differentiated neural lineage"
+                              )
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type")
+
+
+# counts and percentage of cell types
+kable(table(this_combined$cell_type, this_combined$sample))
+knitr::kable(print_total_pct(this_combined$cell_type, this_combined$sample))
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_day, "_cell_type.qsave"))
+
+```
+
+```{r, fig.height=6, fig.width=12, eval=T}
+DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "cell_type",
+  label = T,
+  pt.size = 0.4,
+  split.by = "sample",
+  repel = T,
+  label.box = F
+) + theme(legend.position = "right")
+
+```
+
+
+
+## Day8
+
+```{r day8h, fig.height=8, fig.width=10}
+
+this_day <- "day8"
+this_combined <- qs::qread(paste0("../integration/", this_day, "_seurat.qsave"))
+Idents(this_combined) <- this_combined$seurat_clusters
+
+p1 <- DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "seurat_clusters",
+  label = T,
+  pt.size = 0.5
+)+ theme(legend.position = "top")
+
+print(p1)
+
+
+```
+
+
+```{r, fig.height=7, fig.width=10, eval=T}
+# Cell type with marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type_with_marker")
+
+Idents(this_combined) <- this_combined$cell_type_with_marker
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell (NES, PAX6)",
+                              "1" = "Cardiac Fibroblast (DDR2, COL1A1, PDGFRA)",
+                              "2" = "Neural Progenitor Cell (NES, PAX6)",
+                              "3" = "Cardiomyocyte (TNNT2, NKX2-5)",
+                              "4" = "Endoderm (SOX17, EPCAM)",
+                              "5" = "Neural crest (SOX10, TFAP2A)",
+                              "6" = "Differentiated neural lineage (TUBB3, DLL3)",
+                              "7" = "Smooth Muscle Cell (ACTA2, TAGLN)",
+                              "8" = "Endothelial cell (CDH5, PECAM1)"
+                              )
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type_with_marker")
+
+# Cell type without marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+Idents(this_combined) <- this_combined$cell_type
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell",
+                              "1" = "Cardiac Fibroblast",
+                              "2" = "Neural Progenitor Cell",
+                              "3" = "Cardiomyocyte",
+                              "4" = "Endoderm",
+                              "5" = "Neural crest",
+                              "6" = "Differentiated neural lineage",
+                              "7" = "Smooth Muscle Cell",
+                              "8" = "Endothelial cell"
+                              )
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type")
+
+
+
+# counts and percentage of cell types
+kable(table(this_combined$cell_type, this_combined$sample))
+knitr::kable(print_total_pct(this_combined$cell_type, this_combined$sample))
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_day, "_cell_type.qsave"))
+
+
+```
+
+
+
+```{r, fig.height=6, fig.width=12, eval=T}
+DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "cell_type",
+  label = T,
+  pt.size = 0.4,
+  split.by = "sample",
+  repel = T,
+  label.box = F
+) + theme(legend.position = "right")
+
+```
+
+
+## Day10
+
+```{r day10wt, fig.height=8, fig.width=10}
+
+this_day <- "day10"
+this_combined <- qs::qread(paste0("../integration/", this_day, "_seurat.qsave"))
+Idents(this_combined) <- this_combined$seurat_clusters
+
+p1 <- DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "seurat_clusters",
+  label = T,
+  pt.size = 0.5
+)+ theme(legend.position = "top")
+
+print(p1)
+
+
+```
+
+
+```{r, fig.height=7, fig.width=10, eval=T}
+# Cell type with marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type_with_marker")
+
+Idents(this_combined) <- this_combined$cell_type_with_marker
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell (NES, PAX6)",
+                              "1" = "Cardiomyocytes (TNNT2, NKX2-5)",
+                              "2" = "Cardiac Fibroblast (DDR2, COL1A1, PDGFRA)",
+                              "3" = "Neural Progenitor Cell (NES, PAX6)",
+                              "4" = "Endoderm (SOX17, EPCAM)",
+                              "5" = "Neural crest (SOX10, TFAP2A)",
+                              "6" = "Unknown",
+                              "7" = "Differentiated neural lineage (TUBB3, DLL3)",
+                              "8" = "Endothelial cell (CDH5, PECAM1)"
+                              )
+
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type_with_marker")
+
+# Cell type without marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+Idents(this_combined) <- this_combined$cell_type
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell",
+                              "1" = "Cardiomyocytes",
+                              "2" = "Cardiac Fibroblast",
+                              "3" = "Neural Progenitor Cell",
+                              "4" = "Endoderm",
+                              "5" = "Neural crest",
+                              "6" = "Unknown",
+                              "7" = "Differentiated neural lineage",
+                              "8" = "Endothelial cell"
+                              )
+
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type")
+
+
+# counts and percentage of cell types
+kable(table(this_combined$cell_type, this_combined$sample))
+knitr::kable(print_total_pct(this_combined$cell_type, this_combined$sample))
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_day, "_cell_type.qsave"))
+
+```
+
+```{r, fig.height=6, fig.width=12, eval=T}
+DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "cell_type",
+  label = T,
+  pt.size = 0.4,
+  split.by = "sample",
+  repel = T,
+  label.box = F
+) + theme(legend.position = "right")
+
+```
+
+
+## Day14
+
+```{r day14h, fig.height=8, fig.width=10}
+
+this_day <- "day14"
+this_combined <- qs::qread(paste0("../integration/", this_day, "_seurat.qsave"))
+Idents(this_combined) <- this_combined$seurat_clusters
+
+p1 <- DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "seurat_clusters",
+  label = T,
+  pt.size = 0.5
+)+ theme(legend.position = "top")
+
+print(p1)
+
+```
+
+```{r, fig.height=7, fig.width=10, eval=T}
+# Cell type with marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type_with_marker")
+
+Idents(this_combined) <- this_combined$cell_type_with_marker
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell (NES, PAX6)",
+                              "1" = "Cardiac Fibroblast (DDR2, COL1A1, PDGFRA)",
+                              "2" = "SHF-derived Cardiomyocyte (TNNT2, NKX2-5, ISL1)",
+                              "3" = "Neural Progenitor Cell (NES, PAX6)",
+                              "4" = "Endoderm (SOX17, EPCAM)",
+                              "5" = "FHF-derived Cardiomyocyte (TNNT2, NKX2-5, HAND1)",
+                              "6" = "FHF-derived Cardiomyocyte (TNNT2, NKX2-5, TBX5)",
+                              "7" = "Endoderm (SOX17, EPCAM)",
+                              "8" = "Differentiated neural lineage (TUBB3, DLL3)",
+                              "9" = "Neural crest (SOX10, TFAP2A)",
+                              "10" = "Endothelial cell (CDH5, PECAM1)"
+                              )
+
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type_with_marker")
+
+# Cell type without marker name
+tmp_ident <- as.factor(this_combined$seurat_clusters)
+this_combined <-
+  AddMetaData(this_combined, tmp_ident, col.name = "cell_type")
+
+Idents(this_combined) <- this_combined$cell_type
+
+this_combined <- RenameIdents(this_combined, 
+                              "0" = "Neural Progenitor Cell",
+                              "1" = "Cardiac Fibroblast",
+                              "2" = "SHF-derived Cardiomyocyte",
+                              "3" = "Neural Progenitor Cell",
+                              "4" = "Endoderm",
+                              "5" = "FHF-derived Cardiomyocyte",
+                              "6" = "FHF-derived Cardiomyocyte",
+                              "7" = "Endoderm",
+                              "8" = "Differentiated neural lineage",
+                              "9" = "Neural crest",
+                              "10" = "Endothelial cell"
+                              )
+
+
+DimPlot(this_combined, reduction = "umap", label = T, pt.size = 0.7)
+
+this_combined <-
+  AddMetaData(this_combined, Idents(this_combined), col.name = "cell_type")
+
+
+
+# counts and percentage of cell types
+kable(table(this_combined$cell_type, this_combined$sample))
+knitr::kable(print_total_pct(this_combined$cell_type, this_combined$sample))
+
+# Save
+qs::qsave(this_combined, paste0("../sample_obj/", this_day, "_cell_type.qsave"))
+
+```
+
+
+```{r, fig.height=6, fig.width=12, eval=T}
+DimPlot(
+  this_combined,
+  reduction = "umap",
+  group.by = "cell_type",
+  label = T,
+  pt.size = 0.4,
+  split.by = "sample",
+  repel = T,
+  label.box = F
+) + theme(legend.position = "right")
+
+```
+
+# Merged results
+
+```{r,eval=T,message=T,warning=F,error=F, fig.width=10, fig.height=8}
+
+combined <- qs::qread("combined_by_day.qsave")
+DimPlot(
+  combined,
+  reduction = "umap",
+  label = T,
+  pt.size = 0.4,
+  repel = T,
+  cols = cell_type_color,
+  label.box = T
+) + theme(legend.position = "none")
+
+
+```
+
+```{r,eval=T,message=T,warning=F,error=F, fig.width=12, fig.height=5}
+
+named_sample_color <- sample_color[1:length(levels(as.factor(combined$sample)))]
+names(named_sample_color) <- levels(as.factor(combined$sample))
+
+Idents(combined) <- combined$sample
+plots <- lapply(
+  X = levels(combined),
+  FUN = function(x) {
+    #x = 'Healthy control iPSC-D5'
+    this_color_index <- which(names(named_sample_color) == x)
+    this_color <- as.character(named_sample_color[this_color_index])
+    return(
+      DimPlot(
+        combined,
+        reduction = "umap",
+        pt.size = 0.6,
+        cells.highlight = CellsByIdentities(combined, idents = x),
+        cols.highlight = this_color
+      ) +
+        ggplot2::theme(legend.position = "top")
+    )
+  }
+)
+
+p2 <- CombinePlots(plots, ncol = 4)
+
+p2
+
+png(
+  paste0("./umap_sample_by_day_version.png"),
+  width = 6800,
+  height = 3500,
+  res = 300
+)
+print(p2)
+dev.off()
+
+```
+
+
+```{r,eval=F,message=T,warning=F,error=F, fig.width=12, fig.height=5}
+
+named_sample_color <- sample_color[1:length(levels(as.factor(combined$sample)))]
+names(named_sample_color) <- levels(as.factor(combined$sample))
+
+named_ct_color <- cell_type_color[1:length(levels(as.factor(combined$cell_type)))]
+names(named_ct_color) <- levels(as.factor(combined$cell_type))
+
+Idents(combined) <- combined$sample
+plots <- lapply(
+  X = levels(combined),
+  FUN = function(x) {
+    #x = 'Control Day5'
+    Idents(combined) <- combined$sample
+    this_combiend <- subset(combined, idents = x)
+    this_color <- named_ct_color[unique(this_combiend$cell_type)]
+    Idents(this_combiend) <- this_combiend$cell_type
+    return(
+      DimPlot(
+        combined,
+        reduction = "umap",
+        group.by = "cell_type",
+        pt.size = 0.5,
+        cells.highlight = CellsByIdentities(this_combiend, idents = unique(this_combiend$cell_type)),
+        cols.highlight = sort(this_color)
+      ) +
+        ggplot2::theme(legend.position = "right") + 
+        ggtitle(x)
+    )
+  }
+)
+
+#print(plots[1])
+
+p3 <- CombinePlots(plots, ncol = 2)
+
+p3
+
+ png(
+   paste0("./umap_cell_type_by_day_version.png"),
+   width = 6800,
+   height = 9500,
+   res = 300
+ )
+ print(p3)
+ dev.off()
+
+```
+
+
+
+```{r}
+knitr::kable(table(combined$cell_type, combined$sample))
+
+
+knitr::kable(print_total_pct(combined$cell_type, combined$sample))
+```

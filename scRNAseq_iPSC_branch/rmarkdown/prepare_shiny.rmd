@@ -1,0 +1,113 @@
+---
+title: "Prepare shiny app"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(error = FALSE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(ShinyCell)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("prepare_shiny.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+#combined <- qs::qread("combined.qsave")
+
+
+
+sample_list <-
+  c(
+    "../sample_obj/Control Day5_processed",
+    "../sample_obj/Control Day8_processed",
+    "../sample_obj/Control Day10_processed",
+    "../sample_obj/Control Day14_processed",
+    "../sample_obj/HG Day5_processed",
+    "../sample_obj/HG Day8_processed",
+    "../sample_obj/HG Day10_processed",
+    "../sample_obj/HG Day14_processed",
+    "../integration/day5_seurat",
+    "../integration/day8_seurat",
+    "../integration/day10_seurat",
+    "../integration/day14_seurat"
+  )     
+
+
+i = 1
+i = 8
+for(i in 1:length(sample_list)) {
+  this_sample_name <- sample_list[i]
+  this_display_name <- gsub(" ","_", basename(this_sample_name))
+  seu <- qs::qread(paste0(this_sample_name, ".qsave"))
+  scConf1 = createConfig(seu)
+  #scConf1 = delMeta(scConf1, c("orig.ident", "RNA_snn_res.0.2"))
+  #scConf1 = modMetaName(scConf1, meta.to.mod = c("nCount_RNA", "nFeature_RNA", "percent.mito", "sample"),
+  #                      new.name = c("No. UMIs", "No. detected genes",
+  #                                   "% MT genes", "% HK genes"))
+  #scConf1 = modColours(scConf1, meta.to.mod = "library",
+  #                     new.colours= c("black", "darkorange", "blue", "pink2"))
+  makeShinyFiles(
+    seu,
+    scConf1,
+    gex.assay = "RNA",
+    gex.slot = "data",
+    gene.mapping = TRUE,
+    shiny.prefix = this_display_name,
+    shiny.dir = "shinyAppMulti/",
+    default.gene1 = "TNNT2",
+    default.gene2 = "ISL1",
+    default.multigene = c(
+      "TNNT2",
+      "ISL1",
+      "NKX2-5"
+    ),
+    default.dimred = c("UMAP_1", "UMAP_2")
+  )
+}
+
+
+
+
+
+
+```
+
+# Dimension reduction
+
+```{r}
+makeShinyCodesMulti(
+  shiny.title = "HG scRNAseq-new QC", shiny.footnotes = "",
+  shiny.prefix = gsub(" ","_", basename(sample_list)),
+  shiny.headers = gsub(" ","_", basename(sample_list)), 
+  shiny.dir = "shinyAppMulti/") 
+
+```

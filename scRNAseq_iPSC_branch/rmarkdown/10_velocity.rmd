@@ -1,0 +1,183 @@
+---
+title: "RNA Velocity"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(here)
+library(qs)
+library(SeuratWrappers)
+library(tidyverse)
+library(SeuratDisk)
+#library(cowplot)
+#library(dplyr)
+#library(ggplot2)
+#library(patchwork)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("functions.R")
+
+combined <- qs::qread('combined.qsave')
+
+two_color <- c('#C0C0C0', '#B00D23')
+
+sample_color <-
+  as.character(glasbey.colors()[-1])
+
+cell_type_color <-
+  as.character(palette36.colors(36)[-2])
+
+Idents(combined) <- combined$orig.ident
+DefaultAssay(combined) <- "RNA"
+
+dir.create('../velocity_h5ad')
+RESULT_DIR <- "../velocity_h5ad/"
+
+i = 1
+j = 1
+k = 1
+idx = 1
+
+sample_list <- read.csv("../sample_list.csv")
+sample_list
+```
+
+# Extract velocity counts
+
+```{r}
+i = 1
+for (i in seq_len(nrow(sample_list))) {
+  
+  this_sample <- sample_list$sample[i]
+  this_sample_name <- sample_list$id[i]
+  this_day <- sample_list$day[i]
+  
+  sub_combined <- subset(combined, idents = this_sample)
+  
+  loom_filename <-
+    paste0("../velocity_loom/", this_sample_name, ".loom")
+  loom_obj <- read.loom.matrices(file = loom_filename)
+  loom_seurat_obj <- as.Seurat(x = loom_obj)
+  
+  # Rename cell names in velocity matrix
+  col_velo <-
+    str_split_fixed(colnames(loom_seurat_obj), ":", 2)[, 2]
+  col_velo <- str_replace_all(col_velo, "x", "-1")
+  col_velo <- paste0(this_sample, "_", col_velo)
+  
+  velo_cell_exist_in_RNA <-
+    which(col_velo %in% colnames(sub_combined))
+  
+  col_velo <- col_velo[velo_cell_exist_in_RNA]
+  
+  loom_obj$spliced <- loom_obj$spliced[, velo_cell_exist_in_RNA]
+  loom_obj$unspliced <- loom_obj$unspliced[, velo_cell_exist_in_RNA]
+  loom_obj$ambiguous <- loom_obj$ambiguous[, velo_cell_exist_in_RNA]
+  
+  loom_obj$spliced <- loom_obj$spliced[, order(col_velo)]
+  loom_obj$unspliced <- loom_obj$unspliced[, order(col_velo)]
+  loom_obj$ambiguous <- loom_obj$ambiguous[, order(col_velo)]
+  col_velo <- col_velo[order(col_velo)]
+  
+  bm <- as.Seurat(x = loom_obj)
+  bm <- RenameCells(bm, new.names = col_velo)
+  
+  bm[["RNA"]] <- bm[["spliced"]]
+  DefaultAssay(bm) <- "RNA"
+  
+  bm@meta.data <- cbind(bm@meta.data, sub_combined@meta.data)
+  qs::qsave(bm, paste0(RESULT_DIR, this_sample, "_velo.qsave"))
+  SaveH5Seurat(bm, filename = paste0(RESULT_DIR, this_sample, ".h5Seurat"))
+  Convert(paste0(RESULT_DIR, this_sample, ".h5Seurat"), dest = "h5ad")
+}
+
+
+```
+
+# Convert to AnnData format for scVelo
+
+```{r}
+
+obj1 <- qread("../velocity_h5ad/Con0_velo.qsave")
+obj2 <- qread("../velocity_h5ad/Con2_velo.qsave")
+obj3 <- qread("../velocity_h5ad/Con5_velo.qsave")
+obj4 <- qread("../velocity_h5ad/Con10_velo.qsave")
+obj5 <- qread("../velocity_h5ad/Con14_velo.qsave")
+obj6 <- qread("../velocity_h5ad/Con30_velo.qsave")
+obj7 <- qread("../velocity_h5ad/N1KO0_velo.qsave")
+obj8 <- qread("../velocity_h5ad/N1KO2_velo.qsave")
+obj9 <- qread("../velocity_h5ad/N1KO5_velo.qsave")
+obj10 <- qread("../velocity_h5ad/N1KO10_velo.qsave")
+obj11 <- qread("../velocity_h5ad/N1KO14_velo.qsave")
+obj12 <- qread("../velocity_h5ad/N1KO30_velo.qsave")
+
+obj <-
+  merge(
+    x = obj1,
+    y = c(obj2,
+          obj3,
+          obj4,
+          obj5,
+          obj6,
+          obj7,
+          obj8,
+          obj9,
+          obj10,
+          obj11,
+          obj12)
+  )
+
+# Rename to singular noun
+tmp_idents <- as.factor(obj$cell_type)
+levels(tmp_idents) <-
+  c(
+    "Atrial cardiomyocyte",
+    "Cardiac fibroblast",
+    "Cardiac mesoderm",
+    "Differentiating iPSC",
+    "Early cardiomyocyte",
+    "Epicardial progenitor",
+    "FHF progenitor",
+    "iPSC",
+    "Mesoderm",
+    "Pacemaker cell",
+    "SHF progenitor",
+    "Unidentified",
+    "Vascular smooth muscle cell",
+    "Ventricular cardiomyocyte"
+  )
+
+obj@meta.data$cell_type <- as.character(tmp_idents)
+
+qs::qsave(obj, paste0(RESULT_DIR, "all_velo.qsave"))
+RESULT_DIR <- "../velocity_h5ad/"
+
+SaveH5Seurat(obj, filename = paste0(RESULT_DIR, "all.h5Seurat"))
+Convert(paste0(RESULT_DIR, "all.h5Seurat"), dest = "h5ad")
+
+```
+
+

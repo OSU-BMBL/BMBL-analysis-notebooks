@@ -1,0 +1,256 @@
+---
+title: "DEG"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(enrichR)
+library(EnhancedVolcano)
+  
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::i_am("5_deg.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r}
+source("functions.R")
+combined <- qs::qread('combined.qsave')
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+custom_color <-
+  as.character(palette36.colors(36)[-2])
+two_color <- c('#C0C0C0', '#B00D23')
+
+
+dbs <-
+  c(
+    "GO_Molecular_Function_2018",
+    "GO_Cellular_Component_2018",
+    "GO_Biological_Process_2018",
+    "KEGG_2019_Human"
+  )
+
+
+dir.create('../result')
+dir.create('../result/deg')
+
+```
+
+# DEG
+
+
+```{r}
+days <- c("0", "2", "5", "10", "14", "30")
+
+
+day <- "2"
+for (day in days) {
+  dir.create(paste0("../result/deg/day", day))
+  RESULT_DIR <- paste0("../result/deg/day", day, "/")
+  
+  Idents(combined) <- combined$orig.ident
+  day_combined <-
+    subset(combined, ident = c(paste0("Con", day), paste0("N1KO", day)))
+  
+  this_cell_type <- levels(as.factor(day_combined$cell_type))
+  
+  i = 1
+  
+  for (i in seq_along(this_cell_type)) {
+    this_ct <- this_cell_type[i]
+    Idents(day_combined) <- day_combined$cell_type
+    this_combined <-
+      subset(day_combined, ident = this_ct)
+    
+    Idents(this_combined) <- this_combined$orig.ident
+    DefaultAssay(this_combined) <- "RNA"
+    
+    # Confirm both samples have same cell type
+    if (length(which(as.numeric(table(
+      this_combined$orig.ident
+    )) > 0)) == 2) {
+      cts_markers <-
+        FindMarkers(
+          this_combined,
+          ident.1 = paste0("N1KO", day),
+          ident.2 = paste0("Con", day)
+        ) %>%
+        rownames_to_column("gene") %>%
+        filter(p_val_adj < 0.05)
+      
+      avg_expr_deg <-
+        AverageExpression(this_combined, features = cts_markers$gene)$RNA %>%
+        as.data.frame() %>%
+        rownames_to_column("gene")
+      
+      cts_markers <- cts_markers %>%
+        left_join(avg_expr_deg, by = "gene") %>%
+        arrange(desc(avg_log2FC))
+      
+      cts_markers %>%
+        write_csv(paste0(RESULT_DIR, this_ct, "_KO_vs_Con.csv"))
+      
+      
+      this_up <- cts_markers %>%
+        filter(avg_log2FC > 0) %>%
+        pull(gene)
+      this_down <- cts_markers %>%
+        filter(avg_log2FC < 0) %>%
+        pull(gene)
+      
+      # Volcano
+      if (length(this_up) > 10 &
+          length(this_down) > 10) {
+        top_up <- cts_markers %>%
+          top_n(10, avg_log2FC) %>%
+          pull(gene)
+        top_down <- cts_markers %>%
+          top_n(-10, avg_log2FC) %>%
+          pull(gene)
+        
+        p1 <- EnhancedVolcano(
+          cts_markers,
+          lab = cts_markers$gene,
+          x = 'avg_log2FC',
+          y = 'p_val_adj',
+          selectLab = c(top_up, top_down),
+          pCutoff = 0.05,
+          FCcutoff = 0.25,
+        )
+        png(
+          paste0(RESULT_DIR, this_ct, "_KO_vs_Con_volcano.png"),
+          width = 3000,
+          height = 3000,
+          res = 300
+        )
+        print(p1)
+        dev.off()
+        
+      }
+      ### UP
+      if (length(this_up) > 10) {
+        enriched_combined <- enrichr(this_up, dbs)
+        enriched_combined <- lapply(enriched_combined, function(x) {
+          x$Overlap <- paste0(" ", x$Overlap)
+          return(x[, c(-5,-6)])
+        })
+        
+        for (idx in seq_along(enriched_combined)) {
+          this_res <- enriched_combined[[idx]]
+          this_name <- names(enriched_combined[idx])
+          
+          this_selected_terms <- this_res[1:10,]
+          enrichment_dotplot(
+            this_selected_terms,
+            filename = paste0(
+              RESULT_DIR,
+              this_ct,
+              "_enrich_top10_up_",
+              this_name,
+              ".png"
+            )
+          )
+        }
+        write.csv(
+          enriched_combined$GO_Molecular_Function_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_MF_up.csv")
+        )
+        write.csv(
+          enriched_combined$GO_Cellular_Component_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_CC_up.csv")
+        )
+        write.csv(
+          enriched_combined$GO_Biological_Process_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_BP_up.csv")
+        )
+        write.csv(
+          enriched_combined$KEGG_2019_Human,
+          paste0(RESULT_DIR, this_ct, "_KEGG_up.csv")
+        )
+        
+      }
+      ### DOWN
+      if (length(this_down) > 10) {
+        enriched_combined <- enrichr(this_down, dbs)
+        enriched_combined <- lapply(enriched_combined, function(x) {
+          x$Overlap <- paste0(" ", x$Overlap)
+          return(x[, c(-5,-6)])
+        })
+        
+        for (idx in seq_along(enriched_combined)) {
+          this_res <- enriched_combined[[idx]]
+          this_name <- names(enriched_combined[idx])
+          this_selected_terms <- this_res[1:10,]
+          enrichment_dotplot(
+            this_selected_terms,
+            filename = paste0(
+              RESULT_DIR,
+              this_ct,
+              "_enrich_top10_down_",
+              this_name,
+              ".png"
+            )
+          )
+        }
+        write.csv(
+          enriched_combined$GO_Molecular_Function_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_MF_down.csv")
+        )
+        write.csv(
+          enriched_combined$GO_Cellular_Component_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_CC_down.csv")
+        )
+        write.csv(
+          enriched_combined$GO_Biological_Process_2018,
+          paste0(RESULT_DIR, this_ct, "_GO_BP_down.csv")
+        )
+        write.csv(
+          enriched_combined$KEGG_2019_Human,
+          paste0(RESULT_DIR, this_ct, "_KEGG_down.csv")
+        )
+        
+      }
+    }
+  }
+}
+
+
+```
+
+
+

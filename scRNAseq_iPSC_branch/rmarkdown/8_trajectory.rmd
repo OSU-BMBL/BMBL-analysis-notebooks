@@ -1,0 +1,356 @@
+---
+title: "Trajectory inference"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(fgsea)
+library(monocle3)
+library(batchelor)
+library(Matrix.utils)
+library(tidyverse)
+library(SeuratWrappers)
+#BiocManager::install(c('batchelor', 'Matrix.utils'))
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+here::i_am("8_trajectory.Rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("functions.R")
+
+combined <- qs::qread('combined.qsave')
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$seurat_clusters
+#custom_color <-
+#  as.character(palette36.colors(36)[-2])[1:length(levels(Idents(combined)))]
+
+custom_color <-
+  as.character(Polychrome::glasbey.colors()[-1])
+
+two_color <- c('#C0C0C0', '#B00D23')
+
+Idents(combined) <- combined$orig.ident
+DefaultAssay(combined) <- "RNA"
+
+
+i = 1
+j = 1
+k = 1
+idx = 1
+
+
+days <- levels(combined$orig.ident)
+
+
+dbs <-
+  c(
+    "GO_Molecular_Function_2018",
+    "GO_Cellular_Component_2018",
+    "GO_Biological_Process_2018",
+    "KEGG_2019_Human"
+  )
+
+```
+
+
+# Trajectory
+
+
+```{r,echo=F,eval=T,message=FALSE,warning=F}
+dir.create('../result')
+dir.create('../result/trajectory')
+
+this_sample_name <- "Con14"
+
+for (this_sample_name in levels(combined$orig.ident)) {
+  this_combined <-
+    qs::qread(paste0("../sample_obj/", this_sample_name, ".qsave"))
+  Idents(this_combined) <- this_combined$cell_type
+  #this_combined <- FindVariableFeatures(this_combined)
+  combined.cds <- as.cell_data_set(this_combined)
+  combined.cds <-
+    cluster_cells(cds = combined.cds, reduction_method = "UMAP")
+  
+  combined.cds <- learn_graph(combined.cds, use_partition = TRUE)
+  hsc <- colnames(this_combined)
+  
+  rowData(combined.cds)$gene_short_name <-
+    rownames(rowData(combined.cds))
+  
+  p1 <- plot_cells(
+    combined.cds,
+    show_trajectory_graph = T,
+    group_label_size = 0,
+    color_cells_by = "cell_type",
+    group_cells_by = "partition",
+    label_groups_by_cluster = F,
+    graph_label_size = 2.5,
+    label_branch_points = F,
+    label_roots = F,
+    label_leaves = T,
+    label_cell_groups = F,
+    cell_size = 0.6,
+  ) + scale_color_manual(values = custom_color)
+  png(
+    paste0("../result/trajectory/", this_sample_name, ".png"),
+    width = 1800,
+    height = 1500,
+    res = 300
+  )
+  print(p1)
+  dev.off()
+  
+}
+```
+
+
+```{r,echo=F,eval=F,message=FALSE,warning=F}
+dir.create('result')
+dir.create('result/trajectory')
+
+Idents(combined) <- combined$orig.ident
+DefaultAssay(combined) <- "RNA"
+
+# seq_along(levels(provided_marker$cell_type))
+for (idx in seq_along(levels(provided_marker$cell_type))) {
+  this_ct <- levels(provided_marker$cell_type)[idx]
+  this_ct_ident <- gsub(" ", "_", this_ct)
+  this_ct_index <- which(colnames(combined@meta.data) == this_ct_ident)
+  
+  RESULT_DIR <-
+      paste0("./result/trajectory/",
+             this_ct,
+             "/")
+  dir.create(RESULT_DIR)
+  
+  Idents(combined) <- combined$orig.ident
+  
+  ## Control
+  con_combined <- subset(combined, idents = c("Con5","Con10","Con14","Con30"))
+  #con_combined <- subset(combined, idents = c("Con5","Con10","Con14","Con30","N1KO5","N1KO10","N1KO14","N1KO30"))
+  Idents(con_combined) <- con_combined@meta.data[this_ct_index]
+  con_combined <- subset(con_combined, idents = c("positive"))
+  
+  Idents(con_combined) <- con_combined$orig.ident
+  
+  combined.cds <- as.cell_data_set(con_combined)
+  combined.cds <-
+    cluster_cells(cds = combined.cds, reduction_method = "UMAP")
+  
+  combined.cds <- learn_graph(combined.cds, use_partition = TRUE)
+  hsc <- colnames(con_combined)
+  if (as.numeric(table(con_combined$orig.ident)[3]) != 0) {
+    root_group = Seurat::WhichCells(con_combined, idents = "Con5")
+  } else if (as.numeric(table(con_combined$orig.ident)[4]) != 0) {
+    root_group = Seurat::WhichCells(con_combined, idents = "Con10")
+  } else if (as.numeric(table(con_combined$orig.ident)[5]) != 0) {
+    root_group = Seurat::WhichCells(con_combined, idents = "Con14")
+  } else if (as.numeric(table(con_combined$orig.ident)[6]) != 0) {
+    root_group = Seurat::WhichCells(con_combined, idents = "Con30")
+  }
+  combined.cds <-
+    order_cells(combined.cds,
+                reduction_method = "UMAP",
+                root_cells = root_group)
+  rowData(combined.cds)$gene_short_name <-
+    rownames(rowData(combined.cds))
+  
+  p1 <- plot_cells(
+    combined.cds,
+    show_trajectory_graph = T,
+    group_label_size = 0,
+    color_cells_by = "orig.ident",
+    group_cells_by = "partition",
+    label_groups_by_cluster = F,
+    graph_label_size = 2.5,
+    label_branch_points = T,
+    label_roots = T,
+    label_leaves = T,
+    label_cell_groups = F,
+    cell_size = 0.6,
+  ) + scale_color_manual(values = custom_color)
+  p1
+  
+  png(
+    paste(RESULT_DIR, "trajectory_control_by_sample.png",
+          sep = ""),
+    width = 1800,
+    height = 1500,
+    res = 300
+  )
+  print(p1)
+  dev.off()
+  
+  
+  p2 <- plot_cells(
+    combined.cds,
+    color_cells_by = "pseudotime",
+    show_trajectory_graph = T,
+    graph_label_size = 2.5,
+    trajectory_graph_segment_size = 0.8,
+    cell_size = 0.6
+  )
+  
+  png(
+    paste(RESULT_DIR, "trajectory_control_by_pseudotime.png",
+          sep = ""),
+    width = 2200,
+    height = 1500,
+    res = 300
+  )
+  print(p2)
+  dev.off()
+  
+  
+  
+  ## KO
+  ko_combined <-
+    subset(combined, idents = c("N1KO5","N1KO10","N1KO14","N1KO30"))
+  #ko_combined <- subset(combined, idents = c("Con5","Con10","Con14","Con30","N1KO5","N1KO10","N1KO14","N1KO30"))
+  Idents(ko_combined) <- ko_combined@meta.data[this_ct_index]
+  ko_combined <- subset(ko_combined, idents = c("positive"))
+  
+  Idents(ko_combined) <- ko_combined$orig.ident
+  
+  combined.cds <- as.cell_data_set(ko_combined)
+  combined.cds <-
+    cluster_cells(cds = combined.cds, reduction_method = "UMAP")
+  
+  combined.cds <- learn_graph(combined.cds, use_partition = TRUE)
+  hsc <- colnames(ko_combined)
+  if (as.numeric(table(ko_combined$orig.ident)[9]) != 0) {
+    root_group = Seurat::WhichCells(ko_combined, idents = "N1KO5")
+  } else if (as.numeric(table(ko_combined$orig.ident)[10]) != 0) {
+    root_group = Seurat::WhichCells(ko_combined, idents = "N1KO10")
+  } else if (as.numeric(table(ko_combined$orig.ident)[11]) != 0) {
+    root_group = Seurat::WhichCells(ko_combined, idents = "N1KO14")
+  } else if (as.numeric(table(ko_combined$orig.ident)[12]) != 0) {
+    root_group = Seurat::WhichCells(ko_combined, idents = "N1KO30")
+  }
+  
+  combined.cds <-
+    order_cells(combined.cds,
+                reduction_method = "UMAP",
+                root_cells = root_group)
+  rowData(combined.cds)$gene_short_name <-
+    rownames(rowData(combined.cds))
+  
+  p1 <- plot_cells(
+    combined.cds,
+    show_trajectory_graph = T,
+    group_label_size = 0,
+    color_cells_by = "orig.ident",
+    group_cells_by = "partition",
+    label_groups_by_cluster = F,
+    graph_label_size = 2.5,
+    label_branch_points = T,
+    label_roots = T,
+    label_leaves = T,
+    label_cell_groups = F,
+    cell_size = 0.6,
+  ) + scale_color_manual(values = custom_color)
+  p1
+  
+  png(
+    paste(RESULT_DIR, "trajectory_ko_by_sample.png",
+          sep = ""),
+    width = 1800,
+    height = 1500,
+    res = 300
+  )
+  print(p1)
+  dev.off()
+  
+  
+  p2 <- plot_cells(
+    combined.cds,
+    color_cells_by = "pseudotime",
+    show_trajectory_graph = T,
+    graph_label_size = 2.5,
+    trajectory_graph_segment_size = 0.8,
+    cell_size = 0.6
+  )
+  
+  png(
+    paste(RESULT_DIR, "trajectory_ko_by_pseudotime.png",
+          sep = ""),
+    width = 2200,
+    height = 1500,
+    res = 300
+  )
+  print(p2)
+  
+  dev.off()
+  
+  
+}
+
+
+```
+
+
+
+
+```{r,echo=F,eval=F,message=FALSE,warning=F}
+
+
+Idents(combined) <- combined$orig.ident
+cell_metadata <- readRDS(url("http://staff.washington.edu/hpliner/data/cao_l2_colData.rds"))
+DefaultAssay(combined) <- 'RNA'
+sub_combined <- subset(combined, idents = "Con0")
+Idents(sub_combined) <- sub_combined$seurat_clusters
+
+combined.cds <- as.cell_data_set(sub_combined)
+combined.cds <- cluster_cells(cds = combined.cds, reduction_method = "UMAP")
+
+combined.cds <- learn_graph(combined.cds, use_partition = TRUE)
+hsc <- colnames(combined)
+root_group = WhichCells(combined, idents="0")
+combined.cds <- order_cells(combined.cds, reduction_method = "UMAP", root_cells = root_group)
+rowData(combined.cds)$gene_short_name <- rownames(rowData(combined.cds))
+
+plot_cells(
+  cds = combined.cds,
+  color_cells_by = "pseudotime",
+  show_trajectory_graph = F,
+  group_cells_by = 'cluster'
+)
+
+
+```
+
+
+```{r}
+
+```
+
+

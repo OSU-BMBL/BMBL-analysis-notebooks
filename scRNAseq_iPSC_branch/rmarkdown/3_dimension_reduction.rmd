@@ -1,0 +1,148 @@
+---
+title: "3. Dimension reduction"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(plotly)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("3_dimension_reduction.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+combined <- qs::qread('combined_qc.qsave')
+Idents(combined) <- combined$orig.ident
+custom_color <-
+  as.character(palette36.colors(36)[-2])[1:length(levels(Idents(combined)))]
+```
+
+# Dimension reduction
+
+Here we only want to visualize the sample differences in one UMAP. We adjusted UMAP neighbors and distance paramsters to make the visualization more 'spread'.
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+
+DefaultAssay(combined) <- "RNA"
+combined <- FindVariableFeatures(combined, verbose = FALSE)
+combined <- ScaleData(combined, verbose = FALSE)
+combined <- RunPCA(combined, npcs = 20, verbose = FALSE)
+# Better UMAP points spread
+combined <- RunUMAP(combined, reduction = "pca", dims = 1:20, n.components = 3L, n.neighbors = 30, min.dist = 0.4)
+combined <- RunTSNE(combined, reduction = "pca", dims = 1:20, n.components = 3L)
+combined <- FindNeighbors(combined, reduction = "pca", dims = 1:20)
+
+combined <- FindClusters(combined, resolution = 0.2)
+Idents(combined) <- combined$orig.ident
+```
+
+# 2D
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+DimPlot(
+  combined,
+  reduction = "umap",
+  cols = as.vector(palette36.colors(36)[-2]),
+  label = T,
+  pt.size = 0.8
+)
+
+```
+
+
+# 3D
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F, fig.width=6, fig.height=8}
+
+DefaultAssay(combined) <- "RNA"
+
+yourseuratobject <- combined
+umap_1 <- yourseuratobject[["umap"]]@cell.embeddings[,1]
+umap_2 <- yourseuratobject[["umap"]]@cell.embeddings[,2]
+umap_3 <- yourseuratobject[["umap"]]@cell.embeddings[,3]
+
+plot.data <- FetchData(object = yourseuratobject, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "orig.ident"))
+
+plot.data$label <- paste(rownames(plot.data))
+
+fig <- plot_ly(data = plot.data, 
+               x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3, 
+               color = ~orig.ident, 
+               colors = custom_color,
+               type = "scatter3d", 
+               mode = "markers", 
+               marker = list(size = 1.5, width=1), # controls size of points
+               text=~label, #This is that extra column we made earlier for which we will use for cell ID
+               hoverinfo="text") #When you visualize your plotly object, hovering your mouse pointer over a point shows cell names
+
+# xaxis
+axx <- list(
+  nticks = 4,
+  range = c(-10,10) #select range of xaxis
+)
+# yaxis
+axy <- list(
+  nticks = 4,
+  range = c(-10,10) #select range of yaxis
+)
+#zaxis
+axz <- list(
+  nticks = 4,
+  range = c(-10,10) #select range of zaxis
+)
+#fig <- fig %>% layout(scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+fig_cube <- fig %>% layout(scene = list(xaxis=axx,yaxis=axy,zaxis=axz, aspectmode='cube')) # To maintain cubic aspect
+
+fig_cube
+```
+
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+# Only run once to re-order the sample by time:
+
+combined$orig.ident <-
+  factor(combined$orig.ident, levels = levels(as.factor(combined$orig.ident))[c(1, 4, 6, 2, 3, 5, 7, 10, 12, 8, 9, 11)])
+
+```
+
+```{r,echo=F,eval=T,message=FALSE,warning=F}
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+qs::qsave(combined, "combined.qsave") 
+
+```
+
+# Session info
+
+```{r,echo=F,eval=T,message=F,warning=F}
+sessionInfo()
+```

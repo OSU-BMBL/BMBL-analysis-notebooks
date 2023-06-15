@@ -1,0 +1,223 @@
+---
+title: "Export to IRIS3"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(Matrix.utils)
+library(data.table)
+#BiocManager::install(c('batchelor', 'Matrix.utils'))
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+#here::i_am("7_GSEA.Rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+source("functions.R")
+####
+
+#combined <- readRDS("combined.rds")
+combined <- qs::qread('combined.qsave')
+####
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+table(combined$orig.ident)
+```
+
+
+```{r}
+this_sample <- "Con10"
+
+this_sample <- "N1KO10"
+d30_combined <- subset(combined, idents=this_sample)
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$cell_type)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+
+table(d30_combined$cell_type)
+```
+
+```{r}
+this_sample <- "d30_ventricular"
+
+Idents(combined) <- combined$orig.ident
+d30_combined <- subset(combined, idents=c("N1KO30","Con30"))
+
+Idents(d30_combined) <- d30_combined$cell_type
+d30_combined <- subset(d30_combined, idents=c("Ventricular cardiomyocytes"))
+
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$orig.ident)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+
+
+```
+
+
+```{r}
+this_sample <- "d30_atrial"
+
+Idents(combined) <- combined$orig.ident
+d30_combined <- subset(combined, idents=c("N1KO30","Con30"))
+
+Idents(d30_combined) <- d30_combined$cell_type
+d30_combined <- subset(d30_combined, idents=c("Atrial cardiomyocytes"))
+
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$orig.ident)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+dim(exp_data)
+
+```
+
+
+```{r}
+this_sample <- "d10_fhf"
+
+Idents(combined) <- combined$orig.ident
+d30_combined <- subset(combined, idents=c("N1KO10","Con10"))
+
+Idents(d30_combined) <- d30_combined$cell_type
+d30_combined <- subset(d30_combined, idents=c("FHF progenitor"))
+
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$orig.ident)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+dim(exp_data)
+
+```
+
+
+
+```{r}
+this_sample <- "d10_shf"
+
+Idents(combined) <- combined$orig.ident
+d30_combined <- subset(combined, idents=c("N1KO10","Con10"))
+
+Idents(d30_combined) <- d30_combined$cell_type
+d30_combined <- subset(d30_combined, idents=c("SHF progenitor"))
+
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$orig.ident)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+dim(exp_data)
+
+```
+
+
+
+```{r}
+this_sample <- "d10_epicardial"
+
+Idents(combined) <- combined$orig.ident
+d30_combined <- subset(combined, idents=c("N1KO10","Con10"))
+
+Idents(d30_combined) <- d30_combined$cell_type
+d30_combined <- subset(d30_combined, idents=c("Epicardial progenitor"))
+
+
+exp_data <- GetAssayData(d30_combined, slot = "counts")
+cell_info <- as.character(d30_combined$orig.ident)
+cell_label <- cbind(colnames(d30_combined),cell_info)
+colnames(cell_label) <- c("cell_name","label")
+cell_label <- cell_label[order(cell_label[,1]),]
+
+write.table(data.frame("Gene"=rownames(exp_data),exp_data,check.names = F),paste(this_sample, "_expr.txt",sep = ""), row.names = F,sep="\t",quote=FALSE)
+write.table(cell_label,paste(this_sample, "_label.txt",sep = ""),quote = F,row.names = F,sep = "\t")
+
+dim(exp_data)
+
+```
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```

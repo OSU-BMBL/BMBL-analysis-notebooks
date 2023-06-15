@@ -1,0 +1,26 @@
+cell_type,gene,direction
+iPSCs,POU5F1,pos
+Mesoderm,MIXL1,pos
+Mesoderm,TBXT,pos
+Ectoderm,PAX6,pos
+Ectoderm,SOX1,pos
+Cardiac mesoderm,MESP1,pos
+Cardiac mesoderm,PDGFRA,pos
+SHF progenitor,ISL1,pos
+SHF progenitor,NKX2-5,pos
+FHF progenitor,NKX2-5,pos
+FHF progenitor,ISL1,neg
+Epicardial progenitor,WT1,pos
+Epicardial progenitor,TBX18,pos
+Atrial cardiomyocytes,MYH6,pos
+Atrial cardiomyocytes,NR2F2,pos
+Atrial cardiomyocytes,TNNT2,pos
+Ventricular cardiomyocytes,MYL2,pos
+Ventricular cardiomyocytes,MYH7,pos
+Ventricular cardiomyocytes,TNNT2,pos
+Pacemaker cells,HCN4,pos
+Pacemaker cells,TNNT2,pos
+Vascular smooth muscle cells,MYH11,pos
+Vascular smooth muscle cells,ACTA2,pos
+Cardiac fibroblast,DDR2,pos
+Cardiac fibroblast,TCF21,pos

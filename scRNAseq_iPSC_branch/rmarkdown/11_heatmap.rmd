@@ -1,0 +1,1327 @@
+---
+title: "Figures: heatmaps"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(ComplexHeatmap)
+library(data.table)
+library(circlize)
+library(RColorBrewer)
+library(GSVA)
+library(ggpubr)
+library(matrixStats)
+library(EnhancedVolcano)
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r}
+source("functions.R")
+dir.create('../sample_obj', showWarnings = F)
+combined <- qs::qread('combined.qsave')
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+sample_color <-
+  as.character(glasbey.colors()[-1])
+
+cell_type_color <-
+  as.character(palette36.colors(36)[-2])
+two_color <- c('#C0C0C0', '#B00D23')
+
+
+provided_marker <- read_csv("../marker/marker_by_day.csv") %>%
+  mutate(cell_type = factor(cell_type))
+
+provided_marker
+
+```
+
+
+# Setup
+
+```{r}
+all_ct <- levels(as.factor(combined$cell_type))
+all_cell_type_cols <- cell_type_color[1:length(all_ct)]
+names(all_cell_type_cols) <- all_ct
+
+all_samples <- levels(as.factor(combined$orig.ident))
+all_sample_cols <- sample_color[1:length(all_samples)]
+names(all_sample_cols) <- all_samples
+
+print(all_cell_type_cols)
+print(all_sample_cols)
+print(two_color)
+
+```
+
+```{r, include=F}
+
+```
+
+# Heat by sample
+
+```{r}
+
+#this_combined <- qs::qread("../integration/day30_harmony.qsave")
+this_combined <- combined
+
+DefaultAssay(this_combined) <- "RNA"
+
+this_combined <- ScaleData(this_combined, verbose = F)
+
+this_genes <- unique(provided_marker$gene)
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+col_fun <- all_sample_cols
+tmp_order <-
+  c("Con0",
+    "N1KO0",
+    "Con2",
+    "N1KO2",
+    "Con5",
+    "N1KO5",
+    "Con10",
+    "N1KO10",
+    "Con14",
+    "N1KO14",
+    "Con30",
+    "N1KO30")
+names(col_fun) <- tmp_order
+tmp_ident <- factor(this_combined$orig.ident, levels = tmp_order)
+
+#mat <- mat[, c(4, 2, 3, 1)]
+ht1 <- Heatmap(
+  mat,
+  top_annotation = HeatmapAnnotation(
+    Group = tmp_order,
+    col = list(Group = col_fun),
+    show_annotation_name = F
+  ),
+  show_column_names = T,
+  cluster_rows = T,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = T,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+draw(ht1)
+```
+
+# Heat by CT+sample
+
+```{r}
+
+#this_combined <- qs::qread("../integration/day30_harmony.qsave")
+this_combined <- combined
+
+DefaultAssay(this_combined) <- "RNA"
+#tmp_ident <- paste(this_combined$cell_type, this_combined$orig.ident,sep = "-")
+tmp_ident <- paste(this_combined$cell_type)
+
+this_combined <- AddMetaData(this_combined, tmp_ident, "ct_sample")
+this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_sample
+this_genes <- unique(provided_marker$gene)
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 2
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+#mat <- mat[, c(4, 2, 3, 1)]
+
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = T,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 45
+)
+
+png("../figure/heatmap/marker_ct_sample.png", width = 5500, height = 2000, res = 300)
+
+draw(ht1)
+dev.off()
+```
+
+# Heat by all CT
+
+```{r}
+
+this_combined <- combined
+
+DefaultAssay(this_combined) <- "RNA"
+
+this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$cell_type
+this_genes <- unique(provided_marker$gene)
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+mat <- mat[this_genes, ]
+color_sequence <- seq(min(mat), max(mat), length = 3) / 2
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+png("../figure/heatmap/marker_ct.png", width = 5500, height = 2000, res = 300)
+
+draw(ht1)
+dev.off()
+
+
+
+pdf(
+  paste0("../figure/marker_ct.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+```
+
+```{r}
+Idents(combined) <- combined$orig.ident
+
+
+#Mesoderm (d2) 
+#
+#Cardiac mesoderm (d5)
+#
+#cardiac progenitor (FHF, SHF, epicardial) (d10)
+#
+#early CM (D10)
+#
+#early CM (D14)
+#
+#atrial CM (d30)
+#
+#ventricular CM (d30)
+#
+#pacemaker (d30)
+
+c1 <- subset(combined, idents = c("Con2", "N1KO2"))
+Idents(c1) <- c1$cell_type
+c1 <- subset(c1, idents = c("Mesoderm"))
+
+c2 <- subset(combined, idents = c("Con5", "N1KO5"))
+Idents(c2) <- c2$cell_type
+c2 <- subset(c2, idents = c("Cardiac mesoderm"))
+
+c3 <- subset(combined, idents = c("Con10", "N1KO10"))
+Idents(c3) <- c3$cell_type
+c3 <- subset(c3, idents = c("Unidentified"), invert = T)
+
+c4 <- subset(combined, idents = c("Con14", "N1KO14"))
+Idents(c4) <- c4$cell_type
+c4 <- subset(c4, idents = c("Early cardiomyocytes"), invert = F)
+
+c5 <- subset(combined, idents = c("Con30", "N1KO30"))
+Idents(c5) <- c5$cell_type
+c5 <- subset(c5, idents = c("Atrial cardiomyocytes","Pacemaker cell", "Ventricular cardiomyocytes"), invert = F)
+
+selected_combined <- merge(c1, y=c(c2,c3,c4,c5))
+
+
+tmp_ident <- paste0(selected_combined$cell_type, "-d",str_replace(selected_combined$orig.ident, "Con|N1KO",""))
+table(tmp_ident)
+selected_combined <- AddMetaData(selected_combined, tmp_ident, col.name = "ct_day")
+Idents(selected_combined) <- selected_combined$ct_day
+levels(Idents(selected_combined) )
+
+
+```
+
+# Heat by avg selected CT x markers
+
+```{r}
+this_combined <- selected_combined
+DefaultAssay(this_combined) <- "RNA"
+Idents(this_combined) <- this_combined$ct_day
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <- provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+
+pdf(
+  paste0("../figure/heatmap_avg_selected_marker.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_selected_marker.pdf"),
+  width = 10,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+
+```
+
+
+# Heatmap by avg selected CT x markers (only WT)
+
+```{r}
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "Con")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <- provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+
+pdf(
+  paste0("../figure/heatmap_avg_selected_marker_WT.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_selected_marker_WT.pdf"),
+  width = 10,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+```
+
+# Heatmap by avg selected CT x markers (only KO)
+
+```{r}
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "KO")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <- provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+
+pdf(
+  paste0("../figure/heatmap_avg_selected_marker_KO.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_selected_marker_KO.pdf"),
+  width = 10,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+```
+
+
+# Heat by cells selected CT x markers
+
+```{r}
+
+this_combined <- selected_combined
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <-  provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_selected_marker.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+# Heat by cells selected CT x markers
+
+```{r}
+
+this_combined <- selected_combined
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <-  provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_selected_marker.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+# Heat by cells selected CT x markers (only WT)
+
+```{r}
+
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "Con")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <-  provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_selected_marker_WT.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+
+# Heat by cells selected CT x markers (only ko)
+
+```{r}
+
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "KO")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+this_genes <-  provided_marker %>%
+  dplyr::filter(!cell_type %in% c("iPSCs","Vascular smooth muscle cells","Cardiac fibroblast")) %>%
+  dplyr::pull(gene) %>%
+  unique()
+
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_selected_marker_KO.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+# Heatmap by top 3 markers 
+```{r}
+DefaultAssay(selected_combined) <- "RNA"
+Idents(selected_combined) <- selected_combined$ct_day
+#cts_markers <- FindAllMarkers(selected_combined, logfc.threshold = 0.8)
+write.csv(cts_markers,"selected_combined_ct_day_marker.csv")
+        
+this_genes <- cts_markers %>%
+  group_by(cluster) %>%
+  arrange(cluster) %>%
+  top_n(3, avg_log2FC) %>%
+  pull(gene) %>%
+  unique()
+
+```
+
+# Heat by avg top3 markers
+
+```{r}
+this_combined <- selected_combined
+DefaultAssay(this_combined) <- "RNA"
+Idents(this_combined) <- this_combined$ct_day
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+pdf(
+  paste0("../figure/heatmap_avg_top3.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_top3.pdf"),
+  width = 14,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+
+```
+
+
+# Heatmap by avg selected CT x markers (only WT)
+
+```{r}
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "Con")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+
+pdf(
+  paste0("../figure/heatmap_avg_top3_WT.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_top3_WT.pdf"),
+  width = 14,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+```
+
+# Heatmap by avg selected CT x markers (only KO)
+
+```{r}
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "KO")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+if (length(which(toupper(this_genes) == this_genes)) > length(this_genes) / 2) {
+  this_genes_index <-
+    which(toupper(rownames(this_combined)) %in% this_genes)
+} else {
+  this_genes_index <- which(rownames(this_combined) %in% this_genes)
+}
+
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1.5
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+
+mat <- mat[this_genes, ]
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+
+
+pdf(
+  paste0("../figure/heatmap_avg_top3_KO.pdf"),
+  width = 12,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+
+pdf(
+  paste0("../figure/dotplot_avg_top3_KO.pdf"),
+  width = 14,
+  height = 6
+)
+
+DotPlot(this_combined, features = this_genes, cols = two_color) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+dev.off()
+
+```
+
+
+# Heat by cells selected CT x markers
+
+```{r}
+
+this_combined <- selected_combined
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+Idents(this_combined) <- this_combined$ct_day
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_top3.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+# Heat by cells selected CT x markers (only WT)
+
+```{r}
+
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "Con")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_top3_WT.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+
+# Heat by cells selected CT x markers (only ko)
+
+```{r}
+
+Idents(selected_combined) <- selected_combined$condition
+this_combined <- subset(selected_combined, idents = "KO")
+Idents(this_combined) <- this_combined$ct_day
+DefaultAssay(this_combined) <- "RNA"
+this_combined <- ScaleData(this_combined)
+
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- this_combined$ct_day
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(6,"RdBu"))(128)
+
+pdf(
+  paste0("../figure/heatmap_cells_top3_KO.pdf"),
+  width = 12,
+  height = 6
+)
+
+print(DoHeatmap(this_combined, features = this_genes, angle = 90, label = F) + scale_fill_gradientn(colours = rev(mapal))) 
+dev.off()
+
+```
+
+
+
+# Archive below
+
+# Heat by avg selected CT x top5
+
+```{r}
+
+this_combined <- selected_combined
+
+DefaultAssay(this_combined) <- "RNA"
+
+#cts_markers <- FindAllMarkers(this_combined, logfc.threshold = 0.6)
+this_genes <- cts_markers %>%
+  group_by(cluster) %>%
+  arrange(cluster) %>%
+  top_n(5, avg_log2FC) %>%
+  pull(gene) %>%
+  unique()
+
+Idents(this_combined) <- as.factor(this_combined$cell_type)
+
+this_genes_index <- which(rownames(this_combined) %in% this_genes)
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+#mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat))) / rowSds(mat)
+
+mat <- mat[this_genes, ]
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+pdf(
+  paste0("../figure/heatmap_avg_selected_ct_top5.pdf"),
+  width = 8,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+```
+
+# Heat by cells selected CT x top5
+
+```{r}
+
+this_genes <- cts_markers %>%
+  group_by(cluster) %>%
+  arrange(cluster) %>%
+  top_n(5, avg_log2FC) %>%
+  pull(gene) %>%
+  unique()
+
+
+this_combined <- selected_combined
+
+DefaultAssay(this_combined) <- "RNA"
+
+#this_combined <- ScaleData(this_combined, verbose = F)
+Idents(this_combined) <- as.factor(this_combined$cell_type)
+
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(11,"RdBu"))(256)
+
+
+pdf(
+  paste0("../figure/heatmap_cells_selected_ct_top5.pdf"),
+  width = 8,
+  height = 10
+)
+
+print(DoHeatmap(this_combined, features = this_genes) + scale_fill_gradientn(colours = rev(mapal)))
+dev.off()
+```
+
+
+# DEG heatmap on same day, same CT
+
+day 30
+
+"Atrial cardiomyocytes"
+"Ventricular cardiomyocytes"
+
+```{r}
+
+this_day <- 'day5'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+for(this_file in this_files) {
+  this_combined <-  qs::qread(paste0("../integration/",this_day,"_harmony.qsave"))
+  DefaultAssay(this_combined) <- "RNA"
+  cts_markers <-
+    read.csv(paste0("../result/deg/", this_day, "/",this_file)) 
+  
+  top_up <- cts_markers %>%
+    top_n(20, avg_log2FC) %>%
+    pull(gene)
+  top_down <- cts_markers %>%
+    top_n(-20, avg_log2FC) %>%
+    pull(gene)
+  
+  this_genes <- c(top_up, top_down)
+  
+  mapal <- colorRampPalette(RColorBrewer::brewer.pal(11, "RdBu"))(256)
+  
+  pdf(
+    paste0(
+      "../figure/heatmap_",this_day,"_top20_by_cell_",this_file,".pdf"
+    ),
+    width = 8,
+    height = 10
+  )
+  
+  Idents(this_combined) <- this_combined$orig.ident
+  print(
+    DoHeatmap(this_combined, features = this_genes) + scale_fill_gradientn(colours = rev(mapal))
+  )
+  dev.off()
+}
+
+
+
+```
+
+## D5 cardiac mesoderm, selected genes
+
+```{r}
+
+this_day <- 'day5'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+
+  this_combined <-  qs::qread(paste0("../integration/",this_day,"_harmony.qsave"))
+  DefaultAssay(this_combined) <- "RNA"
+  cts_markers <-
+    read.csv(paste0("../result/deg/", this_day, "/",this_file)) 
+  
+  top_up <- cts_markers %>%
+    top_n(20, avg_log2FC) %>%
+    pull(gene)
+  top_down <- cts_markers %>%
+    top_n(-20, avg_log2FC) %>%
+    pull(gene)
+  
+  this_genes <- c("GATA6","MEF2A","TBX5","HAND1","ISL1","HAND2","PCNA","CDC6","CCND1","CCNB1","CCNB2","CDK4")
+  
+  mapal <- colorRampPalette(RColorBrewer::brewer.pal(11, "RdBu"))(256)
+  
+  pdf(
+    paste0(
+      "../figure/heatmap_",this_day,"_selected_by_cell_",this_file,".pdf"
+    ),
+    width = 8,
+    height = 5
+  )
+  
+  Idents(this_combined) <- this_combined$orig.ident
+  print(
+    DoHeatmap(this_combined, features = this_genes) + scale_fill_gradientn(colours = rev(mapal))
+  )
+  dev.off()
+
+
+  FeaturePlot(this_combined, features = "PCNA")
+
+
+```
+
+
+
+# Heat by avg selected CT x top20
+
+```{r}
+
+Idents(combined) <- combined$cell_type
+this_combined <- subset(combined, idents = c("Atrial cardiomyocytes"))
+Idents(this_combined) <- this_combined$orig.ident
+DefaultAssay(this_combined) <- "RNA"
+#cts_markers <- FindMarkers(this_combined, ident.1 = "N1KO30","Con30")
+
+top_up <- cts_markers %>%
+  rownames_to_column("gene") %>%
+  top_n(20, avg_log2FC) %>%
+  pull(gene)
+top_down <- cts_markers %>%
+  rownames_to_column("gene") %>%
+  top_n(-20, avg_log2FC) %>%
+  pull(gene)
+
+this_genes <- c(top_up, top_down)
+
+
+this_genes_index <- which(rownames(this_combined) %in% this_genes)
+
+mat <-
+  AverageExpression(this_combined, slot = "data")$RNA[this_genes_index, ]
+mat <- as.matrix(mat)
+
+mat <- log1p(mat)
+mat <- (mat - as.numeric(rowMeans(mat)))
+
+mat <- mat[this_genes, ]
+
+color_sequence <- seq(min(mat), max(mat), length = 3) / 1
+color_fun = colorRamp2(color_sequence, c("#3266AD", "white", "#B12424"), space = "RGB")
+
+
+ht1 <- Heatmap(
+  mat,
+  show_column_names = T,
+  cluster_rows = F,
+  show_row_names = T,
+  row_km = NULL,
+  show_column_dend = F,
+  col = color_fun,
+  heatmap_legend_param = list(
+    title = "Relative\nexpression",
+    at = c(min(mat), 0,  max(mat)),
+    labels = c("low", "", "high")
+  ),
+  column_order = 1:ncol(mat),
+  column_names_rot = 30
+)
+
+
+pdf(
+  paste0("../figure/heatmap_day30_Atrial_cardiomyocytes_top20_by_avg.pdf"),
+  width = 8,
+  height = 8
+)
+
+print(draw(ht1, padding = unit(c(0, 30, 0, 0), "mm")))
+dev.off()
+
+```
+
+## Volcano
+
+```{r}
+
+p1 <- EnhancedVolcano(
+  cts_markers,
+  lab = rownames(cts_markers),
+  x = 'avg_log2FC',
+  y = 'p_val_adj',
+  selectLab = c(top_up, top_down),
+  pCutoff = 0.05,
+  FCcutoff = 0.25,
+  drawConnectors = TRUE
+)
+
+pdf(
+  paste0("../figure/volcano_day30_Atrial_cardiomyocytes_ko_vs_wt.pdf"),
+  width = 8,
+  height = 8
+)
+print(p1)
+dev.off()
+
+
+```

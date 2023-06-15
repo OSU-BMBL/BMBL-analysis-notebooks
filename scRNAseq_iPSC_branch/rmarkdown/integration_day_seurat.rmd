@@ -1,0 +1,118 @@
+---
+title: "Data integration by days"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(error = FALSE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(harmony)
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("integration_day_seurat.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+
+
+
+```
+
+# Dimension reduction
+
+```{r}
+dir.create("../integration")
+
+table(combined$sample)
+
+days <- c("5", "8", "10", "14")
+
+i = "5"
+Idents(combined) <- combined$sample
+for(i in days) {
+  this_days <- c(paste0("HG Day", i), paste0("Control Day", i))
+  
+  #obj1 <- qs::qread(paste0("../sample_obj/Control Day", i, "_processed.qsave"))
+  #obj2 <- qs::qread(paste0("../sample_obj/HG Day", i, "_processed.qsave"))
+  
+  #combined_qc <- merge(obj1, obj2)
+  
+  combined_qc <- subset(combined, idents = this_days)
+  DefaultAssay(combined_qc) <- "RNA"
+  combine.list <- SplitObject(combined_qc, split.by = "orig.ident")
+  #combine.list <- lapply(
+  #  X = combine.list,
+  #  FUN = function(x) {
+  #    x <- NormalizeData(x)
+  #    x <-
+  #      FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+  #  }
+  #)
+  combine.anchors <-
+    FindIntegrationAnchors(object.list = combine.list, dims = 1:20)
+  combined_qc <-
+    IntegrateData(anchorset = combine.anchors, dims = 1:20)
+  DefaultAssay(combined_qc) <- "integrated"
+  combined_qc <- ScaleData(combined_qc, verbose = FALSE)
+  combined_qc <- RunPCA(combined_qc, npcs = 20, verbose = FALSE)
+  combined_qc <-
+    RunUMAP(
+      combined_qc,
+      reduction = "pca",
+      dims = 1:20,
+      verbose = FALSE
+    )
+  combined_qc <-
+    FindNeighbors(
+      combined_qc,
+      reduction = "pca",
+      dims = 1:20,
+      verbose = FALSE
+    )
+  combined_qc <-
+    FindClusters(combined_qc, resolution = 0.2, verbose = FALSE)
+
+  DefaultAssay(combined_qc) <- "RNA"
+  Idents(combined_qc) <- combined_qc$sample
+  #this_combind <- subset(combined, idents = this_days)
+  #sub_combined <-
+  #  AddMetaData(sub_combined, this_combind$cell_type, col.name = "cell_type")
+  qs::qsave(combined_qc, paste0("../integration/day", i, "_seurat.qsave"))
+}
+
+```
+
+
+# Session info
+
+```{r,echo=F,eval=T,message=F,warning=F}
+sessionInfo()
+```

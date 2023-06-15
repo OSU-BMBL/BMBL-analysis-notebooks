@@ -1,0 +1,211 @@
+---
+title: "2. Quality control"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE)
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(scater)
+
+```
+
+
+# Set working dir
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+here::i_am("2_quality_control.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data 
+
+
+```{r,echo=F,eval=T,message=F,warning=F}
+combined <- qs::qread('combined_raw.qsave')
+
+```
+
+# Number of cells of the original data
+
+```{r,echo=F,eval=T,message=F,warning=F}
+table(combined$orig.ident)
+
+```
+
+
+
+
+
+```{r,echo=F,eval=T,message=F,warning=F}
+
+rb.genes <-
+  rownames(combined)[grep("^RP[SL][[:digit:]]", rownames(combined))]
+percent.ribo <-
+  colSums(combined[rb.genes, ]) / Matrix::colSums(combined) * 100
+combined <-
+  AddMetaData(combined, percent.ribo, col.name = "percent.ribo")
+
+```
+
+# Mitochondrial genes 
+
+```{r,echo=F,eval=T,message=F,warning=F}
+
+combined <- PercentageFeatureSet(combined, "^MT-", col.name = "percent.mito")
+
+mito_genes <- rownames(combined)[grep("^MT-", rownames(combined))]
+
+```
+
+# Plot QC
+
+Citing from “Simple Single Cell” workflows (Lun, McCarthy & Marioni, 2017): “High proportions are indicative of poor-quality cells (Islam et al. 2014; Ilicic et al. 2016), possibly because of loss of cytoplasmic RNA from perforated cells. The reasoning is that mitochondria are larger than individual transcript molecules and less likely to escape through tears in the cell membrane.”
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=12, fig.width=8}
+VlnPlot(
+  combined,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 2,
+  pt.size = 0.1
+)
+```
+
+# Filter cells and plot after QC
+
+During the inital analysis, we found many cells of interest would be lost in Con30 sample if we set the mitocondrial genes percentage cutoff to 15%. Thus, we started over and set the cutoff for Con30 to 25%.
+
+```{r,echo=F,eval=T,message=F,warning=F}
+
+
+combine_mito15 <- subset(
+  combined,
+  subset = percent.ribo < 40 &
+    percent.mito < 15 &
+    orig.ident %in% c('Con0', 'Con2', 'Con5', 'Con10', 'Con14', 'N1KO0', 'N1KO2', 'N1KO5', 'N1KO10', 'N1KO14', 'N1KO30')
+    )
+
+combine_mito25 <- subset(
+  combined,
+  subset = percent.ribo < 40 &
+    percent.mito < 25 &
+    orig.ident == c('Con30')
+    )
+
+combined_qc <- merge(combine_mito15, combine_mito25)
+
+```
+
+Similar to [Single cell transcriptomic analysis of cardiac differentiation from human PSCs reveals HOPX-dependent cardiomyocyte maturation](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6220122/).
+
+We filtered outlier cells which were outside the range of 5x median absolute deviation (MAD) of the in that cell due to sequencing depth or cell conditions.
+
+Finally, these cells are removed:
+
+- Cells with above 40% ribosomal reads
+
+- Cells with above 15% or 25% mitochondrial reads
+
+- Cells detected less than 200 genes
+
+- Cells with total counts outside 5x MAD
+
+These genes were removed: 
+
+- Genes detected in fewer than 3 cells
+
+```{r,echo=F,eval=T,message=F,warning=F}
+
+# MAD filtering
+count.mad.lower <-
+  isOutlier(combined_qc$nCount_RNA,
+            nmads = 5,
+            log = T,
+            type = "lower")
+
+count.mad.higher <-
+  isOutlier(combined_qc$nCount_RNA, nmads = 5, type = "higher")
+
+combined_qc <-
+  AddMetaData(combined_qc, count.mad.lower, col.name = "count.mad.lower")
+
+combined_qc <-
+  AddMetaData(combined_qc, count.mad.higher, col.name = "count.mad.higher")
+
+combined_qc <-
+  subset(
+    combined_qc,
+    subset = 
+      count.mad.lower == F &
+      count.mad.higher == F 
+  )
+```
+
+
+
+# Number of cells 
+
+```{r,echo=F,eval=T,message=F,warning=F}
+print(paste0("before QC: ", ncol(combined)))
+table(combined$orig.ident)
+
+print(paste0("after QC: ", ncol(combined_qc)))
+table(combined_qc$orig.ident)
+```
+
+# Plot data after QC
+
+```{r,echo=F,eval=T,message=F,warning=F, fig.height=12, fig.width=8}
+VlnPlot(
+  combined_qc,
+  features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"),
+  group.by = "orig.ident",
+  ncol = 2,
+  pt.size = 0.1
+)
+```
+
+# Cell-cycle scores
+
+We here perform cell cycle scoring. To score a gene list, the algorithm calculates the difference of mean expression of the given list and the mean expression of reference genes. To build the reference, the function randomly chooses a bunch of genes matching the distribution of the expression of the given list. Cell cycle scoring adds three slots in data, a score for S phase, a score for G2M phase and the predicted cell cycle phase.
+
+```{r,echo=F,eval=T,message=F,warning=F}
+combined_qc <- NormalizeData(combined_qc)
+combined_qc <- CellCycleScoring(object = combined_qc, g2m.features = cc.genes$g2m.genes, 
+                              s.features = cc.genes$s.genes)
+  
+VlnPlot(combined_qc, features = c("S.Score", "G2M.Score"), group.by = "orig.ident", 
+        ncol = 2, pt.size = 0.1)
+
+```
+
+
+```{r,echo=F,eval=T,message=F,warning=F}
+qs::qsave(combined_qc, "combined_qc.qsave") 
+
+```
+
+# Session info
+
+```{r,echo=F,eval=T,message=F,warning=F}
+sessionInfo()
+```
+

@@ -1,0 +1,940 @@
+---
+title: "Figures: pathway dotplot"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(ComplexHeatmap)
+library(data.table)
+library(circlize)
+library(RColorBrewer)
+library(GSVA)
+library(ggpubr)
+library(matrixStats)
+library(EnhancedVolcano)
+library(enrichR)
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
+```{r}
+source("functions.R")
+dir.create('../sample_obj', showWarnings = F)
+combined <- qs::qread('combined.qsave')
+
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$orig.ident
+
+sample_color <-
+  as.character(glasbey.colors()[-1])
+
+cell_type_color <-
+  as.character(palette36.colors(36)[-2])
+two_color <- c('#C0C0C0', '#B00D23')
+
+```
+
+
+# Setup
+
+```{r}
+all_ct <- levels(as.factor(combined$cell_type))
+all_cell_type_cols <- cell_type_color[1:length(all_ct)]
+names(all_cell_type_cols) <- all_ct
+
+all_samples <- levels(as.factor(combined$orig.ident))
+all_sample_cols <- sample_color[1:length(all_samples)]
+names(all_sample_cols) <- all_samples
+
+print(all_cell_type_cols)
+print(all_sample_cols)
+print(two_color)
+
+```
+
+```{r, include=F}
+Idents(combined) <- combined$orig.ident
+combined1 <- subset(combined, idents = c("Con0","Con2","N1KO0","N1KO2"))
+
+table(combined$orig.ident)
+```
+
+
+## Pathway dot plot
+
+
+```{r}
+library(enrichR)
+dbs <-
+  c(
+    "GO_Molecular_Function_2018",
+    "GO_Cellular_Component_2018",
+    "GO_Biological_Process_2018",
+    "KEGG_2019_Human"
+  )
+
+```
+
+
+## D2-mesoderm
+
+```{r}
+
+this_day <- 'day2'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_file <- this_files[2]
+
+this_up_terms <-
+  c(
+    'mitochondrial ATP synthesis coupled electron transport',
+    'regulation of angiogenesis',
+    'mesoderm formation',
+    'epithelium development',
+    'endoderm formation'
+  )
+
+this_down_terms <-
+  c(
+    'Ribosome biogenesis',
+    'rRNA metabolic process',
+    'peptide biosynthesis process',
+    'SRP-dependent cotranslational protein targeting to membrane',
+    'HIF-1 signaling'
+  )
+
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms <- this_terms[c(2, 9, 12, 13, 14), ]
+
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_up_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- rbind(enriched_combined$GO_Biological_Process_2018, enriched_combined$KEGG_2019_Human)
+this_selected_terms <- this_terms[c(2, 4, 9, 11, 1907), ]
+
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+
+
+## D5-cardiac mesoderm
+
+```{r}
+
+this_day <- 'day5'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+
+this_up_terms <-
+  c(
+    '^respiratory electron transport chain',
+    '^heart development',
+    '^Circulatory system development',
+    '^regulation of cell migration',
+    '^cardiac ventricle morphogenesis'
+  )
+
+this_down_terms <-
+  c(
+    '^Ribosome biogenesis',
+    '^DNA replication',
+    '^DNA repair',
+    '^G1/S transition of mitotic cell cycle',
+    '^Mitotic cell cycle phase transition'
+  )
+
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(2, 4, 5, 24, 11), ]
+
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 19, 21, 23, 34), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+
+## D5-SHF
+
+```{r}
+
+this_day <- 'day5'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[3]
+
+this_up_terms <-
+  c(
+    '^Cardiac ventricle morphogenesis',
+    '^heart development',
+    '^Circulatory system development',
+    '^Cardiac right ventricle morphogenesis',
+    '^Endocardial cushion development'
+  )
+
+this_down_terms <-
+  c(
+    '^Ribosome biogenesis',
+    '^peptide biosynthetic process',
+    '^Regulation of apoptotic process',
+    '^SRP-dependent cotranslational protein targeting to membrane',
+    '^Regulation of cell cycle G2/M phase transition',
+    'HIF-1 signaling pathway'
+  )
+
+
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 3, 7, 25, 26), ]
+
+
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- rbind(enriched_combined$GO_Biological_Process_2018, enriched_combined$KEGG_2019_Human)
+this_selected_terms_down <- this_terms[c(9, 11, 53, 2, 61, 335), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D10 Epicardial progenitors**
+
+
+```{r}
+
+this_day <- 'day10'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[2]
+
+this_up_terms <-
+  c(
+    '^Mitotic cytokinesis',
+    '^Mitotic spindle organization',
+    '^Regulation of cell proliferation',
+    '^Microtubule cytoskeleton organization',
+    '^Circulatory system development',
+    '^G2/M transition of mitotic cell cycle'
+  )
+
+this_down_terms <-
+  c(
+    '^mRNA splicing, via spliceosome',
+    '^negative regulation of gene expression',
+    '^mRNA processing',
+    '^positive regulation of cell proliferation',
+    '^regulation of stem cell differentiation'
+  )
+
+print(paste0(this_dir, this_file))
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(2, 3, 4, 8, 18), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 2, 7, 64, 82), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_all_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D10 FHF progenitor**
+
+```{r}
+
+this_day <- 'day10'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_file <- this_files[3]
+
+this_up_terms <-
+  c(
+    '^Extracellular matrix organization',
+    '^Heart development',
+    '^Mitochondrial ATP synthesis coupled electron transport',
+    '^Cardiac ventricle morphogenesis',
+    '^Regulation of cell proliferation'
+  )
+
+this_down_terms <-
+  c(
+'^ncRNA processing',
+'^ribosome biogenesis',
+'^SRP-dependent cotranslational protein targeting to membrane',
+'^Protein targeting to ER'
+  )
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 2, 3, 5, 10), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(2, 18, 3, 5), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_all_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+
+**D10 SHF progenitor**
+
+```{r}
+
+this_day <- 'day10'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_file <- this_files[4]
+
+this_up_terms <-
+  c(
+    '^Mitochondrial ATP synthesis coupled electron transport',
+    '^Muscle contraction',
+    '^Myofibril assembly',
+    '^Cardiac muscle tissue morphogenesis',
+    '^Heart development',
+    'Ventricular cardiac muscle tissue morphogenesis'
+  )
+
+this_down_terms <-
+  c(
+    '^SRP-dependent cotranslational protein targeting to membrane',
+    '^mRNA splicing',
+    '^regulation of mitotic cell cycle phase',
+    '^mitotic sister chromatin segregation',
+    'G2/M transition of mitotic cell cycle',
+    'DNA repair'
+  )
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(2, 4, 8, 9, 20, 21), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(2, 19, 21, 45, 62), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_all_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D10 early committed CMs**',
+
+```{r}
+
+this_day <- 'day10'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+
+this_up_terms <-
+  c(
+'^Ribosome biogenesis',
+'^Cardiac muscle contraction',
+'^Ventricular cardiac muscle tissue morphogenesis',
+'^Muscle filament sliding',
+'^Myofibril assembly'
+  )
+
+this_down_terms <-
+  c(
+'^mRNA splicing, via spliceosome',
+'^mitotic cell cycle phase transition',
+'^chromatin remodeling',
+'^G2/M transition of mitotic cell cycle',
+'^DNA replication'
+  )
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(12, 25, 31, 19, 37), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 21, 56, 58, 72), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+
+**D14 Early CMs**',
+
+```{r}
+
+this_day <- 'day14'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[2]
+
+this_up_terms <-
+  c(
+'^Extracellular matrix organization',
+'^Regulation of cell migration',
+'^Heart development',
+'^Regulation of angiogenesis',
+'^Regulation of apoptotic process',
+'^Regulation of cell proliferation',
+'^Wnt signaling pathway',
+'^Ventricular septum development'
+  )
+
+this_down_terms <-
+  c(
+'^Muscle contraction',
+'^Muscle filament sliding',
+#'^Microtubule cytoskeleton organization',
+#'^Mitotic sister chromatid segregation',
+#'^Mitotic spindle organization',
+'^Regulation of mitotic cell cycle phase transition',
+#'^Mitotic cytokinesis',
+'^Myofibril assembly'
+  )
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 6, 2, 24, 9, 8, 49, 163), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 3, 187, 14), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D14 Cardiac fibroblast**',
+
+```{r}
+
+this_day <- 'day14'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+
+this_up_terms <-
+  c(
+'^Extracellular matrix organization',
+'^Regulation of cell proliferation',
+'^Circulatory system development',
+'^Ventricular septum development',
+'^Cardiac right ventricle morphogenesis',
+'^Outflow tract septum morphogenesis'
+#'^Heart trabecular morphogenesis'
+  )
+
+this_down_terms <-
+  c(
+'^mRNA splicing',
+'^mitotic sister chromatid segregation',
+'^mitotic cell cycle phase transition',
+'^Mitotic cytokinesis',
+'^Regulation of cell cycle G2/M phase',
+'^Centromere complex assembly'
+  )
+
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 7, 8, 15, 26, 33 ), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(2, 9, 10, 24, 42, 36), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D30 Atrial CMs N1KO vs WT**',
+
+```{r}
+
+this_day <- 'day30'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[1]
+
+this_up_terms <-
+  c(
+'^Mitochondrial ATP synthesis coupled electron transport',
+'^Negative regulation of mitotic cell cycle phase transition',
+'^Wnt signaling pathway, planar cell polarity pathway',
+'^Mitochondrial translational elongation',
+'^Cellular response to hypoxia',
+'^Muscle contraction'
+  )
+
+this_down_terms <-
+  c(
+'^mRNA splicing, via splicosome',
+'^RNA metabolic process',
+'^Chromatin remodeling',
+'^Regulation of cell cycle',
+#'^Regulation of cell response to stress',
+'^Mitotic sister chromatid cohesion'
+  )
+
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 14, 13, 19, 17, 60), ]
+
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms <- this_terms[c(3, 7, 25, 37, 57), ]
+
+this_selected_terms<- rbind(this_selected_terms_up, this_selected_terms_down)
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D30 Ventricular CMs N1KO vs WT**'
+
+```{r}
+
+this_day <- 'day30'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[4]
+
+this_up_terms <-
+  c(
+'^Extracellular matrix organization',
+'^Heart development',
+'^Cardiac right ventricle morphogenesis',
+'^Cardiac atrium morphogenesis',
+'^Atrial septum morphogenesis',
+'^Outflow tract septum morphogenesis',
+'^Atrioventricular valve development'
+  )
+
+this_down_terms <-
+  c(
+'^SRP-dependent cotranslational protein targeting to membrane',
+'^Ribosome biogenesis',
+'^Respiratory electron transport chain',
+'^Cardiac muscle contraction',
+'^Ventricular cardiac muscle tissue development'
+  )
+
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 3, 186, 137, 57, 102, 838), ]
+
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 14, 20, 41, 34), ]
+
+
+this_selected_terms<- rbind(this_selected_terms_up, this_selected_terms_down)
+
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+
+```
+
+**D30 Pacemaker N1KO vs WT**',
+
+```{r}
+
+this_day <- 'day30'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[3]
+
+this_up_terms <-
+  c(
+'^Mitochondrial ATP synthesis coupled electron transport',
+'^Muscle contraction',
+'^Mitochondrial translational elongation',
+'^Heart development',
+'^Cellular response to stress'
+  )
+
+this_down_terms <-
+  c(
+'^mRNA splicing, via spliceosome',
+'^RNA processing',
+'^mRNA transport',
+'^translation',
+'^chromatin remodeling'
+  )
+
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(1, 9, 12, 27, 454), ]
+
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(2, 1, 17, 25, 31), ]
+
+this_selected_terms<- rbind(this_selected_terms_up, this_selected_terms_down)
+print(this_selected_terms)
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+
+```
+
+**D30 Cardiac fibroblasts N1KO vs WT**',
+
+```{r}
+
+this_day <- 'day30'
+this_dir <- paste0("../result/deg/", this_day, "/")
+this_files <- list.files(this_dir, pattern = "KO_vs_Con.csv")
+this_files
+this_file <- this_files[2]
+
+this_up_terms <-
+  c(
+'^Mitochondrial ATP synthesis coupled electron transport',
+'^Ribosome biogenesis',
+'^Extracellular matrix organization',
+'^Regulation of apoptotic process',
+'^Negative regulation of mitotic cell cycle'
+  )
+
+this_down_terms <-
+  c(
+'^mRNA splicing, via spliceosome',
+'^RNA processing',
+'^mRNA transport',
+'^chromatin remodeling',
+'^regulation of cell cycle',
+'^DNA repair'
+  )
+
+
+
+paste0(this_dir, this_file)
+cts_markers <- read.csv(paste0(this_dir, this_file))
+this_base <- tools::file_path_sans_ext(this_file)
+this_up <- cts_markers %>%
+  filter(avg_log2FC > 0) %>%
+  pull(gene)
+this_down <- cts_markers %>%
+  filter(avg_log2FC < 0) %>%
+  pull(gene)
+
+# Up
+enriched_combined <- enrichr(this_up, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_up <- this_terms[c(8, 14, 6, 20, 21), ]
+
+# Down
+enriched_combined <- enrichr(this_down, dbs)
+this_terms <- enriched_combined$GO_Biological_Process_2018
+this_selected_terms_down <- this_terms[c(1, 3, 11, 26, 96, 58), ]
+
+this_selected_terms <- rbind(this_selected_terms_up, this_selected_terms_down)
+
+pdf(
+  paste0("../figure/", this_day, "_down_", this_base, ".pdf"),
+  width = 13,
+  height = 7
+)
+print(enrichment_dotplot(this_selected_terms))
+dev.off()
+```

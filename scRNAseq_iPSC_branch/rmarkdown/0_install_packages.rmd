@@ -1,0 +1,59 @@
+---
+title: "0 install packages"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+
+bioc_packages <- c("scater", "EnhancedVolcano")
+cran_packages <- c(
+  "hdf5r",
+  "Seurat",
+  "cowplot",
+  "dplyr",
+  "ggplot2",
+  "patchwork",
+  "stringr",
+  "here",
+  "qs",
+  "tidyverse",
+  "Polychrome",
+  "RColorBrewer",
+  "plotly"
+)
+
+github_packages <- c("SeuratWrappers")
+
+bioc_np <-
+  bioc_packages[!(bioc_packages %in% installed.packages()[, "Package"])]
+cran_np <-
+  cran_packages[!(cran_packages %in% installed.packages()[, "Package"])]
+if (!require("BiocManager"))
+  install.packages("BiocManager")
+if (length(cran_np)) {
+  install.packages(cran_np)
+}
+if (length(bioc_np)) {
+  BiocManager::install(bioc_np)
+}
+
+
+if (!"SeuratWrappers" %in% installed.packages()[, "Package"]) {
+  remotes::install_github('satijalab/seurat-wrappers')
+}
+
+if (!"SeuratDisk" %in% installed.packages()[, "Package"]) {
+  remotes::install_github("mojaveazure/seurat-disk")
+}
+
+```
+
+
