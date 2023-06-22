@@ -1,5 +1,5 @@
 ---
-title: "Differential gene expression analysis"
+title: "DEG"
 author: "Cankun Wang"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
@@ -8,182 +8,266 @@ output:
     toc_float: true
     number_sections: true
     df_print: paged
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(error = FALSE)
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+
 library(Seurat)
 library(cowplot)
-library(dplyr)
 library(ggplot2)
 library(patchwork)
 library(here)
 library(qs)
 library(Polychrome)
+library(RColorBrewer)
 library(tidyverse)
 library(enrichR)
+library(fgsea)
+library(data.table)
+#library(EnhancedVolcano)
+  
 ```
 
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::i_am("5_deg.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load data
+
 ```{r}
+source("functions.R")
+combined <- qs::qread('combined_by_day.qsave')
+all_gene_sets <- qs::qread("all_gene_sets_human.qsave")
 
 
-combined <- qs::qread('combined.qsave')
+DefaultAssay(combined) <- "RNA"
 
-
-# Note: remember to use the correct species
 dbs <-
   c(
-    "GO_Molecular_Function_2018",
-    "GO_Cellular_Component_2018",
-    "GO_Biological_Process_2018",
-    "KEGG_2019_Human"
+    "GO_Molecular_Function_2023",
+    "GO_Cellular_Component_2023",
+    "GO_Biological_Process_2023",
+    "KEGG_2021_Human"
   )
 
-source("../common/functions.R")
 
-
-# Select the RNA counts slot to be the default assay
-DefaultAssay(combined) <- "RNA"
-
-Idents(combined) <- combined$orig.ident
-levels(Idents(combined))
-```
-
-# DEG: stim vs ctrl by each cell type
-
-```{r}
-DefaultAssay(combined) <- "RNA"
-dir.create("./result")
-dir.create(paste0("./result/deg"))
-dir.create(paste0("./result/deg/stim_vs_ctrl"))
-
-Idents(combined) <- combined$orig.ident
-
-this_clusters <- levels(as.factor(combined$cell_type))
-
-i = 1
-ident1 <- "stim_raw_feature_bc_matrix"
-ident2 <- "ctrl_raw_feature_bc_matrix"
-comparison_name <- "stim_vs_ctrl"
-
-
-for (i in seq_along(this_clusters)) {
-  this_cluster <- this_clusters[i]
-  
-  Idents(combined) <- combined$cell_type
-  this_combined <-
-    subset(combined, ident = this_cluster)
-  
-  Idents(this_combined) <- this_combined$orig.ident
-  DefaultAssay(this_combined) <- "RNA"
-  
-  
-  dir.create(paste0("./result/deg/",
-                    comparison_name,
-                    "/",
-                    this_cluster))
-  
-  RESULT_DIR <-
-    paste0(paste0("./result/deg/",
-                  comparison_name,
-                  "/",
-                  this_cluster,
-                  "/"))
-  
-  cts_markers <-
-    FindMarkers(this_combined,
-                ident.1 = ident1,
-                ident.2 = ident2) %>%
-    rownames_to_column("gene") %>%
-    filter(p_val_adj < 0.05) %>%
-    write_csv(paste0(RESULT_DIR, "deg.csv"))
-  
-  this_up <- cts_markers %>%
-    filter(avg_log2FC > 0) %>%
-    pull(gene)
-  this_down <- cts_markers %>%
-    filter(avg_log2FC < 0) %>%
-    pull(gene)
-  
-  ### UP
-  if (length(this_up) > 10) {
-    enriched_combined <- enrichr(this_up, dbs)
-    enriched_combined <- lapply(enriched_combined, function(x) {
-      x$Overlap <- paste0(" ", x$Overlap)
-      return(x[, c(-5,-6)])
-    })
-    
-    write.csv(
-      enriched_combined$GO_Molecular_Function_2018,
-      paste0(RESULT_DIR, "GO_MF_up.csv")
-    )
-    write.csv(
-      enriched_combined$GO_Cellular_Component_2018,
-      paste0(RESULT_DIR, "GO_CC_up.csv")
-    )
-    write.csv(
-      enriched_combined$GO_Biological_Process_2018,
-      paste0(RESULT_DIR, "GO_BP_up.csv")
-    )
-    write.csv(enriched_combined$KEGG_2019_Human,
-              paste0(RESULT_DIR, "KEGG_up.csv"))
-  }
-  ### DOWN
-  if (length(this_down) > 10) {
-    enriched_combined <- enrichr(this_down, dbs)
-    enriched_combined <- lapply(enriched_combined, function(x) {
-      x$Overlap <- paste0(" ", x$Overlap)
-      return(x[, c(-5,-6)])
-    })
-    
-    write.csv(
-      enriched_combined$GO_Molecular_Function_2018,
-      paste0(RESULT_DIR, "GO_MF_down.csv")
-    )
-    write.csv(
-      enriched_combined$GO_Cellular_Component_2018,
-      paste0(RESULT_DIR, "GO_CC_down.csv")
-    )
-    write.csv(
-      enriched_combined$GO_Biological_Process_2018,
-      paste0(RESULT_DIR, "GO_BP_down.csv")
-    )
-    write.csv(enriched_combined$KEGG_2019_Human,
-              paste0(RESULT_DIR, "KEGG_down.csv"))
-    
-  }
-}
-
+dir.create('../result')
+dir.create('../result/deg')
 
 ```
 
+# DEG, hlhs vs control
 
-
-# Cell type specific genes
 
 ```{r}
-DefaultAssay(combined) <- "RNA"
-dir.create(paste0("./result/deg"))
-dir.create(paste0("./result/deg/cell_type_specific_genes"))
+days <- c("5", "8", "10", "14", "30")
 
-Idents(combined) <- combined$cell_type
-
-# 30 mins
-cts_markers <- FindAllMarkers(combined)
-
-cts_markers %>%
-  write.csv("./result/deg/cell_type_specific_genes/cluster_specific_genes_combined.csv")
-
-i = 1
-for (i in seq_along(levels(cts_markers$cluster))) {
-  this_cluster <- levels(cts_markers$cluster)[i]
-  dir.create(paste0("./result/deg/cell_type_specific_genes/",this_cluster))
-  cts_markers %>%
-    filter(cluster == this_cluster) %>%
-    write_csv(paste0("./result/deg/cell_type_specific_genes/",this_cluster,"/cell_type_specific_genes.csv"))
+#day <- "5"
+for (day in days) {
+  # Create new directories for each day to store results
+  dir.create(paste0("../result/deg/day", day))
+  # Define the result directory path for the current day
+  RESULT_DIR <- paste0("../result/deg/day", day, "/")
+  
+  # Set the ident to the sample in the combined data
+  Idents(combined) <- combined$sample
+  # Subset the data for the current day and control and HG samples
+  day_combined <- subset(combined, ident = c(paste0("Control Day", day), paste0("HLHS Day", day)))
+  
+  # Get cell types in the current combined data
+  this_cell_type <- levels(as.factor(day_combined$cell_type))
+  
+  i = 1
+  for (i in seq_along(this_cell_type)) {
+    # Set cell type for the current iteration
+    this_ct <- this_cell_type[i]
+    # Set the identity to the cell_type in the day_combined object
+    Idents(day_combined) <- day_combined$cell_type
+    # Subset the day_combined data based on the current cell type
+    this_combined <- subset(day_combined, ident = this_ct)
+    
+    # Set the identity to the sample in the this_combined object
+    Idents(this_combined) <- this_combined$sample
+    # Set the default assay in this_combined object to "RNA"
+    DefaultAssay(this_combined) <- "RNA"
+    
+    # Checks if two different samples are there in the dataset and each sample has more than 3 cells
+    check_analysis <- length(which(as.numeric(table(
+      this_combined$sample
+    )) > 0)) == 2 & length(which(as.numeric((
+      table(this_combined$sample)
+    ) > 3) > 0)) == 2
+    
+    # Confirm both samples have same cell type
+    if (check_analysis) {
+      
+      # fgsea enrichment
+      cts_fc <- FoldChange(this_combined,
+                           ident.1 = paste0("HLHS Day", day),
+                           ident.2 = paste0("Control Day", day))
+      
+      res_gsea <- cts_fc %>%
+        rownames_to_column("gene") %>%
+        dplyr::select(gene, avg_log2FC) %>%
+        arrange(desc(avg_log2FC)) %>%
+        na.omit() %>%
+        distinct() %>%
+        group_by(gene) %>%
+        deframe() %>%
+        sort(decreasing = T)
+      
+      # GOBP
+      this_terms <- all_gene_sets %>%
+        filter(gs_cat == 'C5' & gs_subcat == 'GO:BP')
+      
+      m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
+      
+      fgseaRes <- fgsea(pathways = m_list,
+                        stats = res_gsea)
+      
+      fgseaResTidy <- fgseaRes %>%
+        as_tibble() %>%
+        dplyr::filter(padj < 0.1) %>%
+        arrange(desc(NES)) %>%
+        dplyr::select(-ES) %>%
+        arrange(padj, desc(NES))
+      
+      fwrite(
+        fgseaResTidy,
+        file = paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GSEA_GOBP.csv"),
+        sep = ",",
+        sep2 = c("", " ", "")
+      )
+      
+      # GSEA KEGG
+      this_terms <- all_gene_sets %>%
+        filter(gs_cat == 'C2' & gs_subcat == 'CP:KEGG')
+      
+      m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
+      
+      fgseaRes <- fgsea(pathways = m_list,
+                        stats = res_gsea)
+      
+      fgseaResTidy <- fgseaRes %>%
+        as_tibble() %>%
+        dplyr::filter(padj < 0.1) %>%
+        arrange(desc(NES)) %>%
+        dplyr::select(-ES) %>%
+        arrange(padj, desc(NES))
+      
+      fwrite(
+        fgseaResTidy,
+        file = paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GSEA_KEGG.csv"),
+        sep = ",",
+        sep2 = c("", " ", "")
+      )
+      
+      # DEG
+      cts_markers <-
+        FindMarkers(
+          this_combined,
+          ident.1 = paste0("HLHS Day", day),
+          ident.2 = paste0("Control Day", day)
+        ) %>%
+        rownames_to_column("gene") %>%
+        filter(p_val_adj < 0.05)
+      
+      avg_expr_deg <-
+        AverageExpression(this_combined, features = cts_markers$gene)$RNA %>%
+        as.data.frame() %>%
+        rownames_to_column("gene")
+      
+      cts_markers <- cts_markers %>%
+        left_join(avg_expr_deg, by = "gene") %>%
+        arrange(desc(avg_log2FC))
+      
+      cts_markers %>%
+        write_csv(paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con.csv"))
+      
+      this_up <- cts_markers %>%
+        filter(avg_log2FC > 0) %>%
+        pull(gene)
+      this_down <- cts_markers %>%
+        filter(avg_log2FC < 0) %>%
+        pull(gene)
+      
+      # filter DEG
+      if (length(this_up) > 10 &
+          length(this_down) > 10) {
+        top_up <- cts_markers %>%
+          top_n(10, avg_log2FC) %>%
+          pull(gene)
+        top_down <- cts_markers %>%
+          top_n(-10, avg_log2FC) %>%
+          pull(gene)
+        
+        
+        ### Enrichr: UP
+        if (length(this_up) > 10) {
+          enriched_combined <- enrichr(this_up, dbs)
+          enriched_combined <- lapply(enriched_combined, function(x) {
+            x$Overlap <- paste0(" ", x$Overlap)
+            return(x[, c(-5, -6)])
+          })
+          
+          write.csv(
+            enriched_combined$GO_Molecular_Function_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_MF_up.csv")
+          )
+          write.csv(
+            enriched_combined$GO_Cellular_Component_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_CC_up.csv")
+          )
+          write.csv(
+            enriched_combined$GO_Biological_Process_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_BP_up.csv")
+          )
+          write.csv(
+            enriched_combined$KEGG_2021_Human,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_KEGG_up.csv")
+          )
+        }
+        ### Enrichr: DOWN
+        if (length(this_down) > 10) {
+          enriched_combined <- enrichr(this_down, dbs)
+          enriched_combined <- lapply(enriched_combined, function(x) {
+            x$Overlap <- paste0(" ", x$Overlap)
+            return(x[, c(-5, -6)])
+          })
+          
+          write.csv(
+            enriched_combined$GO_Molecular_Function_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_MF_down.csv")
+          )
+          write.csv(
+            enriched_combined$GO_Cellular_Component_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_CC_down.csv")
+          )
+          write.csv(
+            enriched_combined$GO_Biological_Process_2023,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_BP_down.csv")
+          )
+          write.csv(
+            enriched_combined$KEGG_2021_Human,
+            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_KEGG_down.csv")
+          )
+        }
+      }
+    }
+  }
 }
 
 ```
