@@ -27,6 +27,7 @@ tmp/
 *.h5
 sample_obj/
 deg/
+.DS_Store
 
 ## Whitelist
 !figure_code/example_combined.qsave
