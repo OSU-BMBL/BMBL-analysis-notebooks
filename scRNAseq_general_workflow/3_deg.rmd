@@ -39,7 +39,7 @@ library(data.table)
 
 ```{r,,eval=T,message=F,warning=F,error=F}
 
-here::i_am("5_deg.rmd")
+here::i_am("3_deg.rmd")
 here::set_here()
 print(paste("Current working directory:", here::here()))
 
@@ -48,9 +48,9 @@ print(paste("Current working directory:", here::here()))
 # Load data
 
 ```{r}
-source("functions.R")
-combined <- qs::qread('combined_by_day.qsave')
-all_gene_sets <- qs::qread("all_gene_sets_human.qsave")
+source("../common/functions.R")
+combined <- qs::qread('./combined.qsave')
+all_gene_sets <- qs::qread("../RNAseq_workflow/all_gene_sets_human.qsave")
 
 
 DefaultAssay(combined) <- "RNA"
@@ -69,46 +69,43 @@ dir.create('../result/deg')
 
 ```
 
-# DEG, hlhs vs control
+# DEG, stimulation vs control
 
 
 ```{r}
-days <- c("5", "8", "10", "14", "30")
 
-#day <- "5"
-for (day in days) {
-  # Create new directories for each day to store results
-  dir.create(paste0("../result/deg/day", day))
-  # Define the result directory path for the current day
-  RESULT_DIR <- paste0("../result/deg/day", day, "/")
+  # Create new directories to store results
+  dir.create(paste0("../result/deg"))
+  # Define the result directory path 
+  RESULT_DIR <- paste0("../result/deg", "/")
   
   # Set the ident to the sample in the combined data
-  Idents(combined) <- combined$sample
-  # Subset the data for the current day and control and HG samples
-  day_combined <- subset(combined, ident = c(paste0("Control Day", day), paste0("HLHS Day", day)))
+  Idents(combined) <- combined$orig.ident
+  # Subset the data for the control and stim samples
+  combined <- subset(combined, ident = c(paste0("ctrl_raw_feature_bc_matrix"), paste0("stim_raw_feature_bc_matrix")))
   
   # Get cell types in the current combined data
-  this_cell_type <- levels(as.factor(day_combined$cell_type))
+  this_cell_type <- levels(as.factor(combined$cell_type))
   
   i = 1
   for (i in seq_along(this_cell_type)) {
     # Set cell type for the current iteration
     this_ct <- this_cell_type[i]
-    # Set the identity to the cell_type in the day_combined object
-    Idents(day_combined) <- day_combined$cell_type
-    # Subset the day_combined data based on the current cell type
-    this_combined <- subset(day_combined, ident = this_ct)
+    # Set the identity to the cell_type in the combined object
+    Idents(combined) <- combined$cell_type
+    # Subset the combined data based on the current cell type
+    this_combined <- subset(combined, ident = this_ct)
     
     # Set the identity to the sample in the this_combined object
-    Idents(this_combined) <- this_combined$sample
+    Idents(this_combined) <- this_combined$orig.ident
     # Set the default assay in this_combined object to "RNA"
     DefaultAssay(this_combined) <- "RNA"
     
     # Checks if two different samples are there in the dataset and each sample has more than 3 cells
     check_analysis <- length(which(as.numeric(table(
-      this_combined$sample
+      this_combined$orig.ident
     )) > 0)) == 2 & length(which(as.numeric((
-      table(this_combined$sample)
+      table(this_combined$orig.ident)
     ) > 3) > 0)) == 2
     
     # Confirm both samples have same cell type
@@ -116,8 +113,8 @@ for (day in days) {
       
       # fgsea enrichment
       cts_fc <- FoldChange(this_combined,
-                           ident.1 = paste0("HLHS Day", day),
-                           ident.2 = paste0("Control Day", day))
+                           ident.1 = paste0("stim_raw_feature_bc_matrix"),
+                           ident.2 = paste0("ctrl_raw_feature_bc_matrix"))
       
       res_gsea <- cts_fc %>%
         rownames_to_column("gene") %>%
@@ -147,7 +144,7 @@ for (day in days) {
       
       fwrite(
         fgseaResTidy,
-        file = paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GSEA_GOBP.csv"),
+        file = paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GSEA_GOBP.csv"),
         sep = ",",
         sep2 = c("", " ", "")
       )
@@ -170,7 +167,7 @@ for (day in days) {
       
       fwrite(
         fgseaResTidy,
-        file = paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GSEA_KEGG.csv"),
+        file = paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GSEA_KEGG.csv"),
         sep = ",",
         sep2 = c("", " ", "")
       )
@@ -179,8 +176,8 @@ for (day in days) {
       cts_markers <-
         FindMarkers(
           this_combined,
-          ident.1 = paste0("HLHS Day", day),
-          ident.2 = paste0("Control Day", day)
+          ident.1 = paste0("stim_raw_feature_bc_matrix"),
+          ident.2 = paste0("ctrl_raw_feature_bc_matrix")
         ) %>%
         rownames_to_column("gene") %>%
         filter(p_val_adj < 0.05)
@@ -195,7 +192,7 @@ for (day in days) {
         arrange(desc(avg_log2FC))
       
       cts_markers %>%
-        write_csv(paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con.csv"))
+        write_csv(paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl.csv"))
       
       this_up <- cts_markers %>%
         filter(avg_log2FC > 0) %>%
@@ -225,22 +222,23 @@ for (day in days) {
           
           write.csv(
             enriched_combined$GO_Molecular_Function_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_MF_up.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_MF_up.csv")
           )
           write.csv(
             enriched_combined$GO_Cellular_Component_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_CC_up.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_CC_up.csv")
           )
           write.csv(
             enriched_combined$GO_Biological_Process_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_BP_up.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_BP_up.csv")
           )
           write.csv(
             enriched_combined$KEGG_2021_Human,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_KEGG_up.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_KEGG_up.csv")
           )
         }
-        ### Enrichr: DOWN
+        Sys.sleep(3)
+         ### Enrichr: DOWN
         if (length(this_down) > 10) {
           enriched_combined <- enrichr(this_down, dbs)
           enriched_combined <- lapply(enriched_combined, function(x) {
@@ -250,25 +248,24 @@ for (day in days) {
           
           write.csv(
             enriched_combined$GO_Molecular_Function_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_MF_down.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_MF_down.csv")
           )
           write.csv(
             enriched_combined$GO_Cellular_Component_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_CC_down.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_CC_down.csv")
           )
           write.csv(
             enriched_combined$GO_Biological_Process_2023,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_GO_BP_down.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_GO_BP_down.csv")
           )
           write.csv(
             enriched_combined$KEGG_2021_Human,
-            paste0(RESULT_DIR, this_ct, "_HLHS_vs_Con_KEGG_down.csv")
+            paste0(RESULT_DIR, this_ct, "_Stim_vs_Ctrl_KEGG_down.csv")
           )
         }
       }
     }
   }
-}
 
 ```
 
