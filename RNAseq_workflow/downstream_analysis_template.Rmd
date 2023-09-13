@@ -64,11 +64,12 @@ if (length(which(duplicated.default(counts[, 1]))) > 0) {
   counts <- counts[-which(duplicated.default(counts[, 1]) == T),]
 }
 
+
 rownames(counts) <- counts[, 1]
 counts <- counts[,-1]
 
 # You can filter the genes with low counts, it is called most minimal filtering rule: removing rows of the dataset that have no counts, or only a count of 20 across all samples. The value can be adjusted based on your dataset condition.
-keep <- rowSums(counts) >= 20
+keep <- rowSums(counts) >= 50
 
 counts <- counts[keep, ]
 
@@ -139,7 +140,7 @@ dds <- DESeq(dds)
 res <- results(dds, contrast = c("group", "NCH3", "NCH1"))
 dir.create('result', showWarnings = F)
 result <- as.data.frame(res[order(res$pvalue),])
-summary(res, alpha = 0.1)
+summary(res, alpha = 0.05)
 write.csv(result, "./result/Group1_vs_Group2.csv")
 
 #norm_counts <- counts(dds, normalized=TRUE)
