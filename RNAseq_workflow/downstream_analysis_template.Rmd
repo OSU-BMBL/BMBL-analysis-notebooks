@@ -16,7 +16,7 @@ knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(echo = FALSE)
 
-# 'here' package automatically sets wornking directory for us
+# 'here' package automatically sets working directory for us
 library(here)
 # DESeq2 provides methods to test for differential gene expression (DGE) analysis 
 library(DESeq2)
@@ -52,10 +52,10 @@ library(stringr)
 all_gene_sets <- qs::qread("all_gene_sets_human.qsave")
 # Read the count matrix
 
-counts <- read.csv("./counts.csv")
+counts <- read.csv("./Example_Data/counts.csv")
 
 # Read metadata
-meta <- read.csv("./meta.csv", stringsAsFactors = F)
+meta <- read.csv("./Example_Data/meta.csv", stringsAsFactors = F)
 colnames(meta)[1]<-'sample_id'
 colnames(meta)[2]<-'group'
 
@@ -265,19 +265,19 @@ DT::datatable(
 
 # Reference
 
-Rmarkdown reference: [Reference](https://urldefense.com/v3/__https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf__;!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYaV3Xtm6I$ )
+Rmarkdown reference: [Reference](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
 
-How to experimental design in DESeq2 (https://urldefense.com/v3/__https://rpubs.com/ge600/deseq2__;!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYazsuvfs8$ )
+How to experimental design in DESeq2 (https://rpubs.com/ge600/deseq2)
 
-[Mathematics in Rmarkdown](https://urldefense.com/v3/__https://www.calvin.edu/*rpruim/courses/s341/S17/from-class/MathinRmd.html__;fg!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYaboRNM-Q$ )
+[Mathematics in Rmarkdown](https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html)
 
-[Analyzing RNA-seq data with DESeq2](https://urldefense.com/v3/__http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html*independent-hypothesis-weighting__;Iw!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYaQz4jN7A$ )
+[Analyzing RNA-seq data with DESeq2](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#independent-hypothesis-weighting)
 
-[RNA-seq workflow: gene-level exploratory analysis and differential expression](https://urldefense.com/v3/__http://bioconductor.org/packages/release/bioc/vignettes/IHW/inst/doc/introduction_to_ihw.html*an-example-rna-seq-differential-expression__;Iw!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYaWu1cx-o$ )
+[RNA-seq workflow: gene-level exploratory analysis and differential expression](http://bioconductor.org/packages/release/bioc/vignettes/IHW/inst/doc/introduction_to_ihw.html#an-example-rna-seq-differential-expression)
 
-[RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://urldefense.com/v3/__https://www.bioconductor.org/packages/devel/workflows/vignettes/RNAseq123/inst/doc/limmaWorkflow.html__;!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYapGSDDE4$ )
+[RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://www.bioconductor.org/packages/devel/workflows/vignettes/RNAseq123/inst/doc/limmaWorkflow.html)
 
-[RNA-seq workshop from Harvard Medical School](https://urldefense.com/v3/__https://github.com/hbctraining/Training-modules__;!!AU3bcTlGKuA!CEhjVQfniIpqY77lObyzoAfJvwsnRDbvII1KfLpBGQdmCQ1BZTdpFbTRS9yNZZ7NftYOulr5yY2OjiRWWAYaC1EtcxU$ )
+[RNA-seq workshop from Harvard Medical School](https://github.com/hbctraining/Training-modules)
 
 
 # Session info
