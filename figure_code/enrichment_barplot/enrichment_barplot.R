@@ -1,5 +1,5 @@
 library(tidyverse)
-setwd('C:/Users/flyku/Desktop/yingjie_plot/enrichment_barplot')
+setwd('C:/your_wd/enrichment_barplot')
 set.seed(42)
 
 
@@ -45,7 +45,7 @@ p2
 # save plot
 
 png(
-  paste0('./yingjie_enrichment_barplot.png'),
+  paste0('./enrichment_barplot.png'),
   width = 4000,
   height = 3500,
   res = 300

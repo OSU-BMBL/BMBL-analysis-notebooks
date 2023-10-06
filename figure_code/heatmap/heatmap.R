@@ -1,11 +1,11 @@
 library(tidyverse)
-setwd('C:/Users/flyku/Desktop/yingjie_plot/heatmap')
+setwd('C:/your_wd/heatmap')
 set.seed(42)
 
 
 
 # Process data
-df <- read.csv("fig2b_heatmap.csv")
+df <- read.csv("heatmap.csv")
 
 heatmap_matrix <-
   as.data.frame(df) %>%
@@ -34,7 +34,7 @@ pheatmap::pheatmap(
 # save plot
 
 png(
-  paste0('./yingjie_pheatmap.png'),
+  paste0('pheatmap.png'),
   width = 2000,
   height = 3500,
   res = 300
