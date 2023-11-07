@@ -1,5 +1,5 @@
 ---
-title: "RNA-seq data analysis-- Downstream Analysis Template Using Example Data"
+title: "RNA-seq data analysis-- Downstream Analysis Template Using Limma"
 author: "Brutus Buckeye"
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
@@ -18,8 +18,8 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # 'here' package automatically sets working directory for us
 library(here)
-# DESeq2 provides methods to test for differential gene expression (DGE) analysis 
-library(DESeq2)
+# Limma provides methods to test for differential gene expression (DGE) analysis 
+library(limma)
 # ‘ggplot2’ and its extension for publication ready plots
 library(ggplot2)
 library(ggpubr) 
@@ -94,20 +94,6 @@ DT::datatable(
 ```
 
 
-```{r}
-
-
-dds <- DESeq2::DESeqDataSetFromMatrix(
-  countData = counts,
-  colData = meta,
-  design = ~ group
-)
-
-vsd <- vst(dds, blind = FALSE)
-
-
-```
-
 ## Principal component analysis (PCA)
 
 ### PCA plot colored by group
@@ -132,20 +118,33 @@ ggplot(pcaData, aes(PC1, PC2, color=group)) +
 
 ## Group1 vs Group2
 
+
 ```{r}
-design(dds) <- formula( ~ group)
-dds <- DESeq(dds)
-#resultsNames(dds)
+library(limma)
 
-res <- results(dds, contrast = c("group", "NCH3", "NCH1"))
-dir.create('result', showWarnings = F)
-result <- as.data.frame(res[order(res$pvalue),])
-summary(res, alpha = 0.05)
+# Ensure that the columns of your counts data match the rows of your metadata
+stopifnot(all(meta$sample_id == colnames(counts)))
+
+# Based on your metadata, I'm assuming you want to contrast different 'group' values
+# If 'group' is already a factor, great! If not, convert it.
+group <- as.factor(meta$group)
+
+# Create the design matrix
+design <- model.matrix(~0 + group)
+colnames(design) <- levels(group)
+
+# Since I'm not sure about the exact levels of your 'group' column, I'm providing a generic contrast
+# If for example, you have two levels "A" and "B" and you wish to contrast "A" vs "B", then use: contrast.matrix <- makeContrasts("A-B", levels = design)
+# Adjust the contrast matrix as per your requirements
+
+# Here's a generic way to make a contrast for the first two levels:
+contrast.matrix <- makeContrasts(paste0(levels(group)[1], "-", levels(group)[2]), levels=design)
+
+fit <- lmFit(counts, design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+result <- topTable(fit2, adjust="BH", number=Inf)
 write.csv(result, "./result/Group1_vs_Group2.csv")
-
-#norm_counts <- counts(dds, normalized=TRUE)
-#write.csv(norm_counts,"normalized_counts.csv")
-
 ```
 
 ## DEG table (top 500 rows)
@@ -172,8 +171,8 @@ DT::datatable(
 
 res_gsea <- result %>%
   rownames_to_column("gene") %>%
-  dplyr::select(gene, stat) %>%
-  arrange(desc(stat)) %>%
+  dplyr::select(gene, logFC) %>%
+  arrange(desc(logFC)) %>%
   na.omit() %>%
   distinct() %>%
   group_by(gene) %>%
@@ -222,12 +221,12 @@ DT::datatable(
 
 ```
 
-## C5: Reactome
+## C5: KEGG
 
 ```{r}
 
 this_terms <- all_gene_sets %>%
-  filter(gs_cat == 'C2' & gs_subcat == 'CP:REACTOME')
+  filter(gs_cat == 'C2' & gs_subcat == 'CP:KEGG')
 
 m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
 
@@ -243,7 +242,7 @@ fgseaResTidy <- fgseaRes %>%
 
 fwrite(
   fgseaResTidy,
-  file = paste0("./result/Group1_vs_Group2_Reactome.csv"),
+  file = paste0("./result/Group1_vs_Group2_KEGG.csv"),
   sep = ",",
   sep2 = c("", " ", "")
 )
@@ -267,7 +266,7 @@ DT::datatable(
 
 Rmarkdown reference: [Reference](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
 
-How to experimental design in DESeq2 (https://rpubs.com/ge600/deseq2)
+[How to experimental design in limma] (https://bioconductor.org/packages/devel/bioc/vignettes/limma/inst/doc/usersguide.pdf)
 
 [Mathematics in Rmarkdown](https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html)
 

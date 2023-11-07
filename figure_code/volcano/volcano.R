@@ -1,6 +1,6 @@
 library(tidyverse)
 library(EnhancedVolcano)
-setwd('C:/Users/flyku/Desktop/yingjie_plot/volcano')
+setwd('C:/your_wd/volcano')
 set.seed(42)
 
 
@@ -91,7 +91,7 @@ p1
 # save plot
 
 png(
-  paste0('./yingjie_volcano.png'),
+  paste0('./volcano.png'),
   width = 2500,
   height = 2000,
   res = 300
