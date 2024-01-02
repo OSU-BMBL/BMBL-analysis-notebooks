@@ -7,7 +7,7 @@ The following is a set of guidelines for contributing to BMBL notebooks.
 ### Do you have a workflow that you would like to contribute?
 
 If you have a workflow that you think would be helpful for other lab members, we would love for you to contribute it to our repository!
-## Steps to contribute
+#### Steps to contribute
 1. Have a workflow (R, python, etc.)!
 2. Try and annotate your workflow to describe each step taken-- this will make it much easier to share with the lab later
 3. Send your annotated workflow to Megan (megan.mcnutt@osumc.edu)
