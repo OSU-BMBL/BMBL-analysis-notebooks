@@ -1,0 +1,204 @@
+---
+title: "Slingshot trajectory"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = F)
+knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(error = F)
+knitr::opts_chunk$set(fig.width = 8)
+library(Polychrome)
+library(ggbeeswarm)
+library(ggthemes)
+library(SingleCellExperiment)
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(slingshot)
+library(data.table)
+library(fields)
+
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::i_am("slingshot.rmd")
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+# Load
+
+
+```{r}
+
+RESULT_DIR <- "./result/"
+dir.create(RESULT_DIR)
+set.seed(1)
+
+library(MoMAColors)
+cell_type_color <- MoMAColors::moma.colors("Klein", n= length(unique(combined@meta.data$celltype)))
+
+```
+
+# Load and process seurat object
+
+```{r eval=T, echo=F, fig.height=10, fig.width=10, message=TRUE}
+combined <- read_rds("combined.rds")
+this_obj <- "Example_object"
+Idents(combined) <- combined1$celltype
+
+DefaultAssay(combined) <- "RNA"
+
+named_cell_type_color <-
+  cell_type_color[1:length(levels(as.factor(combined$celltype)))]
+names(named_cell_type_color) <-
+  levels(as.factor(combined$celltype))
+
+sce <- as.SingleCellExperiment(combined)
+dimred <- combined@reductions$umap@cell.embeddings
+reducedDims(sce)$UMAP <- dimred
+sce <-
+  slingshot(
+    sce,
+    clusterLabels = "celltype",
+    reducedDim = "UMAP",
+    allow.breaks = F,
+    omega = T,
+    start.clus = c("AT2") # you need to manuualy set the start cluster of the trajectory
+  )
+
+lnes <-
+  getLineages(
+    reducedDim(sce, "UMAP"),
+    clusterLabels = sce$ident
+  )
+curves <- getCurves(lnes,  thresh = 0.01, stretch = 0.8, allow.breaks = T, shrink = 0.99)
+
+pdf(paste0("./result/slingshot_", this_obj, ".pdf"),
+      width = 6,
+      height = 6)
+plot(reducedDims(sce)$UMAP,
+     col = named_cell_type_color[as.character(sce$celltype)],
+     pch = 16,
+     cex = 0.5,
+     asp = 1,
+   axes = F)
+# Add lines to the plot
+lines(SlingshotDataSet(curves),
+      lwd = 3,
+      col = 'black')
+
+dev.off()
+
+colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+plotcol[is.na(plotcol)] <- '#d3d3d3'
+
+#1
+pdf(paste0("./result/slingshot_", this_obj, "_Pseudotime_1.pdf"),
+      width = 8,
+      height = 6)
+# Your existing code
+colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+plotcol[is.na(plotcol)] <- '#d3d3d3'
+
+plot(reducedDims(sce)$UMAP,
+     col = plotcol,
+     pch = 16,
+     cex = 0.5,
+     asp = 1,
+     axes = F)
+
+lines(SlingshotDataSet(sce), lwd = 3, col = c("black"))
+
+# New code to add a legend
+max_val <- max(sce$slingPseudotime_1, na.rm = TRUE)
+breaks <- seq(0, max_val, length.out = 5)  # create 5 breaks
+labels <- round(breaks, 0)  # round the breaks to 2 decimal places
+
+color_indices <- round(seq(1, length(colors), length.out = length(breaks)))
+color_labels <- colors[color_indices]
+
+legend("bottomright", 
+       legend = labels, 
+       fill = color_labels, 
+       title = "Pseudotime_1",
+       #inset = c(-0.5, 0.05),
+       box.lwd = NA)  # adjust these values as needed
+dev.off()
+
+#2
+pdf(paste0("./result/slingshot_", this_obj, "_Pseudotime_2.pdf"),
+      width = 8,
+      height = 6)
+# Your existing code
+colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_2, breaks=100)]
+plotcol[is.na(plotcol)] <- '#d3d3d3'
+
+plot(reducedDims(sce)$UMAP,
+     col = plotcol,
+     pch = 16,
+     cex = 0.5,
+     asp = 1,
+     axes = F)
+
+lines(SlingshotDataSet(sce), lwd = 3, col = c("black"))
+
+# New code to add a legend
+max_val <- max(sce$slingPseudotime_2, na.rm = TRUE)
+breaks <- seq(0, max_val, length.out = 5)  # create 5 breaks
+labels <- round(breaks, 0)  # round the breaks to 2 decimal places
+
+color_indices <- round(seq(1, length(colors), length.out = length(breaks)))
+color_labels <- colors[color_indices]
+
+legend("bottomright", 
+       legend = labels, 
+       fill = color_labels, 
+       title = "Pseudotime_2",
+       #inset = c(-0.5, 0.05),
+       box.lwd = NA)  # adjust these values as needed
+dev.off()
+
+# seurat better plot
+combined$pseudotime1 <- sce$slingPseudotime_1
+combined$pseudotime2 <- sce$slingPseudotime_2
+p1 <- FeaturePlot(combined, c("pseudotime1"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
+p2 <- FeaturePlot(combined, c("pseudotime2"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
+pdf(paste0("./result/slingshot_", this_obj, "_pseudotime1_v2.pdf"),
+      width = 6,
+      height = 6)
+
+print(p1)
+dev.off()
+pdf(paste0("./result/slingshot_", this_obj, "_pseudotime2_v2.pdf"),
+      width = 6,
+      height = 6)
+
+print(p2)
+dev.off()
+```
+
