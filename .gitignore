@@ -7,7 +7,7 @@ pdf/
 *.rds
 result*
 *.log
-*.pptx
+#*.pptx
 *.h5ad
 *.h5Seurat
 *.log
