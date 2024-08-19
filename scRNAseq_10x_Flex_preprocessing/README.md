@@ -35,10 +35,45 @@ Before running this pipeline, you will need the following:
 
 ## How to organize your working directory
 
-Please describe and include screenshot to show how to correctly place code and files
+1. Edit csv file:
+![image](https://github.com/user-attachments/assets/a0f3a9a0-7a70-43ef-9917-ab48c7681712)
+
+Note:
+1) Reference: human sample - GRCh, mouse sample - mm
+2) fastq_id: raw data fastq.gz file name
+3) fasqs: pathway of fastq.gz file
+4) [samples]: unique barcode for each sample in a pool; description: sample name![image](https://github.com/user-attachments/assets/e357f15e-23ae-40a7-8782-f57794c37674)
+
+
 
 ## How to set up input parameters
-
+	2. Prepare sh file:
+	
+	#!/usr/bin/bash
+	#SBATCH --account PAS2584
+	#SBATCH --time=10:00:00
+	#SBATCH --nodes=1 
+	#SBATCH --ntasks=8
+	#SBATCH --mem=64GB
+	date
+	CellRanger=/fs/ess/PCON0022/tools/cellranger-7.1.0/cellranger
+	cd /fs/ess/PAS2584/scRNA.analysis.Jia.Apr2024/Raw.fastq.data
+	${CellRanger} multi --id=Y11789_LockeL_5-Control-4-Mock_V1G_1 --csv=Y11789_LockeL_5-Control-4-Mock_V1G_1.csv --localcores=8  --localmem=64
+	date
+ 
+	# Save as Y11789_LockeL_5-Control-4-Mock_V1G_1.sh in osc
+	
+	
+	Note: 
+	1) cd /fs/ess/PAS2584/scRNA.analysis.Jia.Apr2024/Raw.fastq.data (parent folder for fastq.file )
+	2) --id= is fastq_id in csv file
 
 ## How to submit jobs
+3. Submit batch file (OSC-> open in terminal):
+
+sbatch Y11789_LockeL_5-Control-4-Mock_V1G_1.sh
+
+#squeue -u osc.id
+
+#slurm-28722802.out (to check real-time running results in this folder)
 
