@@ -30,14 +30,15 @@ This repository is NOT an introduction to data analysis. There are many availabl
 2. Analysis of immune system data with scRNA-seq: `/scRNAseq_immune_branch`
 3. Code for generating publication-ready figures: `/figure_code`
 
-If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Cankun Wang at cankun.wang@osumc.edu.
+If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Cankun Wang at shaopeng.gu@osumc.edu.
 
 ## Acknowledgements
 
-Maintainer: [Cankun Wang](https://github.com/Wang-Cankun)
+Maintainer: [Shaopeng Gu](https://github.com/ashinandjay)
 
 Contributors:
 
+- [Shaopeng Gu](https://github.com/ashinandjay)
 - [Cankun Wang](https://github.com/Wang-Cankun)
 - [Yuzhou Chang](https://github.com/BMEngineeR)
 - [Qi Guo](https://github.com/1QiGuo)
