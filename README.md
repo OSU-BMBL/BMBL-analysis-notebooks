@@ -25,12 +25,44 @@ This repository is NOT an introduction to data analysis. There are many availabl
 3. Assays such as RNA-seq, single-cell RNA-seq, and Spatial transcriptomics.
 
 ## Table of Contents
+### Bioinformatics pipelines based on data type
+- Single-cell RNA-seq:
+  1. [scRNAseq_general_workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
+  2. [scRNAseq_10x_Flex_preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
+  3. [scRNAseq_trajectory_analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_trajectory_Slingshot)
+  4. [scRNAseq shiny cell](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)
+  5. [scRNAseq cell-cell communication](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)
+  6. [scRNAseq HPV mapping](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch)
+  7. [scRNAseq stomach and colon branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
+  8. [scRNAseq_large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/sc_LargeData_Sketch-based_Analysis)
+- Single-cell ATAC-seq:
+  1. [scATACseq_general_workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
+  2. [scATACseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATAC-seq_preprocessing)
+  3. [scATACseq ArchR branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ArchR_branch)
+  4. [scATACseq Cicero branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch)
+  5. [scATACseq cisTopic branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch)
+- Single-cell Multi-omics:
+  1. [scMultiome AD branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)
+- RNA-seq:
+  1. [RNAseq general workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_workflow)
+  2. [RNAseq general workflow nf-core]()
+- Chip-seq:
+  1. [Chipseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
+- Spatial Transcriptomics(ST):
+  1. [ST general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_general_workflow)
+  2. [ST BayesSpace branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_BayesSpace_branch)
+  3. [ST giotto branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_giotto_branch)
+  4. [ST spotlight branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_spotlight_branch)
+### Artificial Intelligence
+- ChatGPT prompts
+  1. [ChatGPT_prompts](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChatGPT_prompts)
+### Other Tutorials
+- Server
+  1. [Introduction OSC](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Introduction_OSC)
+- Figure/Plot scripts
+  1. [Figure codes](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/figure_code)
 
-1. Single-cell RNA-seq general preprocessing workflow: `/scRNAseq_preprocess_main`
-2. Analysis of immune system data with scRNA-seq: `/scRNAseq_immune_branch`
-3. Code for generating publication-ready figures: `/figure_code`
-
-If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Cankun Wang at shaopeng.gu@osumc.edu.
+If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Shaopeng Gu at shaopeng.gu@osumc.edu.
 
 ## Acknowledgements
 
