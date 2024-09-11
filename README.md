@@ -27,14 +27,14 @@ This repository is NOT an introduction to data analysis. There are many availabl
 ## Table of Contents
 ### Bioinformatics pipelines based on data type
 - Single-cell RNA-seq:
-  1. [scRNAseq_general_workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
-  2. [scRNAseq_10x_Flex_preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
+  1. [scRNAseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
+  2. [scRNAseq 10x Flex preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
   3. [scRNAseq_trajectory_analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_trajectory_Slingshot)
   4. [scRNAseq shiny cell](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)
   5. [scRNAseq cell-cell communication](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)
   6. [scRNAseq HPV mapping](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch)
   7. [scRNAseq stomach and colon branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
-  8. [scRNAseq_large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/sc_LargeData_Sketch-based_Analysis)
+  8. [scRNAseq large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/sc_LargeData_Sketch-based_Analysis)
 - Single-cell ATAC-seq:
   1. [scATACseq_general_workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
   2. [scATACseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATAC-seq_preprocessing)
