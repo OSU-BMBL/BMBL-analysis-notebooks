@@ -20,7 +20,7 @@ library(patchwork)
 library(here)
 library(qs)
 library(Polychrome)
-library(scater)
+#library(scater)
 ```
 
 
@@ -60,7 +60,7 @@ combined <- purrr::reduce(data_list, function(x, y) {
     merge(x = x, y = y, merge.data = T)
   })
 
-
+combined <- JoinLayers(combined)
 ```
 
 
@@ -77,7 +77,7 @@ table(combined$orig.ident)
 rb.genes <-
   rownames(combined)[grep("^RP[SL][[:digit:]]", rownames(combined))]
 percent.ribo <-
-  colSums(combined[rb.genes, ]) / Matrix::colSums(combined) * 100
+  colSums(LayerData(combined[rb.genes, ], assay = "RNA", layer = "counts")) / colSums(LayerData(combined, assay = "RNA", layer = "counts")) * 100
 combined <-
   AddMetaData(combined, percent.ribo, col.name = "percent.ribo")
 
@@ -179,6 +179,8 @@ VlnPlot(
 set.seed(42)
 
 DefaultAssay(combined_qc) <- "RNA"
+
+combined_qc <- FindVariableFeatures(combined_qc, verbose = FALSE)
 combined_qc <- NormalizeData(combined_qc, verbose = FALSE)
 combined_qc <- ScaleData(combined_qc, verbose = FALSE)
 combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE)
@@ -189,9 +191,9 @@ combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
 ```
 
 
-# Integrate data (if needed)
+# Integrate data with batch removal (only use it if you confirmed batch removal is needed)
 
-```{r,echo=F,eval=T,message=F,warning=F,error=F}
+```{r,echo=F,eval=F}
 
 set.seed(42)
 
