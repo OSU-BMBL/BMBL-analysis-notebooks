@@ -6,7 +6,7 @@ This folder contains a comprehensive general workflow for scRNAseq analysis. The
 
 ## Pipeline input
 
-- Raw count matrices in two condition: Ctrol and Stim
+- Raw count matrices in two condition: Control and Stim
 
 ## Pipeline output
 
