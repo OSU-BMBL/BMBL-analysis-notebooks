@@ -26,6 +26,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
 
 ## Table of Contents
 ### Bioinformatics pipelines based on data type
+
 - Single-cell RNA-seq:
   1. [scRNAseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
   2. [scRNAseq 10x Flex preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
@@ -61,6 +62,11 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [Introduction OSC](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Introduction_OSC)
 - Figure/Plot scripts
   1. [Figure codes](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/figure_code)
+
+### Contributing template
+
+- Template Readme for all new contributions: [README_template.md](./README_template.md)
+
 
 If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Shaopeng Gu at shaopeng.gu@osumc.edu.
 

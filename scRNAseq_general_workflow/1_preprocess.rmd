@@ -172,7 +172,24 @@ VlnPlot(
 )
 ```
 
-# Integrate data
+# Merge data without batch removal integration
+
+```{r,echo=F,eval=T,message=F,warning=F,error=F}
+
+set.seed(42)
+
+DefaultAssay(combined_qc) <- "RNA"
+combined_qc <- NormalizeData(combined_qc, verbose = FALSE)
+combined_qc <- ScaleData(combined_qc, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE)
+combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
+
+```
+
+
+# Integrate data (if needed)
 
 ```{r,echo=F,eval=T,message=F,warning=F,error=F}
 
@@ -189,14 +206,14 @@ combine.list <- lapply(
   }
 )
 combine.anchors <-
-  FindIntegrationAnchors(object.list = combine.list, dims = 1:15)
-combined_qc <- IntegrateData(anchorset = combine.anchors, dims = 1:15)
+  FindIntegrationAnchors(object.list = combine.list, dims = 1:30)
+combined_qc <- IntegrateData(anchorset = combine.anchors, dims = 1:30)
 DefaultAssay(combined_qc) <- "integrated"
 combined_qc <- ScaleData(combined_qc, verbose = FALSE)
-combined_qc <- RunPCA(combined_qc, npcs = 15, verbose = FALSE)
-combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:15, verbose = FALSE)
-combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:15, verbose = FALSE)
-combined_qc <- FindClusters(combined_qc, resolution = 0.2, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE)
+combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
 
 ```
 
