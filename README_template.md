@@ -21,7 +21,7 @@
 
 Author: 
 
-## Methods template
+## Methods for manuscript
 
 ### Part 1
 

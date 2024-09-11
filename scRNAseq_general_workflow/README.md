@@ -41,7 +41,7 @@ This folder contains a comprehensive general workflow for scRNAseq analysis. The
 
 Author: Cankun Wang
 
-## Methods template
+## Methods for manuscript
 
 ### Cell Ranger
 
