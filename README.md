@@ -49,11 +49,18 @@ This repository is NOT an introduction to data analysis. There are many availabl
   2. [RNAseq general workflow nf-core]()
 - Chip-seq:
   1. [Chipseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
+  2. [Chipseq_general_workflow2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Chipseq_general_workflow2)
 - Spatial Transcriptomics(ST):
   1. [ST general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_general_workflow)
   2. [ST BayesSpace branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_BayesSpace_branch)
   3. [ST giotto branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_giotto_branch)
   4. [ST spotlight branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_spotlight_branch)
+- Bulk ATAC-seq:
+  1. [Bulk ATACseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)
+- Bisulfite sequencing (BS-seq):
+  1. [Bismark aligner](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BS-seq_Bismark_Aligner)
+- Bioinformatics tools:
+  1. [HOMER2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/HOMER)
 ### Artificial Intelligence
 - ChatGPT prompts
   1. [ChatGPT_prompts](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChatGPT_prompts)
