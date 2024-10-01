@@ -121,7 +121,19 @@ See the documentation link for more information about the other options not ment
 http://homer.ucsd.edu/homer/homer2.html#createHomer2EnrichmentTable.pl
 The HOMER2 update introduced `createHomer2EnrichmentTable.pl` as a way to map enrichment or depletion of the motifs in your sequences. As mentioned above, this new method uses the `homer2 background` function for generating GC/CpG bias matched regions.  
 
-!!! MH is currently testing this function, recommended options for command will come soon !!!
+Have a motif file from the "Motif Analysis" section ready. This file can be shortened to the motifs of interest. 
+```{sh}
+createHomer2EnrichmentTable.pl -o outputDirectory/ -strand separate -m [HOMER formatted motif file] -p [tss position txt file] -g [FASTA of the genome analyzed] -size 400 -windows 3 -pkmer 2 -allowTargetOverlap -allowBgOverlap
+```
+After running the above line, the more important files are...
+* The "summary.windowN.logq.txt" file where motif enrichment/depletion at specfic positions around any TSS is reported as Benjamini-Hochberg adjusted q-values.
+* The "summary.bestIntervals.txt" where specific positions with the best enrichment and depletion of each motif is reported. 
+
+The first file can be used to visualize summarized distributions of where a motif in the listing is or isn't around a TSS. 
+
+The second file can be used to find the general "most common" locations of binding or absence around any given TSS. 
+
+
 
 ---
 Contact
