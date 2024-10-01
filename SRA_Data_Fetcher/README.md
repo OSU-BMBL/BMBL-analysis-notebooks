@@ -16,6 +16,13 @@ optional arguments:
   -t TEMPDIR, --tempDir TEMPDIR
                         Temporary directory (optional), the default temporary directory is the current
                         directory
+
+```
+Note: please make sure the output directory and the temporary directory are exist.
+
+Example:
+```
+python fetch-with-sratoolkit.py -o /output -t /tmp ./sra_ids.json
 ```
 
 The `jsonfile` is to specify SRA file ids, its format is like:
@@ -28,6 +35,26 @@ The `jsonfile` is to specify SRA file ids, its format is like:
         ...
     ]
 }
+```
+
+### Usage in OSC
+We also provide `osc_script.sh` script to download SRA data in OSC. Here is the script, please modify cluster configuration and the output directory and the temp directory as needed
+```
+#!/usr/bin/bash
+#SBATCH --job-name fetch_sra_with_sratoolkit
+#SBATCH --account PCON0100
+#SBATCH --time=8:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=8
+#SBATCH --mem=128GB
+
+date
+module load python/3.9-2022.05
+module load sratoolkit/2.11.2
+
+cd $HOME
+python ./fetch-with-sratoolkit.py -o ./ -t ./ ./sra_ids.json
+date
 ```
 
 
