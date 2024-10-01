@@ -46,7 +46,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [scMultiome AD branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)
 - RNA-seq:
   1. [RNAseq general workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_workflow)
-  2. [RNAseq general workflow nf-core]()
+  2. [RNAseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_general_workflow_nfcore)
 - Chip-seq:
   1. [Chipseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
   2. [Chipseq_general_workflow2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Chipseq_general_workflow2)
