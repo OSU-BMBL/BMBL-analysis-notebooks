@@ -77,3 +77,5 @@ sbatch Y11789_LockeL_5-Control-4-Mock_V1G_1.sh
 
 #slurm-28722802.out (to check real-time running results in this folder)
 
+## Author: Jia Qu
+
