@@ -498,6 +498,8 @@ DimPlot(integrate,reduction = "wnn.umap", group.by = "celltype",label = T,label.
 ```
 
 #Identify cell type differetially accessible peaks and link peaks
+
+```{r echo = T, eval = F, message = F, warning = F, error = F}
 #load library
 library("qs")
 
@@ -511,7 +513,7 @@ Idents(int)<-int$celltype
 p1 <- DimPlot(int, reduction = "wnn.umap" ,repel = TRUE) + ggtitle("WNN")
 DefaultAssay(int) <- 'peaks'
 
-# DEG & DAP
+# DEG 
 result_late_con<-list()
 result_late_mid<-list()
 result_mid_con<-list()
@@ -549,6 +551,7 @@ for(i in 1:21){
   write.csv(result_deg[[i]],paste0(output_dir,name,".csv"))
 }
 
+```
 # Session Infomation
 
 Please note that real package versions for analyses can be obtained by OSC.
