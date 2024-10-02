@@ -69,6 +69,8 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [Introduction OSC](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Introduction_OSC)
 - Figure/Plot scripts
   1. [Figure codes](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/figure_code)
+- Data submission to GEO
+  1. [GEO data submission](./GEO_data_submission)
 
 ### Contributing template
 
