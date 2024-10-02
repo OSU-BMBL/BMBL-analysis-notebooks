@@ -497,6 +497,58 @@ integrate$celltype[which(integrate$wsnn_res.0.2==5)]<-"OPC"
 DimPlot(integrate,reduction = "wnn.umap", group.by = "celltype",label = T,label.size = 4)+ theme_classic(base_size = 12)
 ```
 
+#Identify cell type differetially accessible peaks and link peaks
+#load library
+library("qs")
+
+#load data
+#load integrated data 0.5
+setwd("/fs/ess/PCON0022/guoqi/NC-snrna/atac_output/New_results_qc")
+output_dir<-"/fs/ess/PCON0022/guoqi/NC-snrna/output/Final_integrated_object/cell_specific_DAP/"
+int<-qread("wnn.qs")
+DefaultAssay(int)<-"SCT"
+Idents(int)<-int$celltype
+p1 <- DimPlot(int, reduction = "wnn.umap" ,repel = TRUE) + ggtitle("WNN")
+DefaultAssay(int) <- 'peaks'
+
+# DEG & DAP
+result_late_con<-list()
+result_late_mid<-list()
+result_mid_con<-list()
+
+cellspecifc_deg<-function(int,ident1,ident2){
+  DefaultAssay(int) <- 'peaks'
+  output<-list()
+  celltype<-unique(int$celltype)
+  Idents(int)<-int$celltype
+  for(i in 1:7){
+    subdata<-subset(int,idents =celltype[i])
+    Idents(subdata)<-subdata$stage
+    temp1<-FindMarkers(subdata,ident.1 = ident1,ident.2 = ident2, test.use = 'LR',latent.vars = 'nCount_peaks')
+    temp1<-cbind(DEGs=rownames(temp1),temp1)
+    temp1$celltype<-celltype[i]
+    temp1$condition<-paste(ident1,ident2,sep = "/")
+    colnames(temp1)[1]<-"DAPs"
+    output[[i]]<-temp1
+  }
+  time<-paste(ident1,ident2,sep = "/")
+  names(output)<-paste(celltype,time,sep = "_")
+  return(output)
+}
+
+result_late_mid<-cellspecifc_deg(int,"Late-AD","Mid-AD")
+result_late_con<-cellspecifc_deg(int,"Late-AD","Control")
+result_mid_con<-cellspecifc_deg(int,"Mid-AD","Control")
+result_deg<-list()
+result_deg<-append(result_mid_con,result_late_con)
+result_deg<-append(result_deg,result_late_mid)
+
+for(i in 1:21){
+  name<-names(result_deg)[i]
+  name<-gsub("/","_",name)
+  write.csv(result_deg[[i]],paste0(output_dir,name,".csv"))
+}
+
 # Session Infomation
 
 Please note that real package versions for analyses can be obtained by OSC.
