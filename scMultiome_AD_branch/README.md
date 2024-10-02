@@ -18,4 +18,6 @@ Steps:
 
 - Annotation using cell type markers from Dr. Fu's lab. Heatmap and featureplot were utilized for cell type annotation.
 
+- Downstream analysis, including DEGs and DAPs identification
+
 Author: Qi Guo
