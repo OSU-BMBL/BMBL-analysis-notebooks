@@ -17,3 +17,5 @@ Steps:
 - Integration of snATAC-seq and snRNA-seq: Integration.
 
 - Annotation using cell type markers from Dr. Fu's lab. Heatmap and featureplot were utilized for cell type annotation.
+
+Author: Qi Guo
