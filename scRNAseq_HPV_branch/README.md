@@ -1,5 +1,20 @@
 # HPV mapping Tutorial
+
+## Introduction
 This tutorial is to detect and identify HPV from single-cell RNA-sequencing (scRNA-seq) raw data based on CellRanger.
+
+
+## Pipeline input
+1. Host scRNA-seq raw data in .fastq (one sample in one folder)
+2. HPV complete genome in .fna 
+3. HPV annotation file in .gft
+
+Please note that there are dozens or hundreds of types for HPV. Make sure the complete genome is the right one you need. 
+
+In this example, we use HPV type 16 downaloaded from [NIBI database](https://www.ncbi.nlm.nih.gov/assembly/). When asking "select file source," you can select RefSeq or GenBank, whichever is available. [ViruSite](http://www.virusite.org/index.php?nav=search) is a genome reference database that can choose multiple microbiome genomes and download them as one file. 
+
+## Pipeline output
+Viral gene expression matrix 
 
 ## Install CellRanger 
 The first step is to install the lateset [Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest). Once the tar.gz file is downloaded in a wanted directory, type the following in the terminal to decompress into current directory.
@@ -8,16 +23,6 @@ The first step is to install the lateset [Cell Ranger](https://support.10xgenomi
 cd /fs/ess/PCON0022/tools
 tar -xzvf cellranger-7.1.0.tar.gz
 ```
-
-## Data preparation 
-Several data should be prepared:
-1. Host scRNA-seq raw data in .fastq (one sample in one folder)
-2. HPV complete genome in .fna 
-3. HPV annotation file in .gft
-
-Please note that there are dozens or hundreds of types for HPV. Make sure the complete genome is the right one you need. 
-
-In this example, we use HPV type 16 downaloaded from [NIBI database](https://www.ncbi.nlm.nih.gov/assembly/). When asking "select file source," you can select RefSeq or GenBank, whichever is available. [ViruSite](http://www.virusite.org/index.php?nav=search) is a genome reference database that can choose multiple microbiome genomes and download them as one file. 
 
 ## Create HPV genome reference 
 Once we have the virus genome and annotation files, we will generate the an HPV genome reference file based on CellRanger. Before we run the code, we need to manually make some changes in the .gft file, as virus sequencing does not contain an "exon" column. Please do the following in the .gft file: **Change the third column "CDS" into "exon".**
@@ -68,5 +73,10 @@ The gene expression matrix for further analysis under R or python can be found u
 
 
 
+## Contact
 
+Author: Yingjie Li
+
+## Methods for manuscript
+ The “mkref” function in Cell Ranger (10X Genomics; version 7.1) was used to build the HPV reference files. To detect HPV present in the single cells, we aligned the data to the HPV reference files using the “count” function in Cell Ranger. The parameters “alignIntronMax” and “genomeSAinndexNbases” for the STAR algorithm (integrated into Cell Ranger) were adjusted based on the characteristics of the viral genome. The “alignIntronMax” parameter, representing the maximum intro length allowed in the algorithm, was set to 1 because viruses do not contain introns. To achieve a balance between memory size and speed, the “genomeSAinndexNbases” parameter was set to 6 based on the algorithm min(14, log2(genome length)/2-1). The “genomeSAinndexNbases” was set to 6 bases on algorithm min(14, log2(genome length)/2-1) to balance the computational memory size and speed.
 
