@@ -7,10 +7,10 @@ The immune tumor microenvironment (iTME) represents a complex integration of tum
 1.	Download the python code, and open in the jupyter notebook
 2.	Change the ‘path_to_data’ to your csv file
 3.	The data file must contain the following elements:
-•	patients – represent each sample
-•	groups – optional, only if there are two distinct patient subgroups
-•	neighborhood10 – cell neighborhood annotation
-•	ClusterName – cell type annotation
+    - patients – represent each sample
+    - groups – optional, only if there are two distinct patient subgroups
+    - neighborhood10 – cell neighborhood annotation
+    - ClusterName – cell type annotation
 4.	Run the python code sequentially
 
 ## Reference
