@@ -32,8 +32,9 @@ library(RColorBrewer)
 library(tidyverse)
 library(slingshot)
 library(data.table)
-library(fields)
-
+#library(fields)
+# The MoMAColors are set for better visualization colors
+library(MoMAColors)
 ```
 
 
@@ -56,17 +57,16 @@ RESULT_DIR <- "./result/"
 dir.create(RESULT_DIR)
 set.seed(1)
 
-# The MoMAColors are set for better visualization colors
-library(MoMAColors)
+combined <- read_rds("combined.rds")
 # Assume that the cell type labels are stored in the 'celltype' column in the Seurat object
 cell_type_color <- MoMAColors::moma.colors("Klein", n= length(unique(combined@meta.data$celltype)))
 
 ```
 
-# Load and process seurat object and convert for Slingshot analysis
+# Load and process seurat object and run Slingshot analysis
 
 ```{r eval=T, echo=F, fig.height=10, fig.width=10, message=TRUE}
-combined <- read_rds("combined.rds")
+
 this_obj_name <- "Example_object"
 Idents(combined) <- combined$celltype
 
@@ -89,118 +89,96 @@ sce <-
     omega = T,
     start.clus = c("AT2") # you need to manuualy set the start cluster of the trajectory
   )
+```
 
-lnes <-
-  getLineages(
-    reducedDim(sce, "UMAP"),
-    clusterLabels = sce$ident
-  )
-curves <- getCurves(lnes,  thresh = 0.01, stretch = 0.8, allow.breaks = T, shrink = 0.99)
+# Plot trajetory
 
+```{r}
+
+# Step 1: Lineage Inference
+lnes <- getLineages(
+  reducedDim(sce, "UMAP"),
+  clusterLabels = sce$ident
+)
+
+# Save Slingshot plot with inferred lineages
 pdf(paste0("./result/slingshot_", this_obj_name, ".pdf"),
-      width = 6,
-      height = 6)
+    width = 6, height = 6)
+
 plot(reducedDims(sce)$UMAP,
      col = named_cell_type_color[as.character(sce$celltype)],
-     pch = 16,
-     cex = 0.5,
-     asp = 1,
-   axes = F)
-# Add lines to the plot
-lines(SlingshotDataSet(curves),
-      lwd = 3,
-      col = 'black')
+     pch = 16, cex = 0.5, asp = 1, axes = FALSE)
 
+# Add trajectory lines
+lines(SlingshotDataSet(sce), lwd = 3, col = 'black')
 dev.off()
 
-colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+# Step 2: Pseudotime Plot for Pseudotime_1
+colors <- colorRampPalette(brewer.pal(11, 'YlOrRd')[-6])(100)
+plotcol <- colors[cut(sce$slingPseudotime_1, breaks = 100)]
 plotcol[is.na(plotcol)] <- '#d3d3d3'
 
-#1
 pdf(paste0("./result/slingshot_", this_obj_name, "_Pseudotime_1.pdf"),
-      width = 8,
-      height = 6)
-# Your existing code
-colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
-plotcol[is.na(plotcol)] <- '#d3d3d3'
+    width = 8, height = 6)
 
 plot(reducedDims(sce)$UMAP,
-     col = plotcol,
-     pch = 16,
-     cex = 0.5,
-     asp = 1,
-     axes = F)
+     col = plotcol, pch = 16, cex = 0.5, asp = 1, axes = FALSE)
 
-lines(SlingshotDataSet(sce), lwd = 3, col = c("black"))
+lines(SlingshotDataSet(sce), lwd = 3, col = 'black')
 
-# New code to add a legend
+# Add legend for Pseudotime_1
 max_val <- max(sce$slingPseudotime_1, na.rm = TRUE)
-breaks <- seq(0, max_val, length.out = 5)  # create 5 breaks
-labels <- round(breaks, 0)  # round the breaks to 2 decimal places
-
+breaks <- seq(0, max_val, length.out = 5)
+labels <- round(breaks, 0)
 color_indices <- round(seq(1, length(colors), length.out = length(breaks)))
 color_labels <- colors[color_indices]
 
-legend("bottomright", 
-       legend = labels, 
-       fill = color_labels, 
-       title = "Pseudotime_1",
-       #inset = c(-0.5, 0.05),
-       box.lwd = NA)  # adjust these values as needed
+legend("bottomright", legend = labels, fill = color_labels, 
+       title = "Pseudotime_1", box.lwd = NA)
 dev.off()
 
-#2
-pdf(paste0("./result/slingshot_", this_obj_name, "_Pseudotime_2.pdf"),
-      width = 8,
-      height = 6)
-# Your existing code
-colors <- colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_2, breaks=100)]
+# Step 3: Pseudotime Plot for Pseudotime_2
+plotcol <- colors[cut(sce$slingPseudotime_2, breaks = 100)]
 plotcol[is.na(plotcol)] <- '#d3d3d3'
 
+pdf(paste0("./result/slingshot_", this_obj_name, "_Pseudotime_2.pdf"),
+    width = 8, height = 6)
+
 plot(reducedDims(sce)$UMAP,
-     col = plotcol,
-     pch = 16,
-     cex = 0.5,
-     asp = 1,
-     axes = F)
+     col = plotcol, pch = 16, cex = 0.5, asp = 1, axes = FALSE)
 
-lines(SlingshotDataSet(sce), lwd = 3, col = c("black"))
+lines(SlingshotDataSet(sce), lwd = 3, col = 'black')
 
-# New code to add a legend
+# Add legend for Pseudotime_2
 max_val <- max(sce$slingPseudotime_2, na.rm = TRUE)
-breaks <- seq(0, max_val, length.out = 5)  # create 5 breaks
-labels <- round(breaks, 0)  # round the breaks to 2 decimal places
-
+breaks <- seq(0, max_val, length.out = 5)
+labels <- round(breaks, 0)
 color_indices <- round(seq(1, length(colors), length.out = length(breaks)))
 color_labels <- colors[color_indices]
 
-legend("bottomright", 
-       legend = labels, 
-       fill = color_labels, 
-       title = "Pseudotime_2",
-       #inset = c(-0.5, 0.05),
-       box.lwd = NA)  # adjust these values as needed
+legend("bottomright", legend = labels, fill = color_labels, 
+       title = "Pseudotime_2", box.lwd = NA)
 dev.off()
 
-# seurat better plot
+# Step 4: Enhanced Seurat Plot
 combined$pseudotime1 <- sce$slingPseudotime_1
 combined$pseudotime2 <- sce$slingPseudotime_2
-p1 <- FeaturePlot(combined, c("pseudotime1"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
-p2 <- FeaturePlot(combined, c("pseudotime2"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
-pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime1_v2.pdf"),
-      width = 6,
-      height = 6)
 
+p1 <- FeaturePlot(combined, "pseudotime1", 
+                  cols = colorRampPalette(brewer.pal(11, 'YlOrRd')[-6])(20)) + NoAxes()
+
+p2 <- FeaturePlot(combined, "pseudotime2", 
+                  cols = colorRampPalette(brewer.pal(11, 'YlOrRd')[-6])(20)) + NoAxes()
+
+pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime1_v2.pdf"),
+    width = 6, height = 6)
 print(p1)
 dev.off()
-pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime2_v2.pdf"),
-      width = 6,
-      height = 6)
 
+pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime2_v2.pdf"),
+    width = 6, height = 6)
 print(p2)
 dev.off()
+
 ```
 
