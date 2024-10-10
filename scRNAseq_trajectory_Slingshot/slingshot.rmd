@@ -56,17 +56,19 @@ RESULT_DIR <- "./result/"
 dir.create(RESULT_DIR)
 set.seed(1)
 
+# The MoMAColors are set for better visualization colors
 library(MoMAColors)
+# Assume that the cell type labels are stored in the 'celltype' column in the Seurat object
 cell_type_color <- MoMAColors::moma.colors("Klein", n= length(unique(combined@meta.data$celltype)))
 
 ```
 
-# Load and process seurat object
+# Load and process seurat object and convert for Slingshot analysis
 
 ```{r eval=T, echo=F, fig.height=10, fig.width=10, message=TRUE}
 combined <- read_rds("combined.rds")
-this_obj <- "Example_object"
-Idents(combined) <- combined1$celltype
+this_obj_name <- "Example_object"
+Idents(combined) <- combined$celltype
 
 DefaultAssay(combined) <- "RNA"
 
@@ -95,7 +97,7 @@ lnes <-
   )
 curves <- getCurves(lnes,  thresh = 0.01, stretch = 0.8, allow.breaks = T, shrink = 0.99)
 
-pdf(paste0("./result/slingshot_", this_obj, ".pdf"),
+pdf(paste0("./result/slingshot_", this_obj_name, ".pdf"),
       width = 6,
       height = 6)
 plot(reducedDims(sce)$UMAP,
@@ -116,7 +118,7 @@ plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
 plotcol[is.na(plotcol)] <- '#d3d3d3'
 
 #1
-pdf(paste0("./result/slingshot_", this_obj, "_Pseudotime_1.pdf"),
+pdf(paste0("./result/slingshot_", this_obj_name, "_Pseudotime_1.pdf"),
       width = 8,
       height = 6)
 # Your existing code
@@ -150,7 +152,7 @@ legend("bottomright",
 dev.off()
 
 #2
-pdf(paste0("./result/slingshot_", this_obj, "_Pseudotime_2.pdf"),
+pdf(paste0("./result/slingshot_", this_obj_name, "_Pseudotime_2.pdf"),
       width = 8,
       height = 6)
 # Your existing code
@@ -188,13 +190,13 @@ combined$pseudotime1 <- sce$slingPseudotime_1
 combined$pseudotime2 <- sce$slingPseudotime_2
 p1 <- FeaturePlot(combined, c("pseudotime1"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
 p2 <- FeaturePlot(combined, c("pseudotime2"), cols = colorRampPalette(brewer.pal(11,'YlOrRd')[-6])(20)) + NoAxes()
-pdf(paste0("./result/slingshot_", this_obj, "_pseudotime1_v2.pdf"),
+pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime1_v2.pdf"),
       width = 6,
       height = 6)
 
 print(p1)
 dev.off()
-pdf(paste0("./result/slingshot_", this_obj, "_pseudotime2_v2.pdf"),
+pdf(paste0("./result/slingshot_", this_obj_name, "_pseudotime2_v2.pdf"),
       width = 6,
       height = 6)
 
