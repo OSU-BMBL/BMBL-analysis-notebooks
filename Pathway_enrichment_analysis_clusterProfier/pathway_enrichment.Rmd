@@ -1,0 +1,156 @@
+---
+title: "Pathway enrichment analysis and visualization using clusterProfiler"
+author: "YOUR NAME"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This R Markdown tutorial was created to perform enrichment analysis on Gene Ontology. GO terms are organized in a directed acyclic graph, where edges between terms represent parent-child relationship.
+
+If you use clusterProfiler in published research, please cite:
+
+G Yu, LG Wang, Y Han, QY He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology 2012, 16(5):284-287. doi:[10.1089/omi.2011.0118](http://dx.doi.org/10.1089/omi.2011.0118)
+
+
+
+# Load packages
+
+```{r}
+library(tidyverse)
+library(clusterProfiler)
+library(ggplot2)
+library(org.Hs.eg.db)
+```
+
+# Load gene list and convert them to EntrezID
+
+```{r}
+
+example_gene_list <- c("GPX3",  "GLRX",   "LBP",   "CRYAB", "DEFB1", "HCLS1",   "SOD2",   "HSPA2",
+       "ORM1",  "IGFBP1", "PTHLH", "GPC3",  "IGFBP3","TOB1",    "MITF",   "NDRG1",
+       "NR1H4", "FGFR3",  "PVR",   "IL6",   "PTPRM", "ERBB2",   "NID2",   "LAMB1",
+       "COMP",  "PLS3",   "MCAM",  "SPP1",  "LAMC1", "COL4A2",  "COL4A1", "MYOC",
+       "ANXA4", "TFPI2",  "CST6",  "SLPI",  "TIMP2", "CPM",     "GGT1",   "NNMT",
+       "MAL",   "EEF1A2", "HGD",   "TCN2",  "CDA",   "PCCA",    "CRYM",   "PDXK",
+       "STC1",  "WARS",  "HMOX1", "FXYD2", "RBP4",   "SLC6A12", "KDELR3", "ITM2B")
+
+example_gene_mapping = bitr(example_gene_list, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
+
+example_gene_id <- example_gene_mapping$ENTREZID
+
+# geneList is a pre-defined background gene list, and can be replaced with all genes in your datasets
+data(geneList, package="DOSE")
+```
+
+# GO over-representation analysis
+
+The clusterProfiler package implements enrichGO() for gene ontology over-representation test.
+
+Here we use the dataset geneList provided by DOSE.
+
+Gene Ontology defines concepts/classes used to describe gene function, and relationships between these concepts. It classifies functions along three aspects:
+
+- MF: Molecular Function: molecular activities of gene products
+
+- CC: Cellular Component: where gene products are active
+
+- BP: Biological Process: pathways and larger processes made up of the activities of multiple gene products
+
+GO terms are organized in a directed acyclic graph, where edges between terms represent parent-child relationship.
+
+
+```{r}
+gobp_result <- enrichGO(gene          = example_gene_id,
+                universe      = names(geneList),
+                OrgDb         = org.Hs.eg.db,
+                ont           = "BP", # can be either one: BP, MF, CC
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.05,
+                qvalueCutoff  = 0.05,
+        readable      = TRUE)
+head(gobp_result)
+```
+
+# Reactome pathway over-representation analysis
+
+Enrichment analysis is a widely used approach to identify biological themes. ReactomePA implemented enrichPathway() that uses hypergeometric model to assess whether the number of selected genes associated with a reactome pathway is larger than expected.
+
+
+
+```{r}
+#BiocManager::install("ReactomePA")
+library(ReactomePA)
+reactome_result <- enrichPathway(gene=example_gene_id, pvalueCutoff = 0.05, readable=TRUE)
+head(reactome_result)
+
+```
+# Pathway visualization
+
+## Bar plot
+
+```{r, fig.width=10, fig.height=10}
+mutate(reactome_result, qscore = -log(p.adjust, base=10)) %>% 
+    barplot(x="qscore")
+
+```
+
+
+## Dot plot
+
+```{r, fig.width=10, fig.height=10}
+
+dotplot(reactome_result, showCategory=30) + ggtitle("dotplot for result")
+```
+## Gene-Concept Network
+
+```{r, fig.width=10, fig.height=10}
+p1 <- cnetplot(reactome_result, node_label="category", 
+        cex_label_category = 1.2) 
+p2 <- cnetplot(reactome_result, node_label="gene", 
+        cex_label_gene = 0.8) 
+p3 <- cnetplot(reactome_result, node_label="all") 
+p4 <- cnetplot(reactome_result, node_label="none", 
+        color_category='firebrick', 
+        color_gene='steelblue') 
+cowplot::plot_grid(p1, p2, p3, p4, ncol=2, labels=LETTERS[1:4])
+```
+
+## Enrichment Map
+
+```{r, fig.width=10, fig.height=10}
+library(enrichplot)
+edo <- pairwise_termsim(reactome_result)
+p1 <- emapplot(edo)
+p2 <- emapplot(edo, cex_category=1.5)
+p3 <- emapplot(edo, layout="kk")
+p4 <- emapplot(edo, cex_category=1.5,layout="kk") 
+cowplot::plot_grid(p1, p2, p3, p4, ncol=2, labels=LETTERS[1:4])
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+

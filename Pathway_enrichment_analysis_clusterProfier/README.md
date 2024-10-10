@@ -1,39 +1,37 @@
-# Slingshot Trajectory Analysis for scRNAseq Data
+# Enrichment Analysis Using clusterProfiler
 
-This tutorial provides a step-by-step guide for performing trajectory analysis on single-cell RNA sequencing (scRNAseq) data using the Slingshot package in R.
+## Introduction
 
-Trajectory analysis is a powerful tool that allows researchers to analyze the developmental progression of cells. It is particularly useful in scRNAseq studies for understanding cellular differentiation processes and the progression of cells from one state to another over time.
+`clusterProfiler` provides a suite of methods to analyze and visualize functional profiles of genomic data. It supports genomic coordinates (via **ChIPseeker**), gene sets, and gene clusters, facilitating comprehensive enrichment analysis.
 
-## Input
+In this tutorial, we will perform Gene Ontology (GO) enrichment analysis using `clusterProfiler`, specifically focusing on the over-representation of GO terms. The GO structure is represented by a **directed acyclic graph** (DAG), where the edges between terms represent parent-child relationships.
 
-Before you proceed, ensure you have the following:
+The **enrichGO()** function in the `clusterProfiler` package will be used for the GO over-representation test. As an example, we will analyze the **geneList** dataset provided by the `DOSE` package.
 
-- A pre-analyzed scRNAseq Seurat object with cell types identified
-- R packages: Polychrome, ggbeeswarm, ggthemes, SingleCellExperiment, Seurat, cowplot, ggplot2, patchwork, here, qs, RColorBrewer, tidyverse, slingshot, data.table, fields, and MoMAColors
+### Overview of Gene Ontology (GO)
 
-## Output
+Gene Ontology (GO) is a framework for describing the functions of genes and their products. It is structured along three main aspects:
 
-- This tutorial will guide you through the process of generating Slingshot trajectories and visualizing them in different ways. The output includes PDF files saved in the ./result/ directory:
+- **MF (Molecular Function)**: Describes the molecular activities of gene products (e.g., binding, catalysis).
+- **CC (Cellular Component)**: Indicates where gene products are located within cells (e.g., nucleus, membrane).
+- **BP (Biological Process)**: Represents the broader biological processes that involve multiple gene products (e.g., cell cycle, signal transduction).
 
-- Slingshot trajectories with each cell colored by its cell type
-  Trajectories colored by pseudotime values (two versions for each pseudotime)
-  Seurat feature plots for each pseudotime
+Additionally, we will also explore **Reactome pathway enrichment**, which provides a curated database of biological pathways. The `ReactomePA` package implements the **enrichPathway()** function, which uses a hypergeometric model to determine if the observed number of genes associated with a specific Reactome pathway is greater than expected by chance.
 
-## Steps
+### Why Enrichment Analysis?
 
-Set up the working directory: The here package is used to set the working directory.
+Enrichment analysis helps identify significant biological themes within a gene set. It can highlight enriched functional categories or pathways, offering deeper biological insights into large-scale gene expression data or genomic datasets.
 
-Load the necessary libraries and initialize the result directory: The required R packages are loaded and a directory for storing the results is created.
+---
 
-Load and process the Seurat object: The Seurat object is loaded and processed. The cell identities are set based on their cell types.
+## Pipeline Input
 
-Convert the Seurat object to a SingleCellExperiment object: The Seurat object is converted to a SingleCellExperiment object, which is the required input for the Slingshot package.
+- **Gene List**: A list of genes for which enrichment analysis will be performed.
 
-Perform trajectory analysis with Slingshot: The Slingshot package is used to perform trajectory analysis. The start cluster for the trajectory needs to be manually set.
+## Pipeline Output
 
-Generate and save trajectory plots: Trajectories are plotted and saved as PDF files. The plots include cells colored by their cell types and by their pseudotime values. The pseudotime values are also added to the Seurat object and visualized using Seurat's FeaturePlot function.
-
-After running this tutorial, you will have a set of trajectory plots that visualize the developmental progression of cells in your scRNAseq data.
+- **Enriched Pathways**: Functional enrichment using **Gene Ontology** (GO terms: MF, CC, BP) or **Reactome pathways**.
+- **Network Visualization**: Visual representations of the relationships between enriched terms and pathways.
 
 ## Contact
 
@@ -43,11 +41,11 @@ Author: Cankun Wang
 
 Please revise the example bioinformatics methods based on your settings:
 
-To analyze the cell trajectory during the differentiation of XXX cell types, we employed the Slingshot method (v.2.8.0), which infers cell lineages and estimates expression dynamics across lineages over pseudotime. The Seurat object was first converted into a SingleCellExperiment format using the as.SingleCellExperiment() function. Trajectory inference was then performed using Slingshot with its default settings, applied to the UMAP embeddings for dimensionality reduction. The predefined starting points for the trajectory were set as the XXXX cell types. Pseudotime values were estimated to track the progression of cells along these developmental lineages, providing insights into the temporal expression changes during differentiation.
+We employed the clusterProfiler package to conduct comprehensive pathway enrichment analysis, integrating both Reactome pathway and Gene Ontology (GO) enrichment analyses for biological processes (BP). Reactome pathway analysis was used to identify over-represented pathways, while GO enrichment focused on uncovering significant biological processes. To maintain statistical rigor, we applied the Benjamini-Hochberg (BH) method for p-value adjustment, setting stringent cutoffs of 0.05 for both p-value and q-value to minimize false positives and ensure the robustness of the findings.
 
 Citation:
 
-https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4772-0
+G Yu, LG Wang, Y Han, QY He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology 2012, 16(5):284-287. doi:[10.1089/omi.2011.0118](http://dx.doi.org/10.1089/omi.2011.0118)
 
 ## Session info as tested
 
