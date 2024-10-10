@@ -25,6 +25,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
 3. Assays such as RNA-seq, single-cell RNA-seq, and Spatial transcriptomics.
 
 ## Table of Contents
+
 ### Bioinformatics pipelines based on data type
 
 - Single-cell RNA-seq:
@@ -59,23 +60,29 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [Bulk ATACseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)
 - Bisulfite sequencing (BS-seq):
   1. [Bismark aligner](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BS-seq_Bismark_Aligner)
-- Bioinformatics tools:
+- DNA motif analysis:
   1. [HOMER2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/HOMER)
+- General downstream analysis:
+  1. [Enrichment Analysis Using clusterProfiler](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Pathway_enrichment_analysis_clusterProfier)
+
 ### Artificial Intelligence
+
 - ChatGPT prompts
   1. [ChatGPT_prompts](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChatGPT_prompts)
+
 ### Other Tutorials
+
 - Server
   1. [Introduction OSC](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Introduction_OSC)
 - Figure/Plot scripts
   1. [Figure codes](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/figure_code)
-- Data submission to GEO
+- Data management guide
   1. [GEO data submission](./GEO_data_submission)
+  2. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
 
 ### Contributing template
 
 - Template Readme for all new contributions: [README_template.md](./README_template.md)
-
 
 If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Shaopeng Gu at shaopeng.gu@osumc.edu.
 
