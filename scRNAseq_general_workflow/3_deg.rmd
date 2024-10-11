@@ -50,6 +50,10 @@ print(paste("Current working directory:", here::here()))
 ```{r}
 source("../common/functions.R")
 combined <- qs::qread('./combined.qsave')
+
+# To obtain all_gene_sets, please run msigdb
+# library(msigdbr)
+# all_gene_sets = msigdbr(species = "human")
 all_gene_sets <- qs::qread("../RNAseq_workflow/all_gene_sets_human.qsave")
 
 

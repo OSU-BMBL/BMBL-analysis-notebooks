@@ -31,7 +31,7 @@ Enrichment analysis helps identify significant biological themes within a gene s
 ## Pipeline Output
 
 - **Enriched Pathways**: Functional enrichment using **Gene Ontology** (GO terms: MF, CC, BP) or **Reactome pathways**.
-- **Network Visualization**: Visual representations of the relationships between enriched terms and pathways.
+- **Network Visualization**: Visual representations of the relationships between enriched terms and pathways, including bar plot, dot plot, network
 
 ## Contact
 

@@ -48,8 +48,9 @@ example_gene_mapping = bitr(example_gene_list, fromType="SYMBOL", toType="ENTREZ
 
 example_gene_id <- example_gene_mapping$ENTREZID
 
-# geneList is a pre-defined background gene list, and can be replaced with all genes in your datasets
+# GeneList is a pre-defined background gene list, and can be replaced with all genes in your datasets
 data(geneList, package="DOSE")
+
 ```
 
 # GO over-representation analysis
@@ -70,7 +71,7 @@ GO terms are organized in a directed acyclic graph, where edges between terms re
 
 
 ```{r}
-gobp_result <- enrichGO(gene          = example_gene_id,
+gobp_result <- enrichGO(gene  = example_gene_id,
                 universe      = names(geneList),
                 OrgDb         = org.Hs.eg.db,
                 ont           = "BP", # can be either one: BP, MF, CC
@@ -99,7 +100,7 @@ head(reactome_result)
 ## Bar plot
 
 ```{r, fig.width=10, fig.height=10}
-mutate(reactome_result, qscore = -log(p.adjust, base=10)) %>% 
+mutate(gobp_result, qscore = -log(p.adjust, base=10)) %>% 
     barplot(x="qscore")
 
 ```

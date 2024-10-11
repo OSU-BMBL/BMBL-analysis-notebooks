@@ -59,7 +59,7 @@ set.seed(1)
 
 combined <- read_rds("combined.rds")
 # Assume that the cell type labels are stored in the 'celltype' column in the Seurat object
-cell_type_color <- MoMAColors::moma.colors("Klein", n= length(unique(combined@meta.data$celltype)))
+cell_type_color <- MoMAColors::moma.colors("Klein", n=length(unique(combined@meta.data$celltype)))
 
 ```
 
