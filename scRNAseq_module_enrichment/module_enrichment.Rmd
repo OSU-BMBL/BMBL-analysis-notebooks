@@ -1,0 +1,135 @@
+---
+title: "Gene module enrichment analysis"
+author: "YOUR NAME"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load packages
+
+```{r}
+library(tidyverse)
+library(Seurat)
+library(GSVA)
+
+```
+
+# Load gene list and Seurat object data
+
+Next, define the gene list and load the Seurat object that contains your scRNA-seq data.
+
+
+```{r}
+
+example_gene_list <- c("Gpx3",  "Glrx",   "Lbp",   "Cryab")
+
+example_obj <- read_rds("combined.rds")
+
+```
+
+# Calculate enrichment using AddModuleScore function from the Seurat package
+
+Use Seurat’s AddModuleScore() function to calculate enrichment scores for the gene module across cells in the dataset.
+
+
+```{r}
+
+DefaultAssay(example_obj) <- "RNA"
+example_obj <- AddModuleScore(example_obj, features = list(example_gene_list=example_gene_list), name = "example_gene_list")
+
+```
+# Calculate enrichment using ssGSEA and gsva method from the GSVA package
+
+The GSVA package provides two methods for enrichment analysis: ssGSEA and GSVA. We will calculate both enrichment scores for the gene module.
+
+
+
+https://www.bioconductor.org/packages/release/bioc/vignettes/GSVA/inst/doc/GSVA.html 
+
+```{r}
+
+exp_data <- LayerData(example_obj, layer = "data")
+
+# ssGSEA method
+ssgseaPar <- ssgseaParam(exp_data, list(example_gene_list=example_gene_list))
+ssgsea.score <- gsva(ssgseaPar, verbose=T)
+example_obj@meta.data[, 'example_ssgsea_score'] <- as.numeric(ssgsea.score)
+
+# gsva method
+gsvaPar <- ssgseaParam(exp_data, list(example_gene_list=example_gene_list))
+gsva.score <- gsva(gsvaPar, verbose=T)
+example_obj@meta.data[, 'example_gsva_score'] <- as.numeric(gsva.score)
+
+
+```
+
+# Gene set score visualization
+
+## Violin plot
+
+visualize the module and enrichment scores across cell types using violin plots.
+
+
+```{r, fig.width=9, fig.height=6}
+
+VlnPlot(example_obj, "example_gene_list1", group.by = "celltype") + ggtitle(paste0("example_gene_list - Module score"))
+
+VlnPlot(example_obj, "example_ssgsea_score", group.by = "celltype") + ggtitle(paste0("example_gene_list - SSGSEA score"))
+
+VlnPlot(example_obj, "example_gsva_score", group.by = "celltype") + ggtitle(paste0("example_gene_list - GSVA score"))
+
+```
+
+
+## Heatmap
+
+visualize the individual genes in the module across cell types using heatmap
+
+```{r, fig.width=6, fig.height=6}
+
+example_obj <- ScaleData(example_obj)
+heatmap_matrix <- AverageExpression(example_obj[example_gene_list,], assays = "RNA", slot = "scale.data")$RNA
+
+pheatmap::pheatmap(
+  heatmap_matrix,
+  #annotation_col = my_sample_col,
+  #scale = "row",
+  color = colorRampPalette(c(
+    "#344298", "#bbe0ed", "#fdf9b7", "#fba95e", "#ae0825"
+  ))(1000),
+  cluster_rows = T,
+  cluster_cols = F,
+  angle_col = 45,
+  cellheight = 16,
+  cellwidth = 16,
+  main = "Average expression of example gene module"
+)
+  
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+

@@ -37,6 +37,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
   6. [scRNAseq HPV mapping](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch)
   7. [scRNAseq stomach and colon branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
   8. [scRNAseq large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/sc_LargeData_Sketch-based_Analysis)
+  9. [Gene Module Enrichment Analysis Using Seurat and GSVA](./scRNAseq_module_enrichment)
 - Single-cell ATAC-seq:
   1. [scATACseq_general_workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
   2. [scATACseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATAC-seq_preprocessing)
