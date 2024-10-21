@@ -34,6 +34,10 @@ example_gene_list <- c("Gpx3",  "Glrx",   "Lbp",   "Cryab")
 
 example_obj <- read_rds("combined.rds")
 
+# Optional: settings specific to the example dataset 
+DefaultAssay(example_obj) <- "RNA"
+example_obj <- NormalizeData(example_obj)
+example_obj <- ScaleData(example_obj)
 ```
 
 # Calculate enrichment using AddModuleScore function from the Seurat package
@@ -43,7 +47,8 @@ Use Seurat’s AddModuleScore() function to calculate enrichment scores for the 
 
 ```{r}
 
-DefaultAssay(example_obj) <- "RNA"
+
+
 example_obj <- AddModuleScore(example_obj, features = list(example_gene_list=example_gene_list), name = "example_gene_list")
 
 ```
@@ -96,7 +101,7 @@ visualize the individual genes in the module across cell types using heatmap
 
 ```{r, fig.width=6, fig.height=6}
 
-example_obj <- ScaleData(example_obj)
+
 heatmap_matrix <- AverageExpression(example_obj[example_gene_list,], assays = "RNA", slot = "scale.data")$RNA
 
 pheatmap::pheatmap(
