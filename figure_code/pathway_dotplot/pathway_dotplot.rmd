@@ -1,0 +1,124 @@
+---
+title: "Figures: pathway dotplot"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(message = T)
+knitr::opts_chunk$set(warning = T)
+knitr::opts_chunk$set(error = T)
+knitr::opts_chunk$set(fig.width = 8)
+
+library(Seurat)
+library(ggplot2)
+library(patchwork)
+library(here)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(ggtext)
+
+```
+
+
+# Set working dir
+
+```{r,,eval=T,message=F,warning=F,error=F}
+
+here::set_here()
+print(paste("Current working directory:", here::here()))
+
+```
+
+
+# Setup functions
+
+```{r}
+add_newlines <- function(string, width = 40) {
+  # Use strwrap to split strings
+  wrapped <- strwrap(string, width = width)
+  
+  # If string wasn't split, return original string
+  if (length(wrapped) == 1) return(string)
+  
+  # Collapse into single string with '<br>' added
+  paste(wrapped, collapse = "<br>")
+}
+
+```
+
+
+## Pathway dot plot
+
+```{r}
+
+
+pathway_table <- read.csv("example_pathways.csv")
+# Remove rows that are completely empty
+pathway_table <- pathway_table[rowSums(is.na(pathway_table) |
+                                         pathway_table == "") != ncol(pathway_table), ]
+
+# Remove pathway REACTOME or GO IDs
+pathway_table$Term <- gsub("R-.*", "", pathway_table$Term)
+pathway_table$Term  <-
+  str_replace_all(pathway_table$Term , " \\(GO.*", "")
+# Add new line if pathway name is too long
+pathway_table$Term <- sapply(pathway_table$Term, add_newlines)
+
+
+pathway_table <- pathway_table %>%
+  mutate(len = lengths(str_split(Genes, ";")),
+         pval = -log10(Adjusted.P.value)) %>%
+  rowwise() %>%
+  mutate(gene_ratio = eval(parse(text = str_remove_all(Overlap, " ")))) %>%
+  dplyr::select(Term, len, pval, gene_ratio, Adjusted.P.value, Direction)
+
+# Define color mapping based on Direction
+pathway_table <- pathway_table %>%
+  mutate(Term_colored = ifelse(
+    Direction == "up",
+    paste0("<span style='color:red;'>", Term, "</span>"),
+    paste0("<span style='color:blue;'>", Term, "</span>")
+  ))
+
+
+# Plot with colored y-axis labels
+p1 <- ggplot(pathway_table, aes(x = gene_ratio, y = Term_colored)) +
+  geom_point(aes(size = len, color = pval)) +
+  scale_color_gradient(low = "red", high = "blue", trans = 'reverse') +
+  theme_bw() +
+  ylab("") +
+  labs(size = "Overlapping count", color = "-log10(adj.p)") +
+  theme(
+    legend.title = element_text(size = 18),
+    legend.text = element_text(size = 14),
+    axis.text.x = element_text(size = 18),
+    axis.text.y = element_markdown(size = 18),  # Enable markdown formatting for y-axis
+    axis.title = element_text(size = 18)
+  ) +
+  scale_x_continuous(name = "Overlapping ratio") +
+  scale_size(range = c(8, 16))
+
+
+```
+
+# Plot figure
+
+```{r, fig.width=12, fig.height=12}
+p1
+```
+
+```{r}
+sessionInfo()
+
+```
