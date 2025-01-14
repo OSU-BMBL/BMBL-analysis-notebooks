@@ -20,7 +20,7 @@ Steps:
 
 - Downstream analysis, including DEGs and DAPs identification
 
-Code reference: https://osu-bmbl.github.io/STREAM/articles/eRegulon-inference.html
+Code reference: [https://osu-bmbl.github.io/STREAM/articles/eRegulon-inference.html](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scMultiome_AD_branch/snMulti-omics-integrtion.rmd)
 
 ## Using STREAM to infer TF and regulon
 
