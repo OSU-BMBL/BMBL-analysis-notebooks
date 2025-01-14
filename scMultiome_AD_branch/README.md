@@ -23,6 +23,6 @@ Steps:
 
 ## Using STREAM to infer TF and regulon
 
-Reference code: https://osu-bmbl.github.io/STREAM/articles/eRegulon-inference.html
+Code reference: https://osu-bmbl.github.io/STREAM/articles/eRegulon-inference.html
 
 Author: Qi Guo
