@@ -3,17 +3,20 @@ nf-core/rnaseq is a bioinformatics pipeline that can be used to analyse RNA sequ
 # Data
 RNASeq data (fastq or fastq.gz)
 # Input format
-Prepare a samplesheet with your input data that looks as follows:
+Prepare a samplesheet with your input data that looks as follows (you can use 'auto' if you do not know the strandedness):
 ```
 sample,fastq_1,fastq_2,strandedness
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz,auto
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz,auto
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz,auto```
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz,forward
+CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz,forward
+CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz,auto
+TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,,reverse
+TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,,reverse
+TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,,auto
 ```
 # Workflow
 nf-core/rnaseq includes mutiple steps, please select your own options based on [usage](https://nf-co.re/rnaseq/usage)
 1. Merge re-sequenced FastQ files (cat)
-1. Sub-sample FastQ files and auto-infer strandedness (fq, Salmon)
+1. Auto-infer strandedness by subsampling and pseudoalignment (fq, Salmon)
 1. Read QC (FastQC)
 1. UMI extraction (UMI-tools)
 1. Adapter and quality trimming (Trim Galore!)
@@ -34,29 +37,62 @@ nf-core/rnaseq includes mutiple steps, please select your own options based on [
     1. dupRadar
     1. Preseq
     1. DESeq2
+    1. Kraken2 -> Bracken on unaligned sequences 
 1. Pseudoalignment and quantification (Salmon or ‘Kallisto’; optional)
 1. Present QC for raw read, alignment, gene biotype, sample similarity, and strand-specificity checks (MultiQC, R)
 
 # Running the job in OSC
 
-1. Installnation
-   - Install jdk-21.0.2 or higher
-   - Install nextflow (>21.10.3)
-   - Install Singularity [tutorial](https://singularity-tutorial.github.io/01-installation/)
-2. Command
+1. Installnation:
+   - Pitzer: module load nextflow/24.10.4
+   - Ascend:
+     1. install the new version of Java (Java v11+)
+     2. export the path of installed Java
+     3. curl -s https://get.nextflow.io | bash
+     4. export installed nextflow path
+3. Command
    ```
     nextflow run nf-core/rnaseq \
        --input samplesheet.csv \
        --outdir <OUTDIR> \
-       --genome GRCh38 \
-       -profile <docker/singularity/.../institute>
+       --genome GRCh38 (GRCm38) \
+       -profile singularity
    ```
-3. Pipeline output:
-   - fastqc
-   - multiqc
+4. Example bash script
+   ```
+   #!/bin/bash
+   #SBATCH --job-name=RNAseq
+   #SBATCH --output="%j_log.txt"
+   #SBATCH --account=PCON0022
+   #SBATCH --nodes=1
+   #SBATCH --ntasks=32
+   #SBATCH --mem=160G
+   #SBATCH --mail-type=BEGIN,END,FAIL
+   #SBATCH --time=80:00:00
+
+   module load nextflow/24.10.4
+   nextflow run nf-core/rnaseq --input loybulkrna.csv --outdir bulkRNA_pipeline_output --genome GRCm38 -profile singularity
+   ```
+4. Pipeline output:
+   - fastqc: this folder contains QC reports for each sequence
+   - **multiqc**: this folder contains the merged QC report and all related data and plots (check this folder first)
    - pipeline info
-   - salmon
-   - star_rsem
-   - trimgalore
+   - **star_salmon**: this folder contains:
+     - bigwig: bigwig files for each sequence
+     - **deseq2_qc**: deseq2 RData and size factor Rdata. Loading these RData for DEG analysis
+     - dupradar: assessment of duplication rates in RNA-Seq datasets. Include all plots and gene data for duplication rates
+     - **featurecounts**: featurecounts for each sequence
+     - **quant**: Length, EffectiveLength, TPM, NumReads for each sequence
+     - picard_metrics: metrics for duplicated reads
+     - qualimap: mapping quality reports for each sequence
+     - rseqc: RNA-seq Quality Control (explore this folder if needed)
+     - samtools_stats: metircs for Bam file
+     - stringtie: transcript structure recovery and abundance estimation from bulk RNA-Seq reads aligned to a reference genome
+     - **all_sorted_BAM**
+     - **merged_gene_counts**: .tsv and .rds files
+     - **merged_transcript_counts**: .tsv and .rds files
+     - **merged_gene_tpm**: .tsv file
+     - merged_gene_length: .tsv file
+   - trimgalore: trimming report
 
 Author: Shaopeng Gu
