@@ -65,10 +65,10 @@ nf-core/rnaseq includes mutiple steps, please select your own options based on [
    #SBATCH --output="%j_log.txt"
    #SBATCH --account=PCON0022
    #SBATCH --nodes=1
-   #SBATCH --ntasks=32
-   #SBATCH --mem=160G
+   #SBATCH --ntasks=1
+   #SBATCH --mem=80G
    #SBATCH --mail-type=BEGIN,END,FAIL
-   #SBATCH --time=80:00:00
+   #SBATCH --time=40:00:00
 
    module load nextflow/24.10.4
    nextflow run nf-core/rnaseq --input loybulkrna.csv --outdir bulkRNA_pipeline_output --genome GRCm38 -profile singularity
