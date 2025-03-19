@@ -31,20 +31,24 @@ data/
 
 The scRNAseq pipeline includes multiple steps:
 
-1. Package installation (0_install_packages.R)
-2. Preprocessing (1_preprocess.rmd)
-   - Read count matrices
-   - Quality control
-   - Normalization
-   - Feature selection
-   - Dimensionality reduction
-   - Clustering
-3. Cell type annotation (2_annotate_cell_type.rmd)
-   - Marker gene identification
-   - Manual cell type assignment
-4. Differential expression analysis (3_deg.rmd)
-   - Identify differentially expressed genes between conditions
-   - Pathway enrichment analysis
+1. **Package Installation** (`0_install_packages.R`)  
+   Installs required R packages.
+   
+2. **Preprocessing** (`1_preprocess.rmd`)  
+   - Reads raw count matrices
+   - Performs **quality control (QC)**
+   - Normalizes data
+   - Selects **highly variable features**
+   - Reduces dimensionality (PCA, UMAP/t-SNE)
+   - Clusters cells  
+
+3. **Cell Type Annotation** (`2_annotate_cell_type.rmd`)  
+   - Identifies marker genes  
+   - Assigns cell types manually  
+
+4. **Differential Expression Analysis (DEG)** (`3_deg.rmd`)  
+   - Identifies **differentially expressed genes** (DEGs)  
+   - Performs **pathway enrichment analysis**  
 
 ## Running the Workflow
 
@@ -61,27 +65,27 @@ The scRNAseq pipeline includes multiple steps:
 
 ## Pipeline Output
 
-- A merged Seurat object with annotated cell types
-- Differentially expressed genes
-- Enriched pathways
+- Processed **Seurat object** with annotated cell types.
+- Identified **differentially expressed genes**.
+- Enriched **biological pathways**.
 
 ## Directory Structure
 
 ```
 .
-├── 0_install_packages.R: install R packages
-├── 1_preprocess.html
-├── 1_preprocess.rmd: notebook to read in count matrix, quality control, and generate a seurat object
-├── 2_annotate_cell_type.html
-├── 2_annotate_cell_type.rmd: notebook to manually annotate cell types
-├── 3_deg.rmd: notebook to calculate differentially expressed genes and pathway enrichment
-└── data: raw counts data
-    ├── annotation.csv: 
-    ├── ctrl_raw_feature_bc_matrix
+├── 0_install_packages.R        # Script to install required packages
+├── 1_preprocess.html           
+├── 1_preprocess.rmd            # Reads data, performs QC, normalization, and clustering
+├── 2_annotate_cell_type.html   
+├── 2_annotate_cell_type.rmd    # Assigns cell types based on marker genes
+├── 3_deg.rmd                   # Identifies differentially expressed genes and performs pathway analysis
+└── data/                       # Raw input data
+    ├── annotation.csv          # (If applicable) Cell annotation metadata
+    ├── ctrl_raw_feature_bc_matrix/
     │   ├── barcodes.tsv.gz
     │   ├── features.tsv.gz
     │   └── matrix.mtx.gz
-    └── stim_raw_feature_bc_matrix
+    └── stim_raw_feature_bc_matrix/
         ├── barcodes.tsv.gz
         ├── features.tsv.gz
         └── matrix.mtx.gz
