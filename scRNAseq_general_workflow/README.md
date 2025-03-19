@@ -97,9 +97,20 @@ The single-cell RNA sequencing data were processed and quantified using the Cell
 
 The subsequent processing and visual representation of the scRNA-seq data were conducted utilizing the Seurat package (version 5.0) in R (version 4.4.1). For the preliminary quality control (QC) stage, cells that expressed fewer than 200 genes or exceeded 7,000 genes were excluded. Cells with total read counts surpassing 30,000 and genes detected in fewer than three cells were also omitted. Additionally, cells with mitochondrial reads comprising more than 20% of total reads were removed from all samples. Following the application of these QC parameters, a total of 50,000 single cells and 30,000 genes were retained for subsequent analyses. The data were then normalized by scaling to 10,000 transcripts per cell and transformed to logarithmic space using Seurat's LogNormalize method. The dataset's highly variable genes were identified based on their dispersion and mean values. Principal Component Analysis (PCA) was executed on the top 2,000 variable genes, and the top 30 principal components were utilized to construct a k-nearest-neighbors cell-to-cell graph with k equal to 30 neighbors. Clusters were delineated using the Louvain graph-clustering algorithm, setting the resolution parameter to 0.8.
 
-### Batch Removal
+### Batch Removal 
 
-Each batch of samples collected on the same day was initially analyzed and integrated using the Harmony package in R, with batch effects mitigated based on the sample group. The integrated dataset was then projected onto a two-dimensional space using Uniform Manifold Approximation and Projection (UMAP) for dimension reduction, based on the top 30 principal components. 
+**Methods**: Each batch of samples collected on the same day was initially analyzed and integrated using the Harmony package in R, with batch effects mitigated based on the sample group. The integrated dataset was then projected onto a two-dimensional space using Uniform Manifold Approximation and Projection (UMAP) for dimension reduction, based on the top 30 principal components. 
+
+⚠ **Important Note**: *Batch effect correction should only be applied when necessary.*  
+- If batch effects **significantly affect clustering**, the **Harmony package** in R can be used to integrate datasets while preserving biological variation.
+- The batch-corrected data is projected onto **UMAP** using the top **30 PCs**.
+
+🛑 **Avoid over-correction**: Batch correction may distort real biological differences. Evaluate if correction is truly needed by visualizing batch effects in **PCA/UMAP plots**.
+
+```r
+library(harmony)
+seurat_object <- RunHarmony(seurat_object, group.by.vars = "batch")
+```
 
 ### Cell Type Annotation
 
