@@ -45,11 +45,8 @@ nf-core/rnaseq includes mutiple steps, please select your own options based on [
 
 1. Installnation:
    - Pitzer: module load nextflow/24.10.4
-   - Ascend:
-     1. install the new version of Java (Java v11+)
-     2. export the path of installed Java
-     3. curl -s https://get.nextflow.io | bash
-     4. export installed nextflow path
+   - Ascend: module load nextflow/24.10.4
+     
 3. Command
    ```
     nextflow run nf-core/rnaseq \
