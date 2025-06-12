@@ -1,21 +1,51 @@
-# Workflow Title
+# ChromVAR Motif Activity Analysis
 
-## Introduction
-compute TF motif activity in scATAC-seq data
+**Author**: Ahmed,Qi  
+**Date**: June 12th 2025
 
-## Pipeline input
-Seurat object for scATAC or scMultiOmic
+---
 
-## Pipeline output
+## 📘 Introduction
 
-Will return a new Seurat assay with the motif activities (the deviations in chromatin accessibility across the set of regions) as a new assay
+This pipeline computes transcription factor (TF) motif activity scores from snATAC-seq data using **ChromVAR** within the Seurat/Signac framework. It uses curated TF binding motifs from **JASPAR2020** and computes per-cell deviations that represent motif accessibility.
+
+---
+
+## 📂 Input
+
+- `MultiOmic.qs`: Preprocessed Seurat object containing ATAC-seq peak counts (assay: `Macs_peaks`).
+- JASPAR2020 motif database (retrieved via `JASPAR2020` package).
+- Human genome reference: `BSgenome.Hsapiens.UCSC.hg38`.
+
+---
+
+## 📤 Output
+
+- `multi_chromvar.qs`: Updated Seurat object with motif annotations and ChromVAR deviation scores stored in the `"chromvar"` assay.
+
+---
+
+## ⚙️ How to Run
+
+1. Load required libraries, including `Signac`, `ChromVAR`, `motifmatchr`, and `JASPAR2020`.
+2. Read the input Seurat object (`MultiOmic.qs`) and set the default assay to `Macs_peaks`.
+3. Retrieve human TF motifs from the JASPAR CORE collection using `getMatrixSet()`.
+4. Add motifs to the Seurat object using `AddMotifs()`.
+5. Run `RunChromVAR()` to compute motif deviation scores per cell.
+6. Save the updated object with ChromVAR results as `multi_chromvar.qs`.
+
+---
+
+## 📝 Notes
+
+- Ensure the genome (`BSgenome.Hsapiens.UCSC.hg38`) and motif database (`JASPAR2020`) are correctly loaded before running ChromVAR.
+- By default, the script uses `SerialParam()` for reproducibility; switch to `MulticoreParam()` to parallelize on Unix systems if desired.
+- The output object can be used for downstream analyses such as TF activity visualization or integrative modeling with gene expression.
+- TF motif activities were computed using ChromVAR with default parameters.
 
 ## Contact
 
-Author: Ahmed Ghobashi 
-
-## Methods for manuscript
-TF motif activities were computed using ChromVAR with default pramaters 
+Author: Ahmed Ghobashi  ahmed.ghobashi@osumc.edu
 
 
 
