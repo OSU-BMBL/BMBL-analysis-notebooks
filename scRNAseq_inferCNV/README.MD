@@ -2,7 +2,7 @@
 
 **Author**: Cankun, Qi
 
-**Date**: `June 12th 2025`
+**Date**: June 12th 2025
 
 ## 📘 Introduction
 
