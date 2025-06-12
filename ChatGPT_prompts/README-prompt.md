@@ -85,7 +85,16 @@ Your task is to generate a complete and high-quality `README.md` file for the bi
 
 ## Reproducibility
 
-This workflow was tested using the following environment:
+**1.This workflow was tested using the following environment**:
 [Paste the complete sessionInfo() or conda env export output here. If not provided, state that the user should generate and add it.]
+
 **2. Existing Notes or Current README:** (The user should paste any thoughts, current documentation, or a simple description of the project here.)
-**3. Key Details (if known):** (The user can provide quick facts here to help the AI.) _ **Project Name:** [e.g., scRNAseq General Workflow] _ **Author(s):** [e.g., Cankun Wang] _ **Contact Email:** [e.g., your.email@example.com] _ **License:** [e.g., MIT] \* **Session Info Output:** [Paste sessionInfo() if available]
+**3. Key Details (if known):** (The user can provide quick facts here to help the AI.)
+
+\_ **Project Name:** [e.g., scRNAseq General Workflow]
+
+\_ **Author(s):** [e.g., Cankun Wang]
+
+\_ **Contact Email:** [e.g., your.email@example.com]
+
+\_ **Session Info Output:** [Paste sessionInfo() if available]
