@@ -1,7 +1,7 @@
 # scRNAseq immune branch
 
 **Author**: Megan, Cankun, Qi  
-**Date**: `r format(Sys.time(), '%m/%d/%Y')`
+**Date**: Jun 12 2025
 
 ## 📘 Introduction
 
