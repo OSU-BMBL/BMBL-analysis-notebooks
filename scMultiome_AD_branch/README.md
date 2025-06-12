@@ -38,7 +38,6 @@ This pipeline integrates single-nucleus RNA-seq (snRNA-seq) and ATAC-seq (snATAC
 ## Major steps to integrate multi-omics datasets
 
 Steps:
-
 - Integration of snATAC-seq: Load data, preprocessing and QC, Normalization, Integration.
 
 - Integration of snRNA-seq: Load data, preprocessing and QC, Normalization, Integration.
