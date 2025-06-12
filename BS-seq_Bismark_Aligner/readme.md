@@ -17,7 +17,7 @@ The following sections are considering a paired-end experiment. Single-ended exp
 # Setup
 
 ---
-OSC happens to have `bowtie2` and `bismark` already, you can load them as modules.
+OSC happens to have `bowtie2` and `bismark` already, you can load them as modules in the "Pitzer Shell Access" in the OSC.
 https://www.osc.edu/resources/available_software/software_list/bowtie2
 https://www.osc.edu/resources/available_software/software_list/bismark
 
