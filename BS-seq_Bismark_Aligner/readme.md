@@ -134,6 +134,8 @@ Contact
 ---
 Michael Hsu
 hsu30@osumc.edu
+Qi Guo
+guo40@osumc.edu
 
 ---
 Package Version
