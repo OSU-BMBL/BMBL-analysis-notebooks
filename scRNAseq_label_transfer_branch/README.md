@@ -27,4 +27,4 @@ The annotation pipeline provides:
 
 ## Contact
 
-Author: Hao Cheng
+Author: Hao Cheng Hao.Cheng@osumc.edu
