@@ -39,13 +39,7 @@ Your task is to generate a complete and high-quality `README.md` file for the bi
 
 ### Instruction
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://docs.github.com/articles/about-remote-repositories](https://docs.github.com/articles/about-remote-repositories)
-    cd [repository-folder-name]
-    ```
-2.  **Set up the environment:** [Provide the command, e.g., `Rscript 0_install_packages.R` or `conda env create -f environment.yml`]
-
+1.  [Write steps here]
 ---
 
 ## Usage
