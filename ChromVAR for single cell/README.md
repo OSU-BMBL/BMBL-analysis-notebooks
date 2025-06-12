@@ -45,8 +45,8 @@ This pipeline computes transcription factor (TF) motif activity scores from snAT
 
 ## Contact
 
-Author: Ahmed Ghobashi  ahmed.ghobashi@osumc.edu
-
+Ahmed Ghobashi  ahmed.ghobashi@osumc.edu
+Qi Guo guo40@osumc.edu
 
 
 
