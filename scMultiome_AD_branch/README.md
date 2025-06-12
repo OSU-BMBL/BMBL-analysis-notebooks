@@ -34,9 +34,8 @@ This pipeline integrates single-nucleus RNA-seq (snRNA-seq) and ATAC-seq (snATAC
 - Saved Seurat or `.qs` files for downstream use.
 - CSV files of DAPs for each cell type and comparison.
 
-
+---
 ## Major steps to integrate multi-omics datasets
-
 
 Steps:
 
@@ -49,7 +48,6 @@ Steps:
 - Annotation using cell type markers from Dr. Fu's lab. Heatmap and featureplot were utilized for cell type annotation.
 
 - Downstream analysis, including DEGs and DAPs identification
-
 
 ---
 
