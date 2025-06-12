@@ -29,57 +29,81 @@ This repository is NOT an introduction to data analysis. There are many availabl
 ### Bioinformatics pipelines based on data type
 
 - Single-cell RNA-seq:
-  1. [scRNAseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
-  2. [scRNAseq 10x Flex preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
-  3. [scRNAseq trajectory_analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_trajectory_Slingshot)
-  4. [scRNAseq shiny cell](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)
-  5. [scRNAseq cell-cell communication](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)
-  6. [scRNAseq HPV mapping](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch)
-  7. [scRNAseq stomach and colon branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
-  8. [scRNAseq large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/sc_LargeData_Sketch-based_Analysis)
-  9. [Gene Module Enrichment Analysis Using Seurat and GSVA](./scRNAseq_module_enrichment)
+  1. [scRNAseq general workflow](./scRNAseq_general_workflow)
+  2. [scRNAseq 10x Flex preprocessing](./scRNAseq_10x_Flex_preprocessing)
+  3. [scRNAseq trajectory_Slingshot](./scRNAseq_trajectory_Slingshot)
+  5. [scRNAseq CellCellCommunication](./scRNAseq_CellCellCommunication_branch)
+  6. [scRNAseq HPV branch](./scRNAseq_HPV_branch)
+  7. [scRNAseq_Seurat_to_Scanpy](./scRNAseq_Seurat_to_Scanpy)
+  8. [scRNAseq stomach branch](./scRNAseq_stomach_branch)
+  9. [scRNAseq_ShinyCell_portal](./scRNAseq_ShinyCell_portal)
+  10. [scRNAseq large dataset analysis](./sc_LargeData_Sketch-based_Analysis)
+  11. [scRNAseq_module_enrichent](./scRNAseq_module_enrichment)
+  12. [scRNAseq_iPSC_branch](./scRNAseq_iPSC_branch)
+  13. [scRNAseq_atlas_SCI](./scRNA-seq_atlas_SCI)
+  14. [scRNAseq_immune_branch](./scRNAseq_immune_branch)
+  15. [scRNAseq_inferCNV](./scRNAseq_inferCNV)
+  16. [scRNAseq_label_transfer](./scRNAseq_label_transfer_branch)
+
 - Single-cell ATAC-seq:
-  1. [scATACseq_general_workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
-  2. [scATACseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATAC-seq_preprocessing)
-  3. [scATACseq ArchR branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ArchR_branch)
-  4. [scATACseq Cicero branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch)
-  5. [scATACseq cisTopic branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch)
+  1. [scATACseq_general_workflow R](./scATACseq_general_workflow)
+  3. [scATACseq ArchR branch](./scATACseq_ArchR_branch)
+  4. [scATACseq Cicero branch](./scATACseq_cicero_branch)
+  5. [scATACseq cisTopic branch](./scATACseq_cisTopic_branch)
+  6. [scATACseq_CellOracle_workflow](./CellOracle%20workflow)
+  7. [scATACseq_TF_motif_activity](./ChromVAR%20for%20single%20cell)
+
 - Single-cell Multi-omics:
-  1. [scMultiome AD branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)
+  1. [scMultiome AD branch](./scMultiome_AD_branch)
+ 
+- Single-cell TCR-seq:
+  1. [scTCRseq_analysis](./scTCRseq_analysis)
+
 - RNA-seq:
-  1. [RNAseq general workflow R](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_workflow)
-  2. [RNAseq general workflow nf-core](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_general_workflow_nfcore)
+  1. [RNAseq general workflow R](./RNAseq_workflow)
+  2. [RNAseq general workflow nf-core](./RNAseq_general_workflow_nfcore)
+
+- ATAC-seq:
+  1. [ATACseq general workflow nf-core](./ATAC-seq_preprocessing)
+  2. [ATACseq_general_workflow](./Bulk_ATAC_general_workflow)
+     
 - Chip-seq:
-  1. [Chipseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
-  2. [Chipseq_general_workflow2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Chipseq_general_workflow2)
+  1. [Chipseq general workflow](./ChipSeq_general_workflow)
+  2. [Chipseq_general_workflow2](./Chipseq_general_workflow2)
+     
 - Spatial Transcriptomics(ST):
-  1. [ST general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_general_workflow)
-  2. [ST BayesSpace branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_BayesSpace_branch)
-  3. [ST giotto branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_giotto_branch)
-  4. [ST spotlight branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_spotlight_branch)
-- Bulk ATAC-seq:
-  1. [Bulk ATACseq general workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)
+  1. [ST general workflow](./ST_general_workflow)
+  2. [ST BayesSpace branch](./ST_BayesSpace_branch)
+  3. [ST giotto branch](./ST_giotto_branch)
+  4. [ST spotlight branch](./ST_spotlight_branch)
+
 - Bisulfite sequencing (BS-seq):
-  1. [Bismark aligner](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BS-seq_Bismark_Aligner)
-- DNA motif analysis:
-  1. [HOMER2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/HOMER)
+  1. [Bismark aligner](./BS-seq_Bismark_Aligner)
+     
+- Motif analysis:
+  1. [HOMER2](./HOMER)
+     
 - General downstream analysis:
-  1. [Enrichment Analysis Using clusterProfiler](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Pathway_enrichment_analysis_clusterProfier)
+  1. [Enrichment Analysis Using clusterProfiler](./Pathway_enrichment_analysis_clusterProfier)
+  2. [Cellular_neighborhood](./Cellular_neighborhood)
+  3. [Gene_activate_score](./Gene_activate_score)
 
 ### Artificial Intelligence
 
 - ChatGPT prompts
-  1. [ChatGPT_prompts](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChatGPT_prompts)
+  1. [ChatGPT_prompts](./ChatGPT_prompts)
 
-### Other Tutorials
-
+### Other Tutorials     
 - Server
-  1. [Introduction OSC](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Introduction_OSC)
+  1. [Introduction OSC](./Introduction_OSC)
+     
 - Figure/Plot scripts
-  1. [Figure codes](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/figure_code)
+  1. [Figure codes](./figure_code)
+     
 - Data management guide
   1. [GEO data submission](./GEO_data_submission)
-  2. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
+     
+  3. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
 
 ### Contributing template
 
