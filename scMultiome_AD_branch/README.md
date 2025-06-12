@@ -80,4 +80,5 @@ Code reference: https://osu-bmbl.github.io/STREAM/articles/eRegulon-inference.ht
 
 
 
-Contact: Qi Guo guo.40@osumc.edu
+# Contact: 
+Qi Guo guo.40@osumc.edu
