@@ -37,7 +37,7 @@ Your task is to generate a complete and high-quality `README.md` file for the bi
 - **Software:** [e.g., R version 4.4.x, Conda, Nextflow]
 - **Knowledge:** [e.g., Familiarity with Rmarkdown, single-cell principles]
 
-### Installation
+### Instruction
 
 1.  **Clone the repository:**
     ```bash
@@ -76,22 +76,6 @@ Your task is to generate a complete and high-quality `README.md` file for the bi
 [Describe the key files and results generated in the `results/` directory.]
 
 ---
-
-## Methods for Manuscript
-
-[Synthesize the code into a formal methods section paragraph. Be specific with parameters and versions.]
-
----
-
-## Reproducibility
-
-**1.This workflow was tested using the following environment**:
-[Paste the complete sessionInfo() or conda env export output here. If not provided, state that the user should generate and add it.]
-
-**2. Existing Notes or Current README:** (The user should paste any thoughts, current documentation, or a simple description of the project here.)
-**3. Key Details (if known):** (The user can provide quick facts here to help the AI.)
-
-\_ **Project Name:** [e.g., scRNAseq General Workflow]
 
 \_ **Author(s):** [e.g., Cankun Wang]
 
