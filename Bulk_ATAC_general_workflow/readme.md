@@ -270,8 +270,6 @@ This concludes the recommended practices for bulk ATAC-seq. The final DARs gener
 ---
 # Contact
 ---
-Author: Weidong
-
 **Author(s):** Weidong Wu,[Michael Hsu](hsu30@osumc.edu)
 
 **Contact:** weidong.wu@osumc.edu
