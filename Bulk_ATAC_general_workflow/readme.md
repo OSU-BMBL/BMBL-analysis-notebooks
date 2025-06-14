@@ -1,9 +1,18 @@
 # Bulk ATAC-seq Analysis Recommended Practices
 #
 
-Most of the following notebook contains recommendations from Reske et al. 2020 (doi: 10.1186/s13072-020-00342-y)
 
+This workflow is based on recommendations from [Reske et al. 2020](https://epigeneticsandchromatin.biomedcentral.com/articles/10.1186/s13072-020-00342-y) for robust ATAC-seq analysis.
 ---
+## Table of Contents
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Workflow Overview](#workflow-overview)
+- [Detailed Steps](#detailed-steps)
+- [Quality Control](#quality-control)
+- [Contact](#contact)
+- [Session Info](#session-info)
+
 
 # Introduction
 
@@ -261,7 +270,11 @@ This concludes the recommended practices for bulk ATAC-seq. The final DARs gener
 ---
 # Contact
 ---
-Author: Michael Hsu (hsu30@osumc.edu)
+Author: Weidong
+
+**Author(s):** Weidong Wu,[Michael Hsu](hsu30@osumc.edu)
+
+**Contact:** weidong.wu@osumc.edu
 
 ---
 # Session info
