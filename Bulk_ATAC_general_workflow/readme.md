@@ -270,53 +270,41 @@ This concludes the recommended practices for bulk ATAC-seq. The final DARs gener
 ---
 # Contact
 ---
-**Author(s):** Weidong Wu,[Michael Hsu](hsu30@osumc.edu)
+**Author(s):** Weidong Wu, [Michael Hsu](hsu30@osumc.edu)
 
 **Contact:** weidong.wu@osumc.edu
+## Software Versions
 
----
-# Session info
----
-Picard v2.18.17
-FastQC v0.11.5
-samtools v1.10
-htslib v1.10
-cutadapt v4.1
-TrimGalore v0.6.6
-deeptools v3.5.1
-bedtools v2.30.0
+| Tool | Version |
+|------|---------|
+| Picard | v2.18.17 |
+| FastQC | v0.11.5 |
+| samtools | v1.10 |
+| htslib | v1.10 |
+| cutadapt | v4.1 |
+| TrimGalore | v0.6.6 |
+| deeptools | v3.5.1 |
+| bedtools | v2.30.0 |
 
-### _For R_
-R version 4.2.1 (2022-06-23)
-Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Red Hat Enterprise Linux
+### R Environment
+| Component | Version |
+|-----------|---------|
+| R | 4.2.1 (2022-06-23) |
+| Platform | x86_64-pc-linux-gnu (64-bit) |
+| OS | Red Hat Enterprise Linux |
 
-Matrix products: default
-BLAS/LAPACK: /opt/intel/2021.3/mkl/2021.3.0/lib/intel64/libmkl_gf_lp64.so.1
-
-locale:
- [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
- [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
- [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
-
-attached base packages:
-[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
- [1] ggplot2_3.4.4               csaw_1.32.0                 SummarizedExperiment_1.28.0 Biobase_2.58.0             
- [5] MatrixGenerics_1.10.0       matrixStats_1.4.1           edgeR_3.40.2                limma_3.54.1               
- [9] GenomicRanges_1.50.2        GenomeInfoDb_1.34.9         IRanges_2.32.0              S4Vectors_0.36.2           
-[13] BiocGenerics_0.44.0        
-
-loaded via a namespace (and not attached):
- [1] locfit_1.5-9.7         tidyselect_1.2.1       xfun_0.37              lattice_0.22-6         colorspace_2.1-0      
- [6] vctrs_0.5.2            generics_0.1.3         htmltools_0.5.5        yaml_2.3.7             utf8_1.2.3            
-[11] rlang_1.1.0            pillar_1.9.0           withr_3.0.1            glue_1.7.0             BiocParallel_1.32.6   
-[16] GenomeInfoDbData_1.2.9 lifecycle_1.0.4        zlibbioc_1.44.0        Biostrings_2.66.0      munsell_0.5.1         
-[21] gtable_0.3.5           codetools_0.2-20       evaluate_1.0.0         knitr_1.42             fastmap_1.1.1         
-[26] parallel_4.2.1         fansi_1.0.4            Rcpp_1.0.10            scales_1.3.0           DelayedArray_0.24.0   
-[31] XVector_0.38.0         Rsamtools_2.14.0       digest_0.6.33          metapod_1.6.0          dplyr_1.1.0           
-[36] grid_4.2.1             cli_3.6.1              tools_4.2.1            bitops_1.0-8           magrittr_2.0.3        
-[41] RCurl_1.98-1.10        tibble_3.2.1           crayon_1.5.3           pkgconfig_2.0.3        Matrix_1.6-0          
-[46] rmarkdown_2.25         rstudioapi_0.16.0      R6_2.5.1               compiler_4.2.1        
+### Key R Packages
+| Package | Version |
+|---------|---------|
+| ggplot2 | 3.4.4 |
+| csaw | 1.32.0 |
+| SummarizedExperiment | 1.28.0 |
+| Biobase | 2.58.0 |
+| edgeR | 3.40.2 |
+| limma | 3.54.1 |
+| GenomicRanges | 1.50.2 |
+| GenomeInfoDb | 1.34.9 |
+| IRanges | 2.32.0 |
+| S4Vectors | 0.36.2 |
+| BiocGenerics | 0.44.0 |
 

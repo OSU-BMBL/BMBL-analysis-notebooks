@@ -1,13 +1,32 @@
 # ChIP-seq Alignment and Processing
 
-by Michael Hsu
 
 # Introduction 
 ---
-https://github.com/hbctraining/Intro-to-ChIPseq/tree/master/lessons 
-Most of the lines used below were adapted from the above HBC training pages related to their ChIP-seq introduction. Some QC steps were added to ensure that files are processed as intended and provides a way to visually inspect data throughout the process. This guide also assumes that you are inputting paired-end files. Single-ended files can also be used as most functions can accommodate by inputing only one file and adjusting some settings (not provided here).
 
-Briefly, ChIP-seq and related assays are a way to show genomic locations directly interacting with a factor of interest (TF, protein, histone modification of nearby nucleosomes, etc.)
+# Introduction to ChIP-seq Analysis
+
+This workflow guide is adapted from the [Harvard Bioinformatics Core (HBC) ChIP-seq training materials](https://github.com/hbctraining/Intro-to-ChIPseq/tree/master/lessons). We've enhanced the original pipeline with additional quality control (QC) steps to ensure robust data processing and provide comprehensive visual inspection capabilities throughout the analysis workflow.
+
+## What is ChIP-seq?
+
+ChIP-seq (Chromatin Immunoprecipitation followed by sequencing) is a powerful technique that identifies genomic regions where specific proteins or histone modifications interact with DNA. This method can be used to study:
+- Transcription factor (TF) binding sites
+- Protein-DNA interactions
+- Histone modifications
+- Nucleosome positioning
+
+## Workflow Overview
+
+This guide is optimized for paired-end sequencing data, though it can be adapted for single-end reads with minor modifications. The workflow includes:
+- Quality control assessment
+- Adapter trimming
+- Read alignment
+- Duplicate removal
+- Coverage analysis
+- Visualization preparation
+
+Each step includes quality metrics to ensure data integrity and processing accuracy.
 
 ---
 # File Inputs/Recommended Directory Structure
@@ -148,16 +167,20 @@ bamCoverage -b ${basename}.s.rms.filt.bam -o ${basename}.bw --normalizeUsing RPK
 ---
 # Contact
 ---
-Author: Michael Hsu (hsu30@osumc.edu)
+**Author(s):** Weidong Wu, [Michael Hsu](hsu30@osumc.edu)
+
+**Contact:** weidong.wu@osumc.edu
 
 ---
 # Session info
 ---
-Picard v2.18.17
-FastQC v0.11.5
-samtools v1.10
-htslib v1.10
-cutadapt v4.1
-TrimGalore v0.6.6
-deeptools v3.5.1
+| Tool | Version |
+|------|---------|
+| Picard | v2.18.17 |
+| FastQC | v0.11.5 |
+| samtools | v1.10 |
+| htslib | v1.10 |
+| cutadapt | v4.1 |
+| TrimGalore | v0.6.6 |
+| deeptools | v3.5.1 |
 
