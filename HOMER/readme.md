@@ -1,15 +1,20 @@
 # HOMER2 
-# Setup, Annotation, Motif Analysis, Motif Positioning
-## _Tutorial by Michael Hsu_
+## Setup, Annotation, Motif Analysis, Motif Positioning
+> **Note:** This documentation is based on HOMER2 v5.1. For comprehensive documentation, visit [HOMER's official website](http://homer.ucsd.edu/homer/index.html).
 
-_Disclaimer: If you would like to adjust parameters used in the following lines, feel free._
-_For extensive documentation, visit CBenner's site: http://homer.ucsd.edu/homer/index.html_
-
+## Table of Contents
+- [Introduction](#introduction)
+- [Setup](#setup)
+- [Annotation](#annotation)
+- [Motif Analysis](#motif-analysis)
+- [Motif Positioning](#motif-positioning)
+- [Contact](#contact)
 --- 
 # Introduction
 ---
+HOMER (Hypergeometric Optimization of Motif EnRichment) is a powerful suite of tools for motif discovery and next-generation sequencing analysis. While this guide focuses on peak annotation and transcription factor binding motifs, HOMER offers many additional features for NGS data analysis. The examples provided are optimized for bulk experiments; single-cell data may require reformatting for pseudo-bulk analysis.
 
-HOMER (Hypergeometric Optimization of Motif EnRichment) is a useful multi-functional tool used for motif discovery and next-gen sequencing analysis. I use HOMER for all things related to peak annotation and TF binding motifs, but Chris Benner and his team of devs have a range of other downstream analyses you can use for your NGS data. Examples below are oriented for bulk experiments, some data reformatting may need to be done before you can analyze single-cell data in pseudo-bulk fashion.
+
 
 This tutorial ensures that the user can reliably use HOMER in OSC `/scratch/` space. Unlike other packages that you may deposit in `/ess/` for future use, HOMER updates and installation does not work in `/ess/`. After you log into OSC, navigate to your `/scratch/` space and then open a terminal in that location.
 
@@ -136,13 +141,14 @@ The second file can be used to find the general "most common" locations of bindi
 
 
 ---
-Contact
+# Contact
 ---
-Michael Hsu
-hsu30@osumc.edu
+**Author(s):** Weidong Wu, [Michael Hsu](hsu30@osumc.edu)
+
+**Contact:** weidong.wu@osumc.edu
 
 ---
 Package Version
 ---
-HOMER2 v5.1, 07-16-2024
+HOMER2 v5.1
 
