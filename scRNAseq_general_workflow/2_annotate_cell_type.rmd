@@ -24,7 +24,7 @@ library(here)
 library(qs)
 library(tidyverse)
 library(Seurat)
-library(SeuratDisk)
+#library(SeuratDisk)
 library(dittoSeq)
 
 ```
