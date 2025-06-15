@@ -40,6 +40,7 @@ The scRNAseq pipeline includes multiple steps:
    - Normalizes data
    - Selects **highly variable features**
    - Reduces dimensionality (PCA, UMAP/t-SNE)
+   - Determine the dimensionality
    - Clusters cells  
 
 3. **Cell Type Annotation** (`2_annotate_cell_type.rmd`)  
