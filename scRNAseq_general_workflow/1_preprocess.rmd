@@ -20,6 +20,8 @@ library(patchwork)
 library(here)
 library(qs)
 library(Polychrome)
+library(tidyverse)
+library(hdf5r)
 #library(scater)
 ```
 
@@ -180,10 +182,12 @@ set.seed(42)
 
 DefaultAssay(combined_qc) <- "RNA"
 
-combined_qc <- FindVariableFeatures(combined_qc, verbose = FALSE)
 combined_qc <- NormalizeData(combined_qc, verbose = FALSE)
+combined_qc <- FindVariableFeatures(combined_qc, verbose = FALSE)
 combined_qc <- ScaleData(combined_qc, verbose = FALSE)
-combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, verbose = FALSE)
+DimHeatmap(combined_qc, dims = 1:40, cells = 1000) #determine dimensionality
+ElbowPlot(combined_qc,ndims=50) #determine dimensionality
 combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
 combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
 combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
@@ -212,7 +216,9 @@ combine.anchors <-
 combined_qc <- IntegrateData(anchorset = combine.anchors, dims = 1:30)
 DefaultAssay(combined_qc) <- "integrated"
 combined_qc <- ScaleData(combined_qc, verbose = FALSE)
-combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, verbose = FALSE)
+DimHeatmap(combined_qc, dims = 1:10) #determine dimensionality
+ElbowPlot(combined_qc,ndims=50) #determine dimensionality
 combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
 combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
 combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
