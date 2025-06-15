@@ -100,7 +100,7 @@ The single-cell RNA sequencing data were processed and quantified using the Cell
 
 ### Seurat Preprocessing
 
-The subsequent processing and visual representation of the scRNA-seq data were conducted utilizing the Seurat package (version 5.0) in R (version 4.4.1). For the preliminary quality control (QC) stage, cells that expressed fewer than 200 genes or exceeded 7,000 genes were excluded. Cells with total read counts surpassing 30,000 and genes detected in fewer than three cells were also omitted. Additionally, cells with mitochondrial reads comprising more than 20% of total reads were removed from all samples. Following the application of these QC parameters, a total of 50,000 single cells and 30,000 genes were retained for subsequent analyses. The data were then normalized by scaling to 10,000 transcripts per cell and transformed to logarithmic space using Seurat's LogNormalize method. The dataset's highly variable genes were identified based on their dispersion and mean values. Principal Component Analysis (PCA) was executed on the top 2,000 variable genes, and the top 30 principal components were utilized to construct a k-nearest-neighbors cell-to-cell graph with k equal to 30 neighbors. Clusters were delineated using the Louvain graph-clustering algorithm, setting the resolution parameter to 0.8.
+The subsequent processing and visual representation of the scRNA-seq data were conducted utilizing the Seurat package (version 5.0) in R (version 4.4.0). For the preliminary quality control (QC) stage, cells that expressed fewer than 200 genes or exceeded 7,000 genes were excluded. Cells with total read counts surpassing 30,000 and genes detected in fewer than three cells were also omitted. Additionally, cells with mitochondrial reads comprising more than 20% of total reads were removed from all samples. Following the application of these QC parameters, a total of 50,000 single cells and 30,000 genes were retained for subsequent analyses. The data were then normalized by scaling to 10,000 transcripts per cell and transformed to logarithmic space using Seurat's LogNormalize method. The dataset's highly variable genes were identified based on their dispersion and mean values. Principal Component Analysis (PCA) was executed on the top 2,000 variable genes, and the top 30 principal components were utilized to construct a k-nearest-neighbors cell-to-cell graph with k equal to 30 neighbors. Clusters were delineated using the Louvain graph-clustering algorithm, setting the resolution parameter to 0.8.
 
 ### Batch Removal 
 
@@ -131,48 +131,72 @@ Specific cell types were computationally selected for between-group analyses. Th
 
 ```
 > sessionInfo()
-R version 4.4.1 (2024-06-14)
-Platform: aarch64-apple-darwin20
-Running under: macOS Sonoma 14.6.1
+R version 4.4.0 (2024-04-24)
+Platform: x86_64-pc-linux-gnu
+Running under: Red Hat Enterprise Linux 9.4 (Plow)
 
 Matrix products: default
-BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+BLAS/LAPACK: /apps/spack/0.21/ascend/linux-rhel9-zen2/intel-oneapi-mkl/gcc/11.4.1/2023.2.0-gwnin2p/mkl/2023.2.0/lib/intel64/libmkl_gf_lp64.so.2;  LAPACK version 3.10.1
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+ [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 
-time zone: America/New_York
+time zone: US/Eastern
 tzcode source: internal
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] Polychrome_1.5.1   qs_0.26.3          here_1.0.1         patchwork_1.2.0    ggplot2_3.5.1      dplyr_1.1.4        cowplot_1.1.3     
- [8] Seurat_5.1.0       SeuratObject_5.0.2 sp_2.1-4          
+ [1] future_1.58.0      hdf5r_1.3.12       lubridate_1.9.4    forcats_1.0.0     
+ [5] stringr_1.5.1      purrr_1.0.4        readr_2.1.5        tidyr_1.3.1       
+ [9] tibble_3.3.0       tidyverse_2.0.0    Polychrome_1.5.4   qs_0.27.3         
+[13] here_1.0.1         patchwork_1.3.0    ggplot2_3.5.2      dplyr_1.1.4       
+[17] cowplot_1.1.3      Seurat_5.3.0       SeuratObject_5.1.0 sp_2.2-0          
 
 loaded via a namespace (and not attached):
-  [1] deldir_2.0-4           pbapply_1.7-2          gridExtra_2.3          rlang_1.1.4            magrittr_2.0.3         RcppAnnoy_0.0.22      
-  [7] spatstat.geom_3.3-2    matrixStats_1.3.0      ggridges_0.5.6         compiler_4.4.1         png_0.1-8              vctrs_0.6.5           
- [13] reshape2_1.4.4         stringr_1.5.1          pkgconfig_2.0.3        fastmap_1.2.0          utf8_1.2.4             promises_1.3.0        
- [19] purrr_1.0.2            xfun_0.47              jsonlite_1.8.8         goftest_1.2-3          later_1.3.2            spatstat.utils_3.1-0  
- [25] irlba_2.3.5.1          parallel_4.4.1         cluster_2.1.6          R6_2.5.1               ica_1.0-3              spatstat.data_3.1-2   
- [31] stringi_1.8.4          RColorBrewer_1.1-3     reticulate_1.38.0      spatstat.univar_3.0-0  parallelly_1.38.0      lmtest_0.9-40         
- [37] scattermore_1.2        Rcpp_1.0.13            knitr_1.48             tensor_1.5             future.apply_1.11.2    zoo_1.8-12            
- [43] sctransform_0.4.1      httpuv_1.6.15          Matrix_1.7-0           splines_4.4.1          igraph_2.0.3           tidyselect_1.2.1      
- [49] abind_1.4-5            rstudioapi_0.16.0      stringfish_0.16.0      spatstat.random_3.3-1  codetools_0.2-20       miniUI_0.1.1.1        
- [55] spatstat.explore_3.3-1 listenv_0.9.1          lattice_0.22-6         tibble_3.2.1           plyr_1.8.9             withr_3.0.1           
- [61] shiny_1.9.1            ROCR_1.0-11            Rtsne_0.17             future_1.34.0          fastDummies_1.7.4      survival_3.6-4        
- [67] polyclip_1.10-7        RcppParallel_5.1.8     fitdistrplus_1.2-1     pillar_1.9.0           KernSmooth_2.23-24     plotly_4.10.4         
- [73] generics_0.1.3         rprojroot_2.0.4        RcppHNSW_0.6.0         munsell_0.5.1          scales_1.3.0           RApiSerialize_0.1.3   
- [79] globals_0.16.3         xtable_1.8-4           glue_1.7.0             scatterplot3d_0.3-44   lazyeval_0.2.2         tools_4.4.1           
- [85] data.table_1.15.4      RSpectra_0.16-2        RANN_2.6.1             leiden_0.4.3.1         dotCall64_1.1-1        grid_4.4.1            
- [91] tidyr_1.3.1            colorspace_2.1-1       nlme_3.1-164           cli_3.6.3              spatstat.sparse_3.1-0  spam_2.10-0           
- [97] fansi_1.0.6            viridisLite_0.4.2      uwot_0.2.2             gtable_0.3.5           digest_0.6.36          progressr_0.14.0      
-[103] ggrepel_0.9.5          htmlwidgets_1.6.4      htmltools_0.5.8.1      lifecycle_1.0.4        httr_1.4.7             mime_0.12             
-[109] MASS_7.3-60.2 
-```
+  [1] RColorBrewer_1.1-3     rstudioapi_0.17.1      jsonlite_2.0.0        
+  [4] magrittr_2.0.3         ggbeeswarm_0.7.2       spatstat.utils_3.1-4  
+  [7] farver_2.1.2           rmarkdown_2.29         vctrs_0.6.5           
+ [10] ROCR_1.0-11            spatstat.explore_3.4-3 htmltools_0.5.8.1     
+ [13] sctransform_0.4.2      parallelly_1.45.0      KernSmooth_2.23-26    
+ [16] htmlwidgets_1.6.4      ica_1.0-3              plyr_1.8.9            
+ [19] plotly_4.10.4          zoo_1.8-14             igraph_2.1.4          
+ [22] mime_0.13              lifecycle_1.0.4        pkgconfig_2.0.3       
+ [25] Matrix_1.7-3           R6_2.6.1               fastmap_1.2.0         
+ [28] fitdistrplus_1.2-2     shiny_1.10.0           digest_0.6.37         
+ [31] colorspace_2.1-1       rprojroot_2.0.4        tensor_1.5            
+ [34] RSpectra_0.16-2        irlba_2.3.5.1          labeling_0.4.3        
+ [37] progressr_0.15.1       timechange_0.3.0       spatstat.sparse_3.1-0 
+ [40] httr_1.4.7             polyclip_1.10-7        abind_1.4-8           
+ [43] compiler_4.4.0         bit64_4.6.0-1          withr_3.0.2           
+ [46] fastDummies_1.7.5      MASS_7.3-65            scatterplot3d_0.3-44  
+ [49] tools_4.4.0            vipor_0.4.7            lmtest_0.9-40         
+ [52] beeswarm_0.4.0         httpuv_1.6.16          future.apply_1.20.0   
+ [55] goftest_1.2-3          glue_1.8.0             nlme_3.1-168          
+ [58] promises_1.3.3         grid_4.4.0             Rtsne_0.17            
+ [61] cluster_2.1.8.1        reshape2_1.4.4         generics_0.1.4        
+ [64] gtable_0.3.6           spatstat.data_3.1-6    tzdb_0.5.0            
+ [67] data.table_1.17.4      RApiSerialize_0.1.4    hms_1.1.3             
+ [70] stringfish_0.16.0      spatstat.geom_3.4-1    RcppAnnoy_0.0.22      
+ [73] ggrepel_0.9.6          RANN_2.6.2             pillar_1.10.2         
+ [76] spam_2.11-1            RcppHNSW_0.6.0         later_1.4.2           
+ [79] splines_4.4.0          lattice_0.22-7         bit_4.6.0             
+ [82] survival_3.8-3         deldir_2.0-4           tidyselect_1.2.1      
+ [85] miniUI_0.1.2           pbapply_1.7-2          knitr_1.50            
+ [88] gridExtra_2.3          scattermore_1.2        xfun_0.52             
+ [91] matrixStats_1.5.0      pheatmap_1.0.13        stringi_1.8.7         
+ [94] lazyeval_0.2.2         yaml_2.3.10            evaluate_1.0.3        
+ [97] codetools_0.2-20       cli_3.6.5              uwot_0.2.3            
+[100] RcppParallel_5.1.10    xtable_1.8-4           reticulate_1.42.0     
+[103] Rcpp_1.0.14            globals_0.18.0         spatstat.random_3.4-1 
+[106] png_0.1-8              ggrastr_1.0.2          spatstat.univar_3.1-3 
+[109] parallel_4.4.0         dotCall64_1.2          listenv_0.9.1         
+[112] viridisLite_0.4.2      scales_1.4.0           ggridges_0.5.6        
+[115] crayon_1.5.3           rlang_1.1.6 
 
 ## Contact
 
