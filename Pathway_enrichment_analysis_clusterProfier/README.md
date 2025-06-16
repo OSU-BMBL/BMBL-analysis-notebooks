@@ -23,6 +23,12 @@ Additionally, we will also explore **Reactome pathway enrichment**, which provid
 Enrichment analysis helps identify significant biological themes within a gene set. It can highlight enriched functional categories or pathways, offering deeper biological insights into large-scale gene expression data or genomic datasets.
 
 ---
+## Pipeline Libraries
+- tidyverse
+- cluterProfiler
+- ggplot2
+- org.Hs.eg.db
+*Note:* A complete list can be found in [Session Info](#session-info-as-tested).
 
 ## Pipeline Input
 
@@ -36,6 +42,7 @@ Enrichment analysis helps identify significant biological themes within a gene s
 ## Contact
 
 Author: Cankun Wang
+Tester: Mirage Modi
 
 ## Methods for manuscript
 
