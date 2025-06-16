@@ -48,14 +48,14 @@ print(paste("Current working directory:", here::here()))
 # Load data
 
 ```{r}
-source("../common/functions.R")
+source("./common/functions.R")
 combined <- qs::qread('./combined.qsave')
 
 # To obtain all_gene_sets, please run msigdb
+# install.packages("msigdbr")
 # library(msigdbr)
-# all_gene_sets = msigdbr(species = "human")
-all_gene_sets <- qs::qread("../RNAseq_workflow/all_gene_sets_human.qsave")
-
+all_gene_sets = msigdbr(species = "Homo sapiens")
+# all_gene_sets <- qs::qread("../RNAseq_workflow/all_gene_sets_human.qsave")
 
 DefaultAssay(combined) <- "RNA"
 
@@ -67,9 +67,8 @@ dbs <-
     "KEGG_2021_Human"
   )
 
-
-dir.create('../result')
-dir.create('../result/deg')
+dir.create('./result')
+dir.create('./result/deg')
 
 ```
 
@@ -116,6 +115,7 @@ dir.create('../result/deg')
     if (check_analysis) {
       
       # fgsea enrichment
+      this_combined[["RNA"]] <- JoinLayers(this_combined[["RNA"]])
       cts_fc <- FoldChange(this_combined,
                            ident.1 = paste0("stim_raw_feature_bc_matrix"),
                            ident.2 = paste0("ctrl_raw_feature_bc_matrix"))
@@ -132,7 +132,7 @@ dir.create('../result/deg')
       
       # GOBP
       this_terms <- all_gene_sets %>%
-        filter(gs_cat == 'C5' & gs_subcat == 'GO:BP')
+        filter(gs_collection == 'C5' & gs_collection == 'GO:BP')
       
       m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
       
@@ -141,7 +141,7 @@ dir.create('../result/deg')
       
       fgseaResTidy <- fgseaRes %>%
         as_tibble() %>%
-        dplyr::filter(padj < 0.1) %>%
+        dplyr::filter(padj < 0.05) %>%
         arrange(desc(NES)) %>%
         dplyr::select(-ES) %>%
         arrange(padj, desc(NES))
@@ -155,7 +155,7 @@ dir.create('../result/deg')
       
       # GSEA KEGG
       this_terms <- all_gene_sets %>%
-        filter(gs_cat == 'C2' & gs_subcat == 'CP:KEGG')
+        filter(gs_collection == 'C2' & gs_collection %in% c('CP:KEGG_LEGACY', 'CP:KEGG_MEDICUS'))
       
       m_list = this_terms %>% split(x = .$gene_symbol, f = .$gs_name)
       
