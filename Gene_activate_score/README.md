@@ -28,9 +28,9 @@
 ### Instruction
 
 1. Ensure all required R packages are installed
-2. Set up Python environment through reticulate
-3. Prepare input peak count matrix in the correct format
-4. Run the analysis using the provided Rmarkdown notebook
+2. Set up Python environment through [reticulate](https://rstudio.github.io/reticulate/index.html)
+4. Prepare input peak count matrix in the correct format
+5. Run the analysis using the provided Rmarkdown notebook
 
 ---
 
