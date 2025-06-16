@@ -107,5 +107,5 @@ sbatch Y12696_GraysonM_Naive-i_V1G_1.sh
 #slurm-xxxx.out (to check real-time running results)
 
 ```
-## Author: Jia Qu Yingjie Li 
+## Author: Jia Qu, Yingjie Li 
 
