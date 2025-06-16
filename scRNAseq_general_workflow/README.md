@@ -21,7 +21,7 @@ The workflow accepts raw count matrices in 10X Genomics format, which includes:
 - `features.tsv.gz`
 - `matrix.mtx.gz`
 
-Common utility script: `../common/functions.R` (used for project path management).
+Common utility script: `../common/functions.R` (used for project path management). /
 Color schemes (`cell_type_color`, `sample_color`) assumed to be loaded.
 
 ```
