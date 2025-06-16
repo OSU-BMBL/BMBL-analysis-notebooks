@@ -68,5 +68,6 @@ ProjectLibraries(
     "SingleCellExperiment",
     "scater",
     "dittoSeq"
+    "fgsea"
     ) 
 )
