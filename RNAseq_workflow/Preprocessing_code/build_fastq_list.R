@@ -1,7 +1,7 @@
 
-#wd <- "/fs/scratch/PCON0100/cankun/mingtao_rnaseq/usftp21.novogene.com/raw_data"
+wd <- "./RNAseq_tutorial_fastq"
 print(getwd())
-setwd(getwd())
+setwd(wd)
 
 all_files <- list.files(pattern = "*fq.gz",recursive = T)
 raw_list <- all_files
