@@ -28,6 +28,7 @@ Enrichment analysis helps identify significant biological themes within a gene s
 - cluterProfiler
 - ggplot2
 - org.Hs.eg.db
+
 *Note:* A complete list can be found in [Session Info](#session-info-as-tested).
 
 ## Pipeline Input
