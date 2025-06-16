@@ -1,8 +1,14 @@
 # scRNAseq General Workflow
 
+**Date**: Jun 15 2025
+
 ## Introduction
 
 This folder contains a comprehensive general workflow for scRNAseq analysis. The Rmarkdown files are organized based on specific analysis tasks and should be executed in numerical order for optimal results.
+
+## What's changed
+- Updated the WorkFlow section 
+- Updated session information
 
 ## Data
 
@@ -14,6 +20,9 @@ The workflow accepts raw count matrices in 10X Genomics format, which includes:
 - `barcodes.tsv.gz`
 - `features.tsv.gz`
 - `matrix.mtx.gz`
+
+Common utility script: `../common/functions.R` (used for project path management).
+Color schemes (`cell_type_color`, `sample_color`) assumed to be loaded.
 
 ```
 data/
