@@ -16,6 +16,9 @@ The immune tumor microenvironment (iTME) represents a complex integration of tum
 ## Reference
 For detail information, please refer to https://pubmed.ncbi.nlm.nih.gov/32763154/
 
+## Sample data
+[CRC_clusters_neighborhoods_markers.csv](https://data.mendeley.com/public-files/datasets/mpjzbtfgfr/files/c24351b3-76d7-444f-9edf-0246356b0c78/file_downloaded)
+
 ## Contact
-Polan Su (su18@osumc.edu)
+Author: Polan Su (su18@osumc.edu)  
 Tester: Shaohong Feng(shaohong.feng@osumc.edu)
