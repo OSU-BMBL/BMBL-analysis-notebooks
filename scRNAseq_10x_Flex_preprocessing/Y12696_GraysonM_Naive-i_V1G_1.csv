@@ -1,0 +1,15 @@
+[gene-expression],,,
+reference,/fs/ess/PCON0022/tools/refdata-gex-GRCh38-2020-A,,
+probe-set,/fs/ess/PCON0022/tools/cellranger-7.1.0/probe_sets/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv,,
+force-cells,,,
+,,,
+[libraries],,,
+fastq_id,fastqs,lanes,feature_types
+Y12696_GraysonM_Naive-i_V1G_1,/fs/ess/PAS2505/230801_Grayson_GSL-RH-3496/raw_data/ILMN_2342_Yan_OSUCM_FLEX_Rehan_Nov2024-transfer,any,Gene Expression
+,,,
+[samples],,,
+sample_id,probe_barcode_ids,description,emptydrops_minimum_umis
+1,BC001,Naive-ii,200
+2,BC002,Naive-i,200
+5,BC003,Naive-v,200
+6,BC004,Apical NRG1-i,200
