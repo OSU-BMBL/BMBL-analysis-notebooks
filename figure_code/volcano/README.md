@@ -88,4 +88,4 @@ The script can be customized by modifying:
 
 ---
 
-**Author(s):** Megan
+**Author(s):** Yingjie, Megan
