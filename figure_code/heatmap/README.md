@@ -90,7 +90,7 @@
   - ComplexHeatmap visualizations
 
 <p align="center">
-<img src="heatmap/pheatmap.png" alt="drawing" height="400"/>
+<img src="pheatmap.png" alt="drawing" height="400"/>
 </p>
 
 ---
