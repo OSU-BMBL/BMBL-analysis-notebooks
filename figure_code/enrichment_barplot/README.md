@@ -75,6 +75,8 @@
   - Customized term labels
   - Publication-ready formatting
 
+<img src="enrichment_barplot.png" alt="drawing" width="400"/>
+
 ---
 
 ## Customization
