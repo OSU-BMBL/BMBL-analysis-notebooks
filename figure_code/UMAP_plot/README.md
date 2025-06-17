@@ -36,16 +36,9 @@
    ```R
    # Core packages
    install.packages(c("tidyverse", "qs", "Seurat"))
-   
-   # Bioconductor packages
-   if (!require("BiocManager"))
-     install.packages("BiocManager")
-   BiocManager::install(c("biomaRt", "GenomeInfoDb", "EnsDb.Hsapiens.v86", 
-                         "GEOquery", "simplifyEnrichment", "ComplexHeatmap"))
-   
-   # GitHub packages
-   devtools::install_github("TheHumphreysLab/plot1cell")
    ```
+   For Bioconductor and Github packages, follow the instructions in `umap.rmd`
+
 2. Prepare your Seurat object
 3. Run the UMAP visualization workflow
 
