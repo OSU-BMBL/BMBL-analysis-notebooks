@@ -75,7 +75,9 @@
   - Customized term labels
   - Publication-ready formatting
 
+<p align="center">
 <img src="enrichment_barplot.png" alt="drawing" width="400"/>
+</p>
 
 ---
 
@@ -91,4 +93,4 @@ The workflow can be customized by modifying:
 
 ---
 
-**Author(s):** Megan
+**Author(s):** Yingjie, Megan
