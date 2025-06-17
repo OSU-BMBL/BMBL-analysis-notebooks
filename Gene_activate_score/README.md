@@ -88,16 +88,3 @@
 **Tester(s):** Mirage
 
 **Contact Email:** xiaoying.wang@osumc.edu
-
-**Session Info Output:**
-```R
-R version: ≥4.0
-Platform: Linux
-Packages:
-- Seurat
-- ggplot2
-- sctransform
-- MAESTRO
-- reticulate
-- qs
-```
