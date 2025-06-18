@@ -1,12 +1,12 @@
 # HPV mapping Tutorial
 
 ## Introduction
-This tutorial is to detect and identify HPV from single-cell RNA-sequencing (scRNA-seq) raw data based on CellRanger.
+This tutorial is to detect and identify HPV from host single-cell RNA-sequencing (scRNA-seq) raw data based on CellRanger.
 
 
 ## Pipeline input
 1. Host scRNA-seq raw data in .fastq (one sample in one folder)
-2. HPV complete genome in .fna 
+2. HPV complete reference genome in .fna 
 3. HPV annotation file in .gft
 
 Please note that there are dozens or hundreds of types for HPV. Make sure the complete genome is the right one you need. 
