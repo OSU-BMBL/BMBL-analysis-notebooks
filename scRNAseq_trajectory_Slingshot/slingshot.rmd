@@ -18,12 +18,12 @@ knitr::opts_chunk$set(warning = F)
 knitr::opts_chunk$set(error = F)
 knitr::opts_chunk$set(fig.width = 8)
 library(Polychrome)
+library(ggplot2)
 library(ggbeeswarm)
 library(ggthemes)
 library(SingleCellExperiment)
 library(Seurat)
 library(cowplot)
-library(ggplot2)
 library(patchwork)
 library(here)
 library(qs)
@@ -34,7 +34,9 @@ library(slingshot)
 library(data.table)
 #library(fields)
 # The MoMAColors are set for better visualization colors
+#devtools::install_github("BlakeRMills/MoMAColors")
 library(MoMAColors)
+library(DelayedMatrixStats)
 ```
 
 
