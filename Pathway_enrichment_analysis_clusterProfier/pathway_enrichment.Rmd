@@ -132,9 +132,9 @@ cowplot::plot_grid(p1, p2, p3, p4, ncol=2, labels=LETTERS[1:4])
 library(enrichplot)
 edo <- pairwise_termsim(reactome_result)
 p1 <- emapplot(edo)
-p2 <- emapplot(edo, cex_category=1.5)
+p2 <- emapplot(edo, cex_category=1.5) # If using different version of enrichplot, may need to change `cex_category=` to `size_category=`
 p3 <- emapplot(edo, layout="kk")
-p4 <- emapplot(edo, cex_category=1.5,layout="kk") 
+p4 <- emapplot(edo, cex_category=1.5,layout="kk") # If using different version of enrichplot, may need to change `cex_category=` to `size_category=`
 cowplot::plot_grid(p1, p2, p3, p4, ncol=2, labels=LETTERS[1:4])
 ```
 
