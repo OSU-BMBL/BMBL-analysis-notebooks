@@ -40,7 +40,7 @@ This tutorial reproduces the analysis of **1.3 million developing‑mouse‑br
 | **hdf5r**   | ≥ 1.3.8 | Needs HDF5 ≥ 1.12 on your system        |
 | **Azimuth** | ≥ 0.5   | Used for gene‑symbol conversion         |
 
-> 📦 **Installation** (run once):
+> **Installation** (run once):
 >
 > ```r
 > install.packages(c("Seurat", "hdf5r"))
