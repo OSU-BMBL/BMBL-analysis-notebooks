@@ -1,7 +1,10 @@
 # Exporting seurat object of scRNAseq to shiny cell
 
-This tutorial provides a code procedure for exporting a Seurat object from single-cell RNA sequencing (scRNAseq) to ShinyCell. ShinyCell is a tool that enables interactive exploration and visualization of scRNAseq data. You can view an example of a ShinyCell application at the following link: [https://bmblx.bmi.osumc.edu/scrnaseq_mauro](https://bmblx.bmi.osumc.edu/scrnaseq_mauro)
+This tutorial provides a code procedure for exporting a Seurat object from single-cell RNA sequencing (scRNAseq) to ShinyCell. ShinyCell is a tool that enables interactive exploration and visualization of scRNAseq data. 
 
+> Purpose – Turn any pre‑analysed Seurat object into an interactive ShinyCell dashboard that you can share with collaborators or deploy on the BMBL server.
+
+Live demo ➡️ [https://bmblx.bmi.osumc.edu/scrnaseq_mauro](https://bmblx.bmi.osumc.edu/scrnaseq_mauro)
 
 
 ## Prerequisites:
