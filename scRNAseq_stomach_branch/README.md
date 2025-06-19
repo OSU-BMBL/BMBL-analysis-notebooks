@@ -1,10 +1,13 @@
 # scRNAseq stomach and colon branch
 
-This folder is a branch of the complete analysis workflow for scRNAseq data related to stomach and colon samples. The Rmarkdown files in this folder should be replaced with the corresponding scripts in the [scRNAseq_general_workflow](../scRNAseq_general_workflow/) folder.
+This branch customises the general single‑cell RNA‑seq (scRNA‑seq) pipeline for gastrointestinal (GI) tissue, focusing on human **stomach** and **colon** datasets. Every R‑Markdown (Rmd) notebook in this folder overlays tissue‑specific choices—mainly cell‑type marker panels—on top of the core workflow found in [`../scRNAseq_general_workflow/`](../scRNAseq_general_workflow/).
 
-## What's changed
 
-- provided stomach and colon marker genes for cell type annotation in the notebooks
+**Key additions in this branch**
+
+* Curated marker tables for epithelial, vascular, and lymphatic cell types common to stomach and colon mucosa.
+* Example sub‑clustering of epithelial compartments (pit/foveolar, chief, enteroendocrine, goblet, crypt base).
+* Tissue‑aware QC thresholds (e.g., higher mitochondrial‑gene cut‑off for stomach biopsies).
 
 ## Workflow
 
@@ -32,8 +35,14 @@ The html file provides the results of the RMD file.
 
 The markers for cell cluster annotation are list below:
 
-Epithelial cell: EPCAM and panCK (KRT4, KRT6, KRT7, KRT8, KRT10, KRT17, KRT18, KRT19 and KRT20)
+| Compartment                        | Marker Set                                                                                            |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Epithelial**                     | `EPCAM`, pan‑keratin (`KRT4`, `KRT6A/B`, `KRT7`, `KRT8`, `KRT10`, `KRT17`, `KRT18`, `KRT19`, `KRT20`) |
+| **Blood‑Vessel Endothelial (BEC)** | `PECAM1`/`CD31`, `TEK`/`TIE2`, `KDR`/`FLK1`                                                           |
+| **Lymphatic Endothelial (LEC)**    | `LYVE1`, `PROX1`, `FLT4`                                                                              |
 
-Blood Vessel Endothelial cells(BEC): PECAM-1/CD31, Tie2/TEK and Kdr/FLK-1
 
-Lymphatic Endothelial cells(LEC) : LYVE-1, PROX1 and Flt4
+
+## Review
+Hao Cheng, updated on 2025/06/19
+
