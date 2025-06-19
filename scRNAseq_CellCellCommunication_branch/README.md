@@ -1,42 +1,126 @@
 # scRNAseq Cell-Cell Communication Branch Tutorial
 
-This tutorial will assist users with analyzing scRNAseq data using CellChat. R is required for this analysis. Rather than using miniconda, this tutorial uses the `uwot` UMAP method.
+*Last updated: 19 Jun 2025*
 
-## Data Download
-The data required for the analysis done in this tutorial is included in the `data` folder of this directory. 
+---
 
-## Running cellchat.rmd
+## 1  Overview
 
-1. Before performing any analysis users must make sure cellchat and all dependencies are installed:
+This hands‑on guide walks you through analysing single‑cell RNA‑seq (scRNA‑seq) data with the **CellChat** R package, focussing on cell–cell communication inference and visualisation. The workflow is built around an R Markdown notebook (`cellchat.rmd`) and uses **uwot** for faster UMAP embedding instead of Python‑based *umap-learn* or *miniconda*.
+
+---
+
+## 2  Prerequisites
+
+| Requirement     | Recommended version  | Notes                                           |
+| --------------- | -------------------- | ----------------------------------------------- |
+| R               | ≥ 4.2                | Tested on 4.3.3 (2025‑03)                       |
+| RStudio         | ≥ 2023.12            | Optional but convenient                         |
+| C/C++ Toolchain | gcc ≥ 10 / Xcode CLT | Needed for packages with compiled code          |
+| Memory          | ≥ 16 GB RAM          | Large scRNA‑seq objects can be memory‑intensive |
+
+### 2.1 Project setup
+
+1. **Clone or download** this tutorial repository. It contains a `data/` folder with the example dataset and the R Markdown notebook.
+2. **Open the repo** in RStudio (or your favourite IDE) and set it as the working directory.
+3. (Optional) **Isolate dependencies** with [`renv`](https://rstudio.github.io/renv/):
+
+   ```r
+   install.packages("renv")
+   renv::init()
    ```
-   devtools::install_github("sqjin/CellChat")
-   ```
 
-   Other dependencies:
-   
-   - Install NMF (>= 0.23.0) using `install.packages('NMF')`.
-   - Install circlize (>= 0.4.12) using `devtools::install_github("jokergoo/circlize")` .
-   - Install ComplexHeatmap using `devtools::install_github("jokergoo/ComplexHeatmap")`.
+   This records package versions in `renv.lock`, ensuring reproducibility.
 
-2. It is recommended to run `cellchat.rmd` chunk-by-chunk to ensure all dependencies are properly installed.
+### 2.2 Install required packages
 
-### Modify the internal netClustering function
-This workflow was written using the old way of implementing parallel processing, causing an issue when the software package version was updated. To check the netClustering function follow these steps:
-1. Type the function name and R will print out the source code of the function.
-2. You can find if the parallel function was enabled by default
-3. Set the parameter to false in the netClustering function so the use of the parallel processing package is skipped.
+Run the following in the R console **before** opening the notebook:
+
+```r
+# Core tooling
+install.packages(c("devtools", "uwot", "Seurat", "patchwork", "dplyr", "ggplot2"))
+
+# CellChat (latest GitHub version)
+devtools::install_github("sqjin/CellChat")
+
+# Visualisation / matrix factorisation helpers
+install.packages("NMF")                 # ≥ 0.23.0
+
+devtools::install_github("jokergoo/circlize")
+devtools::install_github("jokergoo/ComplexHeatmap")
 ```
-do.parallel = FALSE
+
+*Tip:* If compilation fails on macOS, install Xcode Command‑Line Tools (`xcode-select --install`).
+
+---
+
+## 3  Running `cellchat.rmd`
+
+> **Best practice:** knit the notebook *chunk‑by‑chunk* the first time. This lets you catch missing dependencies early and keeps memory usage manageable.
+
+1. **Open** `cellchat.rmd` in the IDE.
+2. **Step through** each code chunk (⌥+⌘+C in RStudio) or press *Knit* once all packages load without errors.
+
+
+---
+
+## 4  Handling the `netClustering` parallel bug
+
+Recent versions of **CellChat** switched to the *future* framework. Older notebooks may explicitly enable legacy parallel code, triggering errors such as `unused argument 'mc.cores'`.
+
+### 4.1 Quick fix inside the notebook
+
+Add this chunk **before** calling `netVisual_*` functions:
+
+```r
+CellChat:::netClustering$do.parallel <- FALSE  # disable legacy parallel flag
 ```
 
-## Outputs
+Alternatively, edit your local copy of the function:
 
-Running `cellchat.rmd` will generate an HTML file. This file will contain the following figures:
-- Pie charts
-- Circle plots
-- Heat maps
-- Chord diagrams
-- Bubble plots
-- Violin/ dot plots
-- Scatter plots
-- River plots
+```r
+trace(CellChat:::netClustering, edit = TRUE)  # opens the source in $EDITOR
+# Locate `do.parallel = TRUE` and change to FALSE, then save.
+```
+
+> **Why?** Setting `do.parallel = FALSE` skips the outdated *parallel* backend and lets CellChat delegate to *future*. If you prefer true parallelism, wrap heavy steps in:
+>
+> ```r
+> library(future.apply)
+> plan(multisession, workers = 8)  # adjust to your CPU cores
+> ```
+
+---
+
+## 5  Interpreting the outputs
+
+When knitting completes, an HTML report (`cellchat.html`) appears in your project root containing interactive widgets and static images:
+
+| Figure                 | Insight                                                    |
+| ---------------------- | ---------------------------------------------------------- |
+| **Pie charts**         | Relative contribution of signalling pathways per cell type |
+| **Circle plots**       | Global communication probability between clusters          |
+| **Heatmaps**           | Pathway‑level interaction strength                         |
+| **Chord diagrams**     | Ligand–receptor pairs connecting sender/receiver types     |
+| **Bubble/Vln plots**   | Gene‑level expression and contribution                     |
+| **River/Sankey plots** | Signal flow across multiple network layers                 |
+| **Scatter plots**      | 2‑D UMAP of cells or pathways                              |
+
+Figures are saved to `figures/` (created automatically) for reuse in manuscripts.
+
+---
+
+## 6  Troubleshooting
+
+| Symptom                              | Possible cause                  | Fix                                                  |
+| ------------------------------------ | ------------------------------- | ---------------------------------------------------- |
+| *Installation hangs at "compiling"*  | Missing build tools             | Install Rtools (Windows) or Xcode CLT (macOS)        |
+| `Error: package 'xyz' not found`     | Package install failed silently | Re‑run `install.packages('xyz')` and inspect console |
+| `cannot allocate vector of size ...` | RAM exhausted during merge      | Subsample cells (`subset`) or upgrade hardware       |
+| `unused argument 'mc.cores'`         | Legacy parallel flag as above   | See §4 Handling the netClustering bug                |
+
+---
+
+## 7  Review
+
+Hao Cheng, updated on 2025/06/19
