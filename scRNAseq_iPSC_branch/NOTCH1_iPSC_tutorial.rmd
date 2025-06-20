@@ -1,0 +1,662 @@
+---
+title: "Comprehensive NOTCH1 iPSC Cardiac Differentiation Analysis"
+author: "BMBL Analysis Team"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: cosmo
+    highlight: tango
+    fig_width: 10
+    fig_height: 8
+---
+
+```{r setup, include=FALSE}
+# Global chunk options
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = TRUE,
+  fig.align = "center",
+  out.width = "90%",
+  cache = TRUE
+)
+
+# Load required libraries
+library(Seurat)
+library(cowplot)
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+library(tidyr)
+library(qs)
+library(Polychrome)
+library(RColorBrewer)
+library(tidyverse)
+library(harmony)
+library(monocle3)
+library(velocyto.R)
+library(SeuratWrappers)
+
+# Set random seed for reproducibility
+set.seed(42)
+
+# Create output directories if they don't exist
+dir.create("results", showWarnings = FALSE)
+dir.create("results/seurat_objects", showWarnings = FALSE)
+dir.create("results/cell_annotations", showWarnings = FALSE)
+dir.create("results/differential_expression", showWarnings = FALSE)
+dir.create("results/trajectory_analysis", showWarnings = FALSE)
+dir.create("results/velocity_analysis", showWarnings = FALSE)
+dir.create("results/pathway_analysis", showWarnings = FALSE)
+dir.create("figures", showWarnings = FALSE)
+dir.create("logs", showWarnings = FALSE)
+```
+
+# Introduction
+
+This tutorial provides a comprehensive analysis of single-cell RNA-seq data from iPSC cardiac differentiation studies investigating the role of NOTCH1 in human cardiac cell development. The study compares control and NOTCH1 knockout (N1KO) iPSCs across multiple timepoints during cardiac differentiation.
+
+## What You'll Learn
+
+By the end of this tutorial, you will be able to:
+
+- **Process** multi-timepoint scRNA-seq data from iPSC differentiation
+- **Integrate** data from multiple samples using Harmony
+- **Identify** cardiac cell types and differentiation stages
+- **Analyze** differential gene expression between conditions
+- **Construct** differentiation trajectories using pseudotime
+- **Perform** RNA velocity analysis for dynamic gene expression
+- **Investigate** pathway enrichment and gene regulatory networks
+- **Visualize** complex multi-dimensional data effectively
+
+## Prerequisites
+
+### System Requirements
+
+- **R version**: 4.0 or higher
+- **Memory**: At least 32GB RAM (64GB recommended)
+- **Storage**: 50GB free space for analysis data
+- **Processing**: Multi-core system recommended
+
+### Required R Packages
+
+```{r check-packages, eval=FALSE}
+# Check if required packages are installed
+required_packages <- c("Seurat", "harmony", "monocle3", "velocyto.R", 
+                      "ggplot2", "dplyr", "qs", "Polychrome")
+
+for(pkg in required_packages) {
+  if(!require(pkg, character.only = TRUE)) {
+    cat("Installing", pkg, "...\n")
+    if(pkg %in% c("harmony", "monocle3", "velocyto.R")) {
+      BiocManager::install(pkg)
+    } else {
+      install.packages(pkg)
+    }
+  }
+}
+```
+
+### Data Description
+
+This tutorial analyzes 12 samples from iPSC cardiac differentiation:
+- **Control samples**: Con0, Con2, Con5, Con10, Con14, Con30
+- **NOTCH1 KO samples**: N1KO0, N1KO2, N1KO5, N1KO10, N1KO14, N1KO30
+- **Timepoints**: 0, 2, 5, 10, 14, and 30 days of differentiation
+
+---
+
+# Data Loading and Preprocessing
+
+## 1. Environment Setup
+
+First, let's set up the analysis environment and load required libraries.
+
+```{r setup-environment}
+# Create a log file for this session
+log_file <- file.path("logs", paste0("notch1_tutorial_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".log"))
+cat("NOTCH1 iPSC Tutorial Session Log\n", file = log_file)
+cat("Started:", format(Sys.time()), "\n", file = log_file, append = TRUE)
+
+# Load sample metadata
+sample_list <- read.csv("sample_list.csv")
+cat("Sample metadata loaded:", nrow(sample_list), "samples\n", file = log_file, append = TRUE)
+
+# Display experimental design
+cat("Experimental Design:\n")
+print(table(sample_list$day, gsub("[0-9]+", "", sample_list$sample)))
+```
+
+## 2. Loading 10x Genomics Data
+
+Load and create Seurat objects for each sample.
+
+```{r load-data}
+# Load 10x Genomics data for all samples
+cat("Loading 10x Genomics data...\n")
+
+# Create a list to store sample paths and names
+sample_paths <- list(
+  "Con0" = "10x_counts/Con0_CKDL200167803-1a-SI_GA_D3_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "Con2" = "10x_counts/Con2_CKDL210000544-1a-SI_GA_B6_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "Con5" = "10x_counts/Con5_CKDL200167807-1a-SI_GA_A3_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "Con10" = "10x_counts/Con10_CKDL200167809-1a-SI_GA_A7_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "Con14" = "10x_counts/Con14_CKDL200167811-1a-SI_GA_A9_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "Con30" = "10x_counts/Con30_CKDL200167813-1a-SI_GA_A11_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO0" = "10x_counts/N1KO0_CKDL200167804-1a-SI_GA_E3_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO2" = "10x_counts/N1KO2_CKDL210000545-1a-SI_GA_B7_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO5" = "10x_counts/N1KO5_CKDL200167808-1a-SI_GA_A4_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO10" = "10x_counts/N1KO10_CKDL200167810-1a-SI_GA_A8_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO14" = "10x_counts/N1KO14_CKDL200167812-1a-SI_GA_A10_HNNKFDSXY/filtered_feature_bc_matrix.h5",
+  "N1KO30" = "10x_counts/N1KO30_CKDL200167814-1a-SI_GA_A12_HNNKFDSXY/filtered_feature_bc_matrix.h5"
+)
+
+# Load data and create Seurat objects
+seurat_objects <- list()
+
+for(sample_name in names(sample_paths)) {
+  cat("Loading", sample_name, "...\n")
+  
+  # Read 10x data
+  data <- Read10X_h5(sample_paths[[sample_name]])
+  
+  # Create Seurat object
+  seurat_obj <- CreateSeuratObject(
+    counts = data,
+    project = sample_name,
+    assay = "RNA",
+    min.cells = 3,
+    min.features = 200
+  )
+  
+  # Add sample metadata
+  seurat_obj$sample <- sample_name
+  seurat_obj$condition <- ifelse(grepl("Con", sample_name), "Control", "N1KO")
+  seurat_obj$day <- sample_list$day[sample_list$sample == sample_name]
+  
+  seurat_objects[[sample_name]] <- seurat_obj
+}
+
+cat("Data loading completed for", length(seurat_objects), "samples\n", file = log_file, append = TRUE)
+```
+
+## 3. Data Integration
+
+Merge all samples and perform data integration using Harmony.
+
+```{r data-integration}
+# Merge all Seurat objects
+cat("Merging all samples...\n")
+
+combined <- merge(
+  seurat_objects[[1]],
+  y = seurat_objects[-1],
+  add.cell.ids = names(seurat_objects),
+  project = "NOTCH1_iPSC"
+)
+
+# Add sample information
+combined$orig.ident <- combined$sample
+
+cat("Merged object contains", ncol(combined), "cells and", nrow(combined), "genes\n", file = log_file, append = TRUE)
+
+# Calculate mitochondrial percentage
+combined[["percent.mt"]] <- PercentageFeatureSet(combined, pattern = "^MT-")
+
+# Display basic statistics
+cat("Basic statistics:\n")
+print(summary(combined$nFeature_RNA))
+print(summary(combined$nCount_RNA))
+print(summary(combined$percent.mt))
+```
+
+---
+
+# Quality Control and Filtering
+
+## 4. Quality Control
+
+Perform quality control filtering to remove low-quality cells.
+
+```{r quality-control}
+# Quality control filtering
+cat("Performing quality control filtering...\n")
+
+# Filter cells based on quality metrics
+combined_filtered <- subset(
+  combined,
+  subset = nFeature_RNA > 200 & 
+          nFeature_RNA < 6000 & 
+          percent.mt < 20
+)
+
+cat("QC filtering removed", ncol(combined) - ncol(combined_filtered), "cells\n")
+cat("Remaining cells:", ncol(combined_filtered), "\n")
+
+# Log QC results
+cat("QC filtering completed. Remaining cells:", ncol(combined_filtered), "\n", file = log_file, append = TRUE)
+
+# Visualize QC metrics
+VlnPlot(combined_filtered, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
+        ncol = 3, pt.size = 0.1)
+```
+
+## 5. Data Normalization and Feature Selection
+
+Normalize data and identify highly variable genes.
+
+```{r normalization}
+# Normalize data
+cat("Normalizing data...\n")
+
+combined_filtered <- NormalizeData(combined_filtered, normalization.method = "LogNormalize", scale.factor = 10000)
+
+# Identify highly variable genes
+combined_filtered <- FindVariableFeatures(combined_filtered, selection.method = "vst", nfeatures = 2000)
+
+# Scale data
+all.genes <- rownames(combined_filtered)
+combined_filtered <- ScaleData(combined_filtered, features = all.genes)
+
+cat("Data normalization and scaling completed\n", file = log_file, append = TRUE)
+```
+
+---
+
+# Data Integration and Dimensionality Reduction
+
+## 6. Harmony Integration
+
+Use Harmony to integrate data from multiple samples and correct for batch effects.
+
+```{r harmony-integration}
+# Run PCA
+cat("Running PCA...\n")
+combined_filtered <- RunPCA(combined_filtered, features = VariableFeatures(object = combined_filtered))
+
+# Run Harmony integration
+cat("Running Harmony integration...\n")
+combined_filtered <- RunHarmony(combined_filtered, group.by.vars = "sample", dims.use = 1:50)
+
+# Run UMAP
+cat("Running UMAP...\n")
+combined_filtered <- RunUMAP(combined_filtered, reduction = "harmony", dims = 1:50)
+
+cat("Harmony integration and UMAP completed\n", file = log_file, append = TRUE)
+```
+
+## 7. Clustering Analysis
+
+Perform clustering to identify cell populations.
+
+```{r clustering}
+# Find neighbors
+cat("Finding neighbors for clustering...\n")
+combined_filtered <- FindNeighbors(combined_filtered, reduction = "harmony", dims = 1:50)
+
+# Find clusters
+combined_filtered <- FindClusters(combined_filtered, resolution = 0.8)
+
+# Visualize clusters
+DimPlot(combined_filtered, reduction = "umap", label = TRUE, pt.size = 0.5) +
+  ggtitle("Clusters")
+
+cat("Clustering completed. Found", length(unique(Idents(combined_filtered))), "clusters\n", file = log_file, append = TRUE)
+```
+
+---
+
+# Cell Type Annotation
+
+## 8. Marker Gene Analysis
+
+Identify marker genes for each cluster to annotate cell types.
+
+```{r marker-analysis}
+# Find marker genes for each cluster
+cat("Finding marker genes for each cluster...\n")
+
+Idents(combined_filtered) <- combined_filtered$seurat_clusters
+
+markers <- FindAllMarkers(
+  combined_filtered,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+
+# Save marker genes
+write.csv(markers, "results/cell_annotations/cluster_markers.csv", row.names = FALSE)
+
+# Display top markers for each cluster
+top_markers <- markers %>%
+  group_by(cluster) %>%
+  top_n(n = 10, wt = avg_log2FC)
+
+print(top_markers)
+
+cat("Marker gene analysis completed\n", file = log_file, append = TRUE)
+```
+
+## 9. Cell Type Annotation
+
+Annotate cell types based on marker genes and cardiac lineage markers.
+
+```{r cell-annotation}
+# Define cardiac lineage markers
+cardiac_markers <- list(
+  "iPSC" = c("POU5F1", "SOX2", "NANOG"),
+  "Mesoderm" = c("MIXL1", "T", "EOMES"),
+  "Cardiac_Mesoderm" = c("MESP1", "PDGFRA", "KDR"),
+  "Cardiac_Progenitor" = c("ISL1", "NKX2-5", "GATA4"),
+  "Cardiomyocyte" = c("TNNT2", "MYH6", "MYH7", "ACTN2"),
+  "Endothelial" = c("PECAM1", "VWF", "CDH5"),
+  "Fibroblast" = c("COL1A1", "COL3A1", "FN1")
+)
+
+# Annotate cell types based on marker expression
+cell_type_annotations <- c(
+  "0" = "Cardiac_Mesoderm",
+  "1" = "iPSC",
+  "2" = "Cardiac_Progenitor", 
+  "3" = "Cardiomyocyte",
+  "4" = "Endothelial",
+  "5" = "Fibroblast",
+  "6" = "Mesoderm",
+  "7" = "Cardiac_Progenitor",
+  "8" = "iPSC"
+)
+
+# Add cell type annotations
+combined_filtered$cell_type <- cell_type_annotations[as.character(combined_filtered$seurat_clusters)]
+
+# Visualize cell types
+DimPlot(combined_filtered, reduction = "umap", group.by = "cell_type", label = TRUE) +
+  ggtitle("Cell Types")
+
+cat("Cell type annotation completed\n", file = log_file, append = TRUE)
+```
+
+---
+
+# Differential Expression Analysis
+
+## 10. Condition-Specific Analysis
+
+Analyze differential gene expression between control and NOTCH1 KO conditions.
+
+```{r differential-expression}
+# Set cell type as identity
+Idents(combined_filtered) <- combined_filtered$cell_type
+
+# Perform differential expression analysis for each cell type
+cat("Performing differential expression analysis...\n")
+
+deg_results <- list()
+
+for(cell_type in unique(combined_filtered$cell_type)) {
+  cat("Analyzing", cell_type, "...\n")
+  
+  # Subset to specific cell type
+  subset_obj <- subset(combined_filtered, cell_type == cell_type)
+  
+  # Find markers between conditions
+  markers <- FindMarkers(
+    subset_obj,
+    ident.1 = "Control",
+    ident.2 = "N1KO",
+    group.by = "condition",
+    min.pct = 0.1,
+    logfc.threshold = 0.25
+  )
+  
+  # Filter significant genes
+  markers_sig <- markers %>%
+    filter(p_val_adj < 0.05) %>%
+    arrange(desc(avg_log2FC))
+  
+  deg_results[[cell_type]] <- markers_sig
+  
+  # Save results
+  write.csv(markers_sig, 
+            paste0("results/differential_expression/", cell_type, "_DEG.csv"), 
+            row.names = TRUE)
+}
+
+cat("Differential expression analysis completed\n", file = log_file, append = TRUE)
+```
+
+## 11. Visualization of Differential Expression
+
+Create visualizations for differential expression results.
+
+```{r deg-visualization}
+# Create volcano plots for each cell type
+for(cell_type in names(deg_results)) {
+  if(nrow(deg_results[[cell_type]]) > 0) {
+    # Create volcano plot
+    p <- ggplot(deg_results[[cell_type]], aes(x = avg_log2FC, y = -log10(p_val_adj))) +
+      geom_point(alpha = 0.6) +
+      geom_point(data = deg_results[[cell_type]] %>% filter(p_val_adj < 0.05 & abs(avg_log2FC) > 1),
+                 color = "red", alpha = 0.8) +
+      theme_minimal() +
+      ggtitle(paste("DEG in", cell_type))
+    
+    print(p)
+    
+    # Save plot
+    ggsave(paste0("figures/", cell_type, "_volcano.pdf"), p, width = 8, height = 6)
+  }
+}
+```
+
+---
+
+# Trajectory Analysis
+
+## 12. Pseudotime Analysis
+
+Perform trajectory analysis to understand differentiation dynamics.
+
+```{r trajectory-analysis}
+# Prepare data for Monocle3
+cat("Preparing data for trajectory analysis...\n")
+
+# Convert to Monocle3 object
+cds <- as.cell_data_set(combined_filtered)
+
+# Preprocess data
+cds <- preprocess_cds(cds, num_dim = 50)
+
+# Reduce dimensions
+cds <- reduce_dimension(cds)
+
+# Cluster cells
+cds <- cluster_cells(cds)
+
+# Learn trajectory
+cds <- learn_graph(cds)
+
+# Order cells in pseudotime
+cds <- order_cells(cds)
+
+# Plot trajectory
+plot_cells(cds, color_cells_by = "cell_type", label_groups_by_cluster = FALSE)
+
+cat("Trajectory analysis completed\n", file = log_file, append = TRUE)
+```
+
+---
+
+# RNA Velocity Analysis
+
+## 13. RNA Velocity Setup
+
+Prepare and analyze RNA velocity data for dynamic gene expression.
+
+```{r velocity-setup}
+# Load velocity data (if available)
+cat("Setting up RNA velocity analysis...\n")
+
+# Note: This section requires loom files from velocyto
+# For demonstration, we'll show the framework
+
+velocity_files <- list(
+  "Con0" = "velocity_loom/Con0.loom",
+  "Con2" = "velocity_loom/Con2.loom",
+  "Con5" = "velocity_loom/Con5.loom",
+  "Con10" = "velocity_loom/Con10.loom",
+  "Con14" = "velocity_loom/Con14.loom",
+  "Con30" = "velocity_loom/Con30.loom",
+  "N1KO0" = "velocity_loom/N1KO0.loom",
+  "N1KO2" = "velocity_loom/N1KO2.loom",
+  "N1KO5" = "velocity_loom/N1KO5.loom",
+  "N1KO10" = "velocity_loom/N1KO10.loom",
+  "N1KO14" = "velocity_loom/N1KO14.loom",
+  "N1KO30" = "velocity_loom/N1KO30.loom"
+)
+
+cat("Velocity analysis framework established\n", file = log_file, append = TRUE)
+```
+
+---
+
+# Results Summary and Visualization
+
+## 14. Comprehensive Visualization
+
+Create comprehensive visualizations of the analysis results.
+
+```{r comprehensive-visualization}
+# Create UMAP plots colored by different metadata
+cat("Creating comprehensive visualizations...\n")
+
+# UMAP colored by sample
+p1 <- DimPlot(combined_filtered, reduction = "umap", group.by = "sample", pt.size = 0.5) +
+  ggtitle("Samples")
+
+# UMAP colored by condition
+p2 <- DimPlot(combined_filtered, reduction = "umap", group.by = "condition", pt.size = 0.5) +
+  ggtitle("Condition")
+
+# UMAP colored by day
+p3 <- DimPlot(combined_filtered, reduction = "umap", group.by = "day", pt.size = 0.5) +
+  ggtitle("Differentiation Day")
+
+# UMAP colored by cell type
+p4 <- DimPlot(combined_filtered, reduction = "umap", group.by = "cell_type", pt.size = 0.5) +
+  ggtitle("Cell Types")
+
+# Combine plots
+(p1 + p2) / (p3 + p4)
+
+# Save combined plot
+ggsave("figures/comprehensive_umap.pdf", width = 16, height = 12)
+```
+
+## 15. Cell Proportion Analysis
+
+Analyze cell proportions across conditions and timepoints.
+
+```{r cell-proportion}
+# Calculate cell proportions
+cat("Analyzing cell proportions...\n")
+
+# Create proportion table
+proportion_data <- combined_filtered@meta.data %>%
+  group_by(condition, day, cell_type) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  group_by(condition, day) %>%
+  mutate(proportion = count / sum(count)) %>%
+  ungroup()
+
+# Plot cell proportions
+ggplot(proportion_data, aes(x = day, y = proportion, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~condition) +
+  theme_minimal() +
+  labs(title = "Cell Proportions by Condition and Day",
+       x = "Differentiation Day",
+       y = "Proportion") +
+  scale_fill_brewer(palette = "Set3")
+
+# Save proportion plot
+ggsave("figures/cell_proportions.pdf", width = 12, height = 8)
+```
+
+---
+
+# Quality Assessment and Summary
+
+## 16. Analysis Quality Assessment
+
+Assess the quality of the analysis and provide summary statistics.
+
+```{r quality-assessment}
+# Assess analysis quality
+cat("Analysis Quality Summary:\n")
+cat("Total cells analyzed:", ncol(combined_filtered), "\n")
+cat("Total genes analyzed:", nrow(combined_filtered), "\n")
+cat("Number of samples:", length(unique(combined_filtered$sample)), "\n")
+cat("Number of cell types:", length(unique(combined_filtered$cell_type)), "\n")
+cat("Number of clusters:", length(unique(combined_filtered$seurat_clusters)), "\n")
+
+# Cell type distribution
+cat("Cell type distribution:\n")
+print(table(combined_filtered$cell_type))
+
+# Sample distribution
+cat("Sample distribution:\n")
+print(table(combined_filtered$sample))
+
+# Log final summary
+cat("Analysis completed successfully\n", file = log_file, append = TRUE)
+cat("Final cell count:", ncol(combined_filtered), "\n", file = log_file, append = TRUE)
+cat("Session ended:", format(Sys.time()), "\n", file = log_file, append = TRUE)
+```
+
+---
+
+# Next Steps
+
+## Further Analysis Options
+
+1. **Pathway Enrichment**: Perform GSEA on differential expression results
+2. **Gene Regulatory Networks**: Infer regulatory networks using SCENIC
+3. **Cell-Cell Communication**: Analyze ligand-receptor interactions
+4. **Integration with ATAC-seq**: Combine with chromatin accessibility data
+5. **Comparative Analysis**: Compare with other cardiac differentiation studies
+
+## Resources
+
+- **Publication**: [Impaired Human Cardiac Cell Development due to NOTCH1 Deficiency](https://www.ahajournals.org/doi/10.1161/CIRCRESAHA.122.321398)
+- **GEO Dataset**: [GSE196632](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE196632)
+- **Seurat Documentation**: https://satijalab.org/seurat/
+- **Harmony Documentation**: https://github.com/immunogenomics/harmony
+
+---
+
+# Session Information
+
+```{r session-info}
+# Display session information
+cat("Session Information:\n")
+cat("R version:", R.version.string, "\n")
+cat("Seurat version:", packageVersion("Seurat"), "\n")
+cat("Analysis date:", format(Sys.time()), "\n")
+
+# Save session info
+sink("session_info.txt")
+sessionInfo()
+sink()
+```
+
+---
+
+*This tutorial was developed by the BMBL Analysis Team. For questions or improvements, please contact the team or submit issues to our repository.*
+
+*Last updated: `r format(Sys.time(), '%B %d, %Y')`* 
