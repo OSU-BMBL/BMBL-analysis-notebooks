@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This folder contains a comprehensive general workflow for scRNAseq analysis. The Rmarkdown files are organized based on specific analysis tasks and should be executed in numerical order for optimal results.
+This folder contains a comprehensive general workflow for scRNAseq analysis. The Rmarkdown files are organized based on specific analysis tasks and should be executed in numerical order for optimal results. This pipeline can be run on OSC Ascend. 
 
 ## What's changed
 - Updated the WorkFlow section 
@@ -209,4 +209,4 @@ loaded via a namespace (and not attached):
 
 ## Contact
 
-Author: Cankun Wang
+Author: Cankun Wang, Yingjie
