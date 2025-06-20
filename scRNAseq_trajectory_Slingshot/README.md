@@ -1,6 +1,6 @@
 # Slingshot Trajectory Analysis for scRNAseq Data
 
-**Author**: Cankun, Yingjie 
+**Author**: Cankun, Yingjie
 **Date**: Jun 15 2025
 
 This tutorial provides a step-by-step guide for performing trajectory analysis on single-cell RNA sequencing (scRNAseq) data using the Slingshot package in R. This pipeline can be run on OSC Ascend. 
