@@ -82,6 +82,8 @@ for (sample_name in names(sp_data@images)) {
 
 Author: Hao Cheng
 
+Test: Xiaojie (06/19/2025)
+
 
 ## Session info as tested
 ```R
@@ -124,4 +126,3 @@ loaded via a namespace (and not attached):
 [51] rlang_1.1.1               Rcpp_1.0.13               glue_1.6.2                rstudioapi_0.15.0         R6_2.5.1                 
 [56] zlibbioc_1.46.0
 ```
-​

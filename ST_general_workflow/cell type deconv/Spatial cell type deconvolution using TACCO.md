@@ -22,6 +22,8 @@ The output of the RCTD pipeline consists of:
 
 Author: Hao Cheng
 
+Test: Xiaojie (06/19/2025)
+
 
 ## Session info as tested
 Running using Python 3.10+.
