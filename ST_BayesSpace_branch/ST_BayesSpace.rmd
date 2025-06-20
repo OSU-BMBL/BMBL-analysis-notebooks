@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-(!require("BayesSpace", quietly = TRUE))
+if (!require("BayesSpace", quietly = TRUE))
     BiocManager::install("BayesSpace")
 ```
 
@@ -80,7 +80,7 @@ library(Matrix)
 rowData <- read.csv("path/to/rowData.csv", stringsAsFactors=FALSE)
 colData <- read.csv("path/to/colData.csv", stringsAsFactors=FALSE, row.names=1)
 counts <- read.csv("path/to/counts.csv.gz",
-                   row.names=1, check.names=F, stringsAsFactors=FALSE))
+                   row.names=1, check.names=F, stringsAsFactors=FALSE)
 sce <- SingleCellExperiment(assays=list(counts=as(counts, "dgCMatrix")),
                             rowData=rowData,
                             colData=colData)
