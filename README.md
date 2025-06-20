@@ -40,7 +40,6 @@ This repository is NOT an introduction to data analysis. There are many availabl
   10. [scRNAseq large dataset analysis](./sc_LargeData_Sketch-based_Analysis)
   11. [scRNAseq_module_enrichent](./scRNAseq_module_enrichment)
   12. [scRNAseq_iPSC_branch](./scRNAseq_iPSC_branch)
-  13. [scRNAseq_atlas_SCI](./scRNA-seq_atlas_SCI)
   14. [scRNAseq_immune_branch](./scRNAseq_immune_branch)
   15. [scRNAseq_inferCNV](./scRNAseq_inferCNV)
   16. [scRNAseq_label_transfer](./scRNAseq_label_transfer_branch)
@@ -60,8 +59,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [scTCRseq_analysis](./scTCRseq_analysis)
 
 - RNA-seq:
-  1. [RNAseq general workflow R](./RNAseq_workflow)
-  2. [RNAseq general workflow nf-core](./RNAseq_general_workflow_nfcore)
+  1. [RNAseq general workflow nf-core](./RNAseq_general_workflow_nfcore)
 
 - ATAC-seq:
   1. [ATACseq general workflow nf-core](./ATAC-seq_preprocessing)
