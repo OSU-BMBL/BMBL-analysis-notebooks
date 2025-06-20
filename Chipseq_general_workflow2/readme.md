@@ -32,6 +32,20 @@ Each step includes quality metrics to ensure data integrity and processing accur
 # File Inputs/Recommended Directory Structure
 ---
 Fastq files from sequencing, organized by sample in separate directories. This workflow produces many intermediate files, so job executions should remain in target directories to reduce clutter.
+``` text
+ChIPseq_Project/
+├── raw_data/
+│   ├── Sample1/
+│   │   ├── Sample1_R1.fastq.gz
+│   │   └── Sample1_R2.fastq.gz
+│   ├── Sample2/
+│   │   ├── Sample2_R1.fastq.gz
+│   │   └── Sample2_R2.fastq.gz
+│   └── ...
+├── qc_reports/
+└── scripts/
+    └── run_fastqc.sh
+```
 
 ---
 # File Outputs
