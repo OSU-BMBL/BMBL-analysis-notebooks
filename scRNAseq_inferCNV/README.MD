@@ -38,6 +38,7 @@ The analysis helps to distinguish malignant (aneuploid) cells from normal (diplo
 - Run the infercnv pipeline with appropriate parameters (cutoff, denoising, HMM, etc.).
 - The output, including CNV heatmaps and inferred results, will be saved in the specified output directory (e.g., ./infercnv_1).
 
+Please note that this tutorial cannot be run on OSC since the package "infercnv" cannot be installed on OSC.
 
 
 ## Contact
