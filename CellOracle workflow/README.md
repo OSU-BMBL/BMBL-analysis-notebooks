@@ -5,8 +5,9 @@
 #peak file from scATACseq and Cicero file to build your custom TF-gene linkage, however you can load prebuilt one using 
  co.data
 
-the Main input for cellorcle in scRNAseq in anndata object 
-the output is dictionary where key is the celltype and value is the GRN (celltype specific GRN)
+The Main input for cellorcle in scRNAseq in anndata object 
+
+The output is dictionary where key is the celltype and value is the GRN (celltype specific GRN)
 
 
 ## Contact
