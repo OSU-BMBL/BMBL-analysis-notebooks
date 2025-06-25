@@ -2,7 +2,7 @@
 
 
 ## Pipeline input
-#peak file from scATACseq and Cicero file to build your custom TF-gene linkage, however you can load prebuilt one using co.data
+peak file from scATACseq and Cicero file to build your custom TF-gene linkage, however you can load prebuilt one using co.data
 
 The Main input for cellorcle in scRNAseq in anndata object 
 
@@ -13,6 +13,7 @@ The output is dictionary where key is the celltype and value is the GRN (celltyp
 ## Contact
 
 Author: Ahmed Ghobashi
+
 Tested by: Shaopeng Gu
 ## Methods for manuscript
 
