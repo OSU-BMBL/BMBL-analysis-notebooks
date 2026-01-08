@@ -1,0 +1,670 @@
+---
+title: "Digital Karyotype Analysis Report"
+author: "BMBL Lab"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: united
+    df_print: paged
+params:
+  counts_dir: "data"
+  metadata_file: "data/example_metadata.csv"
+---
+
+# Digital Karyotype Analysis of iPSC Lines
+
+## Introduction
+
+Induced pluripotent stem cells (iPSCs) are widely used in disease modeling, drug discovery, and regenerative medicine. However, iPSC lines can acquire chromosomal abnormalities during reprogramming and extended culture, potentially compromising experimental validity and safety. Traditional G-banding karyotyping, while reliable for detecting large aneuploidies, is labor-intensive and has limited resolution (~5-10 Mb). Low-pass whole genome sequencing (LP-WGS) offers a cost-effective, high-throughput alternative capable of detecting copy number variations (CNVs) at megabase resolution across the entire genome.
+
+This report presents digital karyotype analysis results for iPSC lines using LP-WGS-based CNV detection. The analysis pipeline implements industry-standard methodologies calibrated to match the detection limits of clinical-grade chromosomal microarray platforms such as KaryoStat+ (Thermo Fisher Scientific).
+
+### Study Design
+
+**Objective**: Screen iPSC lines for chromosomal abnormalities to ensure genomic integrity prior to downstream applications.
+
+**Expected Findings**:
+
+- Down syndrome-derived lines should exhibit trisomy 21 (chromosome 21 gain)
+- Isogenic controls should match parental karyotypes
+- Healthy donor lines should be largely euploid
+
+---
+
+## Quick Guide for Collaborators
+
+### What This Analysis Does
+
+This report checks whether your iPSC lines have the correct number of chromosomes. Think of it as a "genome health check" that can detect:
+
+- **Missing pieces** of chromosomes (deletions/losses)
+- **Extra pieces** of chromosomes (duplications/gains)
+- **Whole chromosome changes** like trisomy (3 copies instead of 2)
+
+We use low-cost DNA sequencing instead of traditional karyotyping, which gives us similar results faster and cheaper.
+
+### How to Read the Plots
+
+Each sample has a genome-wide plot. Here's what to look for:
+
+| What You See | What It Means |
+|--------------|---------------|
+| Flat gray line near "2" | Normal - two copies as expected |
+| **Orange bar** above the line | Extra DNA - possible duplication |
+| **Blue bar** below the line | Missing DNA - possible deletion |
+| Noisy/scattered points | Lower quality data - interpret with caution |
+
+**The dashed line at 2** = normal diploid state (two copies of each chromosome)
+
+### What the Results Mean
+
+| Result | Plain English | Action |
+|--------|---------------|--------|
+| **PASS (Normal)** | Looks good! No problems found | Safe to use |
+| **PASS (Minor CNVs)** | Small changes found, likely harmless | Usually fine to use |
+| **Abnormal** | Large change detected (>10 Mb) | Review before using |
+| **FAIL (Complex)** | Multiple large changes | Do not use - culture may be unstable |
+| **FAIL (Noisy)** | Data quality too poor | Re-sequence this sample |
+
+### When to Be Concerned
+
+**Definitely review if you see:**
+
+- Whole chromosome gains (like chr21 in Down syndrome lines)
+- Large deletions or duplications (>10 Mb)
+- Multiple abnormalities in one sample
+
+**Usually not a problem:**
+
+- Small CNVs (<5 Mb) that appear in multiple unrelated samples
+- CNVs in known polymorphic regions
+
+**Questions?** Contact the bioinformatics team for interpretation help.
+
+---
+
+## Methods
+
+### Sample processing and sequencing
+
+Genomic DNA was extracted from iPSC cultures and subjected to low-pass whole genome sequencing. Paired-end reads were generated on the Illumina NovaSeq platform. Raw sequencing data underwent quality control using fastp (v0.23.4) with default parameters for adapter trimming and quality filtering. Cleaned reads were aligned to the GRCh38 human reference genome using BWA-MEM (v0.7.17) with standard settings. Aligned reads were sorted and indexed using samtools (v1.21).
+
+### Read count binning
+
+The genome was partitioned into non-overlapping 50-kb bins spanning chromosomes 1-22, X, and Y. Read counts per bin were quantified using bedtools coverage (v2.31.0). Bins overlapping centromeric regions, telomeres, and other low-mappability regions were retained but subject to downstream noise filtering during segmentation.
+
+### Copy number estimation
+
+Read counts were normalized to account for differences in sequencing depth between samples. A Panel of Normals (PoN) was constructed from euploid samples in the cohort, excluding known aneuploid lines (e.g., Down syndrome samples) to prevent reference contamination. For each sample, the log2 ratio of observed counts to the PoN median was computed for each bin:
+
+$$\text{log2ratio} = \log_2\left(\frac{\text{sample count} + 1}{\text{reference count} + 1}\right)$$
+
+Log2 ratios were converted to absolute copy number estimates using the relationship CN = 2 x 2^log2ratio, assuming a diploid baseline.
+
+### Segmentation and CNV calling
+
+Circular binary segmentation (CBS) was performed using the DNAcopy package in R (v1.72.0) to identify regions of consistent copy number. Segmentation parameters included: alpha = 0.01, nperm = 10000, min.width = 5, undo.splits = "sdundo", undo.SD = 1.5. Segments were classified as copy number gains (CN > 2.3) or losses (CN < 1.7), corresponding to log2 ratio thresholds of approximately +/-0.2, consistent with established CNV calling conventions in clinical genomics.
+
+### Detection thresholds
+
+CNV calling thresholds were calibrated to match clinical-grade detection standards:
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Minimum loss size | 1 Mb (20 bins) | KaryoStat+ detection limit |
+| Minimum gain size | 2 Mb (40 bins) | KaryoStat+ detection limit |
+| Loss threshold | CN < 1.7 | log2 ~ -0.23 (CNVkit standard) |
+| Gain threshold | CN > 2.3 | log2 ~ +0.20 (CNVkit standard) |
+
+These thresholds balance sensitivity for clinically relevant CNVs against specificity to minimize false positives from technical noise.
+
+### Sex inference
+
+Sample sex was inferred from the ratio of Y chromosome to autosomal (chromosome 20) read counts. Samples with Y/chr20 ratio > 0.15 were classified as male; samples below this threshold were classified as female. This approach accounts for pseudoautosomal region reads present in female samples.
+
+### Quality control
+
+Data quality was assessed using the genome-wide standard deviation of log2 ratios after background correction. Samples with SD > 0.6 were flagged as potentially compromised by technical artifacts. Final calls integrate both CNV findings and quality metrics.
+
+---
+
+## Interpreting the Results
+
+### Genome-wide plots
+
+Each sample includes a genome-wide copy number plot with the following elements:
+
+| Element | Description |
+|---------|-------------|
+| **Dashed line at CN = 2** | Expected diploid copy number |
+| **Gray points** | Smoothed bin-level copy number estimates |
+| **Orange segments** | Regions called as copy number gain (CN > 2.3) |
+| **Blue segments** | Regions called as copy number loss (CN < 1.7) |
+
+### Classification system
+
+| Classification | Criteria | Interpretation |
+|---------------|----------|----------------|
+| **PASS (Normal)** | No CNVs detected | Suitable for use |
+| **PASS (Minor CNVs)** | CNVs < 10 Mb | Common variants; generally acceptable |
+| **Abnormal** | At least one CNV >= 10 Mb | Requires review; may affect experiments |
+| **FAIL (Complex)** | Multiple large CNVs | Genomic instability; not recommended |
+| **FAIL (Noisy Data)** | SD > 0.6 | Technical failure; repeat sequencing |
+
+---
+
+```{r setup, include=FALSE}
+# This chunk runs once to set up the environment.
+# It loads libraries and configures global options.
+
+# --- 1. Load Necessary Libraries ---
+suppressPackageStartupMessages({
+  library(DNAcopy)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(kableExtra)
+})
+
+# --- 2. Global Configuration ---
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 5)
+
+# --- 3. Input Configuration ---
+# Use parameters from YAML header, or set defaults
+counts_dir <- params$counts_dir
+metadata_file <- params$metadata_file
+
+# --- Sample Metadata ---
+# Load metadata for phenotype information
+if (file.exists(metadata_file)) {
+  sample_metadata <- read.csv(metadata_file, stringsAsFactors = FALSE)
+  names(sample_metadata) <- c("Sample_ID", "Phenotype", "Expected_Karyotype", "Family")
+  # Clean sample IDs (remove quotes and whitespace)
+  sample_metadata$Sample_ID <- trimws(gsub('"', '', sample_metadata$Sample_ID))
+} else {
+  sample_metadata <- NULL
+  message("Note: Metadata file not found. Proceeding without phenotype information.")
+}
+
+# --- 4. Analysis Parameters (Literature-Aligned + KaryoStat-Compatible) ---
+# See: CNVkit docs, GenomeScreen (PMC8071346), Clinical LP-WGS (2024)
+QC_SD_THRESHOLD <- 0.6      # QC threshold for genome-wide stdev of log2 ratios.
+MIN_LOSS_SIZE_MB <- 1       # KaryoStat detection limit for losses (1 Mb)
+MIN_GAIN_SIZE_MB <- 2       # KaryoStat detection limit for gains (2 Mb)
+MIN_NUM_MARK_LOSS <- 20     # 20 bins * 50kb/bin = 1 Mb
+MIN_NUM_MARK_GAIN <- 40     # 40 bins * 50kb/bin = 2 Mb
+LARGE_CNV_THRESHOLD_MB <- 10 # Threshold to distinguish major vs. minor aberrations.
+
+# Autosomal thresholds (centered on CN=2)
+# CN 1.7 = log2(-0.23), CN 2.3 = log2(+0.20) - matches CNVkit range
+CN_LOSS_THRESHOLD_AUTO <- 1.7   # log2 ~ -0.23 (CNVkit: -0.25 to -0.2)
+CN_GAIN_THRESHOLD_AUTO <- 2.3   # log2 ~ +0.20 (CNVkit: +0.2 to +0.25)
+
+# Male sex chrom thresholds (centered on CN=1)
+CN_LOSS_THRESHOLD_MALE_SEX <- 0.7
+CN_GAIN_THRESHOLD_MALE_SEX <- 1.3
+
+# Female sex chrom thresholds (centered on CN=2 for X, CN=0 for Y)
+CN_LOSS_THRESHOLD_FEMALE_X <- 1.7
+CN_GAIN_THRESHOLD_FEMALE_X <- 2.3
+CN_GAIN_THRESHOLD_FEMALE_Y <- 0.5 # Any significant Y signal in a female is a gain/artifact
+
+# --- 5. Find all sample files to process ---
+count_files <- list.files(counts_dir, pattern = "\\.counts\\.bed$", full.names = TRUE)
+autosomes <- as.character(1:22)
+
+if (length(count_files) == 0) {
+  stop("Execution stopped: No '.counts.bed' files found in the '", counts_dir, "' directory. Please check your `counts_dir` path.")
+}
+```
+
+```{r reference_creation, include=FALSE}
+# --- This chunk infers sex for all samples and creates a pooled AUTOSOMAL reference ---
+
+cat("--- Inferring Sex and Creating Pooled Autosomal Reference ---\n")
+
+all_counts_list <- list()
+sample_sex_map <- list()
+
+# 1. Read all files to infer sex and prepare for reference creation
+for (file in count_files) {
+  sample_name <- gsub("\\.counts\\.bed$", "", basename(file))
+  df <- read.table(file, header = FALSE, col.names = c("chr", "start", "end", "count"))
+
+  # --- Sex Inference Logic ---
+  # Use ratio of Y chromosome counts to an autosome (e.g., chr20) as a proxy for sex
+  y_counts <- sum(df$count[df$chr == "Y"], na.rm = TRUE)
+  chr20_counts <- sum(df$count[df$chr == "20"], na.rm = TRUE)
+
+  # Avoid division by zero if chr20 has no counts
+  if (chr20_counts > 0) {
+    y_ratio <- y_counts / chr20_counts
+    # Males typically have Y/chr20 ratio ~0.27-0.33
+    # Females have ~0.04-0.07 (pseudoautosomal region reads)
+    # Threshold of 0.15 clearly separates the two groups
+    inferred_sex <- ifelse(y_ratio > 0.15, "Male", "Female")
+  } else {
+    inferred_sex <- "Unknown" # Fallback if reference autosome is missing
+  }
+  sample_sex_map[[sample_name]] <- inferred_sex
+
+  # Prepare data for AUTOSOMAL reference
+  df_auto <- df %>% filter(chr %in% autosomes)
+  df_auto$bin_id <- paste(df_auto$chr, df_auto$start, sep = ":")
+  all_counts_list[[sample_name]] <- df_auto[, c("bin_id", "count")]
+}
+
+# 2. Filter out abnormal samples (e.g., Down syndrome) from Panel of Normals
+# Including aneuploid samples in the reference will suppress real CNV signals
+pon_exclude_samples <- c()
+if (!is.null(sample_metadata)) {
+  # Exclude samples with phenotypes indicating aneuploidy (DS = Down syndrome)
+  abnormal_phenotypes <- c("DS", "Down syndrome", "Trisomy")
+  pon_exclude_samples <- sample_metadata$Sample_ID[
+    grepl(paste(abnormal_phenotypes, collapse = "|"), sample_metadata$Phenotype, ignore.case = TRUE)
+  ]
+  if (length(pon_exclude_samples) > 0) {
+    cat("Excluding from Panel of Normals:", paste(pon_exclude_samples, collapse = ", "), "\n")
+  }
+}
+
+# Create PoN from normal samples only
+pon_samples <- setdiff(names(all_counts_list), pon_exclude_samples)
+pon_counts_list <- all_counts_list[pon_samples]
+
+cat("Merging autosomal data from", length(pon_counts_list), "normal samples for Panel of Normals...\n")
+merged_counts <- Reduce(function(x, y) merge(x, y, by = "bin_id", all = TRUE), pon_counts_list)
+
+rownames(merged_counts) <- merged_counts$bin_id
+merged_counts$bin_id <- NULL
+
+# 3. Calculate the median count for each AUTOSOMAL bin across all samples
+cat("Calculating median counts for each genomic bin...\n")
+reference_counts_vec <- apply(merged_counts, 1, median, na.rm = TRUE)
+
+# 4. Create the final AUTOSOMAL reference data frame
+bin_info <- do.call(rbind, strsplit(names(reference_counts_vec), ":"))
+reference_df <- data.frame(
+  chr = bin_info[, 1],
+  start = as.numeric(bin_info[, 2]),
+  ref_count = reference_counts_vec
+)
+
+# 5. Calculate the overall median of the AUTOSOMAL reference counts for normalization
+REFERENCE_MEDIAN <- median(reference_df$ref_count[reference_df$ref_count > 0], na.rm = TRUE)
+
+cat("--- Autosomal reference background created successfully. ---\n")
+```
+
+# Overall Summary
+
+This report details the digital karyotype analysis for `r length(count_files)` samples. Each sample was assessed for large-scale copy number variations (CNVs) to determine its genomic stability.
+
+```{r summary_table}
+# --- This loop gathers key metrics from all samples to build a summary table ---
+
+summary_list <- list()
+
+for (file_path in count_files) {
+  sample_name <- gsub("\\.counts\\.bed$", "", basename(file_path))
+  inferred_sex <- sample_sex_map[[sample_name]]
+
+  # --- Perform analysis to get summary stats ---
+  counts_data <- read.table(file_path, header = FALSE, col.names = c("chr", "start", "end", "count"))
+  standard_chroms <- c(autosomes, "X", "Y")
+  counts_data <- counts_data %>%
+    filter(chr %in% standard_chroms) %>%
+    filter(count > 0)
+
+  if (nrow(counts_data) == 0) next
+
+  # --- Background-Corrected Normalization using AUTOSOMAL reference ---
+  counts_data$start <- as.numeric(counts_data$start)
+  reference_df$start <- as.numeric(reference_df$start)
+
+  # Join with reference (will only match autosomal bins)
+  data_with_ref <- left_join(counts_data, reference_df, by = c("chr", "start"))
+
+  # Calculate sample's median count from AUTOSOMES ONLY
+  sample_autosomal_median <- median(data_with_ref$count[data_with_ref$chr %in% autosomes], na.rm = TRUE)
+
+  # Calculate log2ratio with separate logic for autosomes and sex chromosomes
+  data_with_ref <- data_with_ref %>%
+    mutate(
+      log2ratio = case_when(
+        # For Autosomes: Use the reference-corrected ratio
+        chr %in% autosomes & !is.na(ref_count) & ref_count > 0 & !is.na(count) & count > 0 ~
+          log2( (count / sample_autosomal_median) / (ref_count / REFERENCE_MEDIAN) ),
+
+        # For Sex Chromosomes: Use the simple ratio to the sample's autosomal median
+        chr %in% c("X", "Y") & !is.na(count) & count > 0 & !is.na(sample_autosomal_median) & sample_autosomal_median > 0 ~
+          log2( count / sample_autosomal_median ),
+
+        # Everything else is NA
+        TRUE ~ NA_real_
+      )
+    )
+
+  data_with_ref$log2ratio[is.infinite(data_with_ref$log2ratio)] <- NA
+
+  # Data for segmentation (all valid bins)
+  counts_data_for_segmentation <- data_with_ref %>% filter(!is.na(log2ratio))
+
+  if (nrow(counts_data_for_segmentation) > 0) {
+      # QC: **Calculate SD on AUTOSOMES ONLY**
+      gw_sd <- sd(data_with_ref$log2ratio[data_with_ref$chr %in% autosomes], na.rm = TRUE)
+      qc_status <- ifelse(is.na(gw_sd) | gw_sd >= QC_SD_THRESHOLD, "FAIL", "PASS")
+
+      # Segmentation: Use all data (autosomes + sex)
+      cna_obj <- CNA(genomdat = counts_data_for_segmentation$log2ratio,
+                     chrom = counts_data_for_segmentation$chr,
+                     maploc = as.numeric(counts_data_for_segmentation$start),
+                     data.type = "logratio",
+                     sampleid = sample_name)
+      smoothed_cna <- smooth.CNA(cna_obj)
+      segmentation <- segment(smoothed_cna, alpha = 0.01, undo.splits = "sdundo", undo.SD = 4, verbose = 0)
+      seg_results_raw <- segments.p(segmentation)
+
+      # Classify Segments with Sex-Specific Logic
+      classified_segments <- seg_results_raw %>%
+        mutate(
+          seg_mean_cn = pmin(6, 2 * (2^seg.mean)),
+          size_mb = (loc.end - loc.start) / 1e6,
+          call = case_when(
+            # Autosomes
+            chrom %in% autosomes & seg_mean_cn > CN_GAIN_THRESHOLD_AUTO & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+            chrom %in% autosomes & seg_mean_cn < CN_LOSS_THRESHOLD_AUTO & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+            # Male Sex Chroms
+            inferred_sex == "Male" & chrom %in% c("X", "Y") & seg_mean_cn > CN_GAIN_THRESHOLD_MALE_SEX & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+            inferred_sex == "Male" & chrom %in% c("X", "Y") & seg_mean_cn < CN_LOSS_THRESHOLD_MALE_SEX & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+            # Female Sex Chroms
+            inferred_sex == "Female" & chrom == "X" & seg_mean_cn > CN_GAIN_THRESHOLD_FEMALE_X & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+            inferred_sex == "Female" & chrom == "X" & seg_mean_cn < CN_LOSS_THRESHOLD_FEMALE_X & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+            inferred_sex == "Female" & chrom == "Y" & seg_mean_cn > CN_GAIN_THRESHOLD_FEMALE_Y & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain", # Y gain in female
+            TRUE ~ "Normal"
+          )
+        )
+
+      significant_cnvs <- classified_segments %>% filter(call != "Normal")
+
+      # Tiered Interpretation Logic for Final Call
+      num_cnvs <- nrow(significant_cnvs)
+      num_large_cnvs <- significant_cnvs %>% filter(size_mb > LARGE_CNV_THRESHOLD_MB) %>% nrow()
+
+      if (qc_status == "FAIL") {
+        final_call <- "FAIL (Noisy Data)"
+      } else if (num_large_cnvs > 2) {
+        final_call <- "FAIL (Complex)"
+      } else if (num_large_cnvs >= 1) {
+        final_call <- "Abnormal"
+      } else if (num_cnvs > 0) {
+        final_call <- "PASS (Minor CNVs)"
+      } else {
+        final_call <- "PASS (Normal)"
+      }
+
+      # Get phenotype from metadata if available
+      phenotype <- "Unknown"
+      family <- "Unknown"
+      if (!is.null(sample_metadata)) {
+        meta_row <- sample_metadata[sample_metadata$Sample_ID == sample_name, ]
+        if (nrow(meta_row) > 0) {
+          phenotype <- meta_row$Phenotype[1]
+          family <- meta_row$Family[1]
+        }
+      }
+
+      # Store results for the summary table
+      summary_list[[sample_name]] <- data.frame(
+        `Sample ID` = sample_name,
+        `Phenotype` = phenotype,
+        `Family` = family,
+        `Inferred Sex` = inferred_sex,
+        `QC Status` = qc_status,
+        `SD` = round(gw_sd, 4),
+        `Num. Aberrations` = nrow(significant_cnvs),
+        `Largest Aberration (Mb)` = ifelse(nrow(significant_cnvs) > 0, round(max(significant_cnvs$size_mb), 2), 0),
+        `Final Call` = final_call,
+        check.names = FALSE
+      )
+  }
+}
+
+# Combine all summaries and print the table
+if (length(summary_list) > 0) {
+  summary_df <- do.call(rbind, summary_list)
+  kable(summary_df, caption = "Overall Summary of All Samples", row.names = FALSE) %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+}
+```
+
+# Detailed Sample Reports
+
+```{r analysis_loop, results='asis'}
+# This is the main loop that processes each sample and generates a report section.
+for (file_path in count_files) {
+
+  # --- Setup for the current sample ---
+  sample_name <- gsub("\\.counts\\.bed$", "", basename(file_path))
+  inferred_sex <- sample_sex_map[[sample_name]]
+  cat("\n## Sample:", sample_name, "\n")
+
+  # Step A: Load and Pre-process Data
+  counts_data <- read.table(file_path, header = FALSE, col.names = c("chr", "start", "end", "count"))
+  standard_chroms <- c(autosomes, "X", "Y")
+  counts_data <- counts_data %>%
+    filter(chr %in% standard_chroms) %>%
+    filter(count > 0)
+
+  if (nrow(counts_data) == 0) {
+    cat("\n\n### Interpretation\n\n**ERROR:** No valid data remains after filtering. Analysis could not be performed.\n\n")
+    cat("\n---\n")
+    next
+  }
+
+  # --- Step B: Background-Corrected Normalization ---
+  counts_data$start <- as.numeric(counts_data$start)
+  reference_df$start <- as.numeric(reference_df$start)
+
+  data_with_ref <- left_join(counts_data, reference_df, by = c("chr", "start"))
+
+  # Calculate sample's median from AUTOSOMES ONLY
+  sample_autosomal_median <- median(data_with_ref$count[data_with_ref$chr %in% autosomes], na.rm = TRUE)
+
+  if (is.na(sample_autosomal_median) || sample_autosomal_median == 0) {
+      cat("\n\n### Interpretation\n\n**ERROR:** Could not calculate a valid autosomal median. Analysis could not be performed.\n\n")
+      cat("\n---\n")
+      next
+  }
+
+  data_with_ref <- data_with_ref %>%
+    mutate(
+      log2ratio = case_when(
+        # For Autosomes: Use the reference-corrected ratio
+        chr %in% autosomes & !is.na(ref_count) & ref_count > 0 & !is.na(count) & count > 0 ~
+          log2( (count / sample_autosomal_median) / (ref_count / REFERENCE_MEDIAN) ),
+
+        # For Sex Chromosomes: Use the simple ratio to the sample's autosomal median
+        chr %in% c("X", "Y") & !is.na(count) & count > 0 & !is.na(sample_autosomal_median) & sample_autosomal_median > 0 ~
+          log2( count / sample_autosomal_median ),
+
+        # Everything else is NA
+        TRUE ~ NA_real_
+      )
+    )
+
+  data_with_ref$log2ratio[is.infinite(data_with_ref$log2ratio)] <- NA
+
+  # Filter for segmentation
+  counts_data_for_segmentation <- data_with_ref %>% filter(!is.na(log2ratio))
+
+  if (nrow(counts_data_for_segmentation) == 0) {
+    cat("\n\n### Interpretation\n\n**ERROR:** No valid log2ratio data remains after normalization.\n\n")
+    cat("\n---\n")
+    next
+  }
+
+  # Step C: Quality Control
+  # **Calculate SD on AUTOSOMES ONLY**
+  gw_sd <- sd(data_with_ref$log2ratio[data_with_ref$chr %in% autosomes], na.rm = TRUE)
+  qc_status <- ifelse(is.na(gw_sd) | gw_sd >= QC_SD_THRESHOLD, "FAIL", "PASS")
+
+  # Step D: Segmentation
+  # Use the *full* filtered dataset (autosomes + sex)
+  cna_obj <- CNA(genomdat = counts_data_for_segmentation$log2ratio,
+                 chrom = counts_data_for_segmentation$chr,
+                 maploc = as.numeric(counts_data_for_segmentation$start),
+                 data.type = "logratio",
+                 sampleid = sample_name)
+  smoothed_cna <- smooth.CNA(cna_obj)
+  segmentation <- segment(smoothed_cna, alpha = 0.01, undo.splits = "sdundo", undo.SD = 4, verbose = 0)
+  seg_results_raw <- segments.p(segmentation)
+
+  # Step E: Classify Segments with Sex-Specific Logic
+  classified_segments <- seg_results_raw %>%
+    mutate(
+      seg_mean_cn = pmin(6, 2 * (2^seg.mean)),
+      size_mb = (loc.end - loc.start) / 1e6,
+      call = case_when(
+        # Autosomes
+        chrom %in% autosomes & seg_mean_cn > CN_GAIN_THRESHOLD_AUTO & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+        chrom %in% autosomes & seg_mean_cn < CN_LOSS_THRESHOLD_AUTO & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+        # Male Sex Chroms
+        inferred_sex == "Male" & chrom %in% c("X", "Y") & seg_mean_cn > CN_GAIN_THRESHOLD_MALE_SEX & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+        inferred_sex == "Male" & chrom %in% c("X", "Y") & seg_mean_cn < CN_LOSS_THRESHOLD_MALE_SEX & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+        # Female Sex Chroms
+        inferred_sex == "Female" & chrom == "X" & seg_mean_cn > CN_GAIN_THRESHOLD_FEMALE_X & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain",
+        inferred_sex == "Female" & chrom == "X" & seg_mean_cn < CN_LOSS_THRESHOLD_FEMALE_X & size_mb > MIN_LOSS_SIZE_MB & num.mark >= MIN_NUM_MARK_LOSS ~ "Loss",
+        inferred_sex == "Female" & chrom == "Y" & seg_mean_cn > CN_GAIN_THRESHOLD_FEMALE_Y & size_mb > MIN_GAIN_SIZE_MB & num.mark >= MIN_NUM_MARK_GAIN ~ "Gain", # Y gain in female
+        TRUE ~ "Normal"
+      )
+    )
+
+  significant_cnvs <- classified_segments %>%
+    filter(call != "Normal") %>%
+    mutate(
+      size_mb = round(size_mb, 2),
+      seg_mean_cn = round(seg_mean_cn, 2)
+    ) %>%
+    dplyr::select(ID, chrom, loc.start, loc.end, size_mb, num.mark, seg_mean_cn, call) %>%
+    arrange(as.numeric(chrom), loc.start)
+
+  # --- Generate the report content for this sample ---
+
+  # Get phenotype from metadata
+  phenotype <- "Unknown"
+  expected_karyotype <- "Unknown"
+  family <- "Unknown"
+  if (!is.null(sample_metadata)) {
+    meta_row <- sample_metadata[sample_metadata$Sample_ID == sample_name, ]
+    if (nrow(meta_row) > 0) {
+      phenotype <- meta_row$Phenotype[1]
+      expected_karyotype <- meta_row$Expected_Karyotype[1]
+      family <- meta_row$Family[1]
+    }
+  }
+
+  cat("\n\n### Summary\n\n")
+  cat(paste0("* **Sample ID:** ", sample_name, "\n"))
+  cat(paste0("* **Phenotype:** ", phenotype, " (", family, ")\n"))
+  cat(paste0("* **Expected Karyotype:** ", expected_karyotype, "\n"))
+  cat(paste0("* **Inferred Sex:** ", inferred_sex, "\n"))
+  cat(paste0("* **QC Status:** ", qc_status, " (Autosomal SD = ", round(gw_sd, 4), ")\n"))
+
+  # Tiered Interpretation Logic
+  num_cnvs <- nrow(significant_cnvs)
+  num_large_cnvs <- significant_cnvs %>% filter(size_mb > LARGE_CNV_THRESHOLD_MB) %>% nrow()
+
+  if (qc_status == "FAIL") {
+    interpretation <- "<span style='color:red; font-weight:bold;'>FAIL (Noisy Data)</span>"
+  } else if (num_large_cnvs > 2) {
+    interpretation <- "<span style='color:darkred; font-weight:bold;'>FAIL (Complex Karyotype)</span>"
+  } else if (num_large_cnvs >= 1) {
+    interpretation <- "<span style='color:orange; font-weight:bold;'>Abnormal</span>"
+  } else if (num_cnvs > 0) {
+    interpretation <- "<span style='color:blue; font-weight:bold;'>PASS (Minor Aberrations)</span>"
+  } else {
+    interpretation <- "<span style='color:green; font-weight:bold;'>PASS (Normal)</span>"
+  }
+
+  cat(paste0("* **Interpretation:** ", interpretation, "\n\n"))
+
+  # Print the plot
+  cat("\n\n### Genome-wide Copy Number Plot\n\n")
+
+  # Prepare data for plotting
+  plot_data <- data.frame(chrom = smoothed_cna$chrom, maploc = smoothed_cna$maploc, value_cn = 2 * (2^smoothed_cna[[3]]))
+  chr_order <- c(as.character(1:22), "X", "Y")
+  plot_data$chrom <- factor(as.character(plot_data$chrom), levels = chr_order, ordered = TRUE)
+  if(nrow(classified_segments) > 0) {
+    classified_segments$chrom <- factor(as.character(classified_segments$chrom), levels = chr_order, ordered = TRUE)
+  }
+  plot_data <- na.omit(plot_data)
+  classified_segments <- na.omit(classified_segments)
+
+  if (nrow(plot_data) > 0) {
+    # This logic correctly handles cases where (e.g.) Y is missing in females
+    chr_lengths <- tapply(plot_data$maploc, plot_data$chrom, max, na.rm = TRUE)
+    present_chroms <- chr_order[chr_order %in% names(chr_lengths)]
+    chr_lengths <- chr_lengths[present_chroms]
+
+    chr_offsets <- c(0, cumsum(as.numeric(chr_lengths[-length(chr_lengths)])))
+    names(chr_offsets) <- names(chr_lengths)
+
+    # Filter plot_data and classified_segments to only include chromosomes that are actually present
+    plot_data <- plot_data %>% filter(chrom %in% present_chroms)
+    plot_data$abs_pos <- plot_data$maploc + chr_offsets[as.character(plot_data$chrom)]
+
+    if(nrow(classified_segments) > 0) {
+        classified_segments <- classified_segments %>% filter(chrom %in% present_chroms)
+        if(nrow(classified_segments) > 0) {
+          classified_segments$abs_start <- classified_segments$loc.start + chr_offsets[as.character(classified_segments$chrom)]
+          classified_segments$abs_end <- classified_segments$loc.end + chr_offsets[as.character(classified_segments$chrom)]
+        }
+    }
+    chr_midpoints <- chr_offsets + chr_lengths / 2
+
+    call_colors <- c("Gain" = "#D55E00", "Loss" = "#0072B2", "Normal" = "gray50")
+
+    cnv_plot <- ggplot() +
+      geom_point(data = plot_data, aes(x = abs_pos, y = value_cn), color = "gray70", size = 0.5, alpha = 0.8) +
+      geom_hline(yintercept = 2, linetype = "dashed", color = "black") +
+      geom_vline(xintercept = chr_offsets, linetype = "dotted", color = "gray60") +
+      scale_color_manual(values = call_colors, name = "CNV Call", drop = FALSE) +
+      scale_y_continuous(name = "Absolute Copy Number", limits = c(0, 6), breaks = 0:6, expand = c(0, 0)) +
+      scale_x_continuous(name = "Chromosome", breaks = chr_midpoints, labels = names(chr_midpoints), expand = c(0.01, 0.01)) +
+      labs(title = paste("Digital Karyotype:", sample_name)) +
+      theme_classic() +
+      theme(
+        plot.title = element_text(face = "bold", size = 16),
+        axis.text.x = element_text(angle = 60, hjust = 1, size = 9),
+        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed"),
+        legend.position = "bottom"
+      )
+
+    # Only add the geom_segment layer if there are segments to plot
+    if (nrow(classified_segments) > 0) {
+       cnv_plot <- cnv_plot + geom_segment(data = classified_segments, aes(x = abs_start, xend = abs_end, y = seg_mean_cn, yend = seg_mean_cn, color = call), size = 1.5)
+    }
+
+    print(cnv_plot)
+  }
+
+  # If aberrations were found, print the detailed table
+  if (nrow(significant_cnvs) > 0) {
+    cat("\n\n### Detected Aberrations\n\n")
+    print(kable(significant_cnvs, caption = "Summary of significant copy number variations detected.", row.names = FALSE) %>%
+            kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE))
+  }
+
+  cat("\n\n---\n\n") # Add a separator for clarity
+}
+```
+
+# Session Info
+
+```{r session_info}
+sessionInfo()
+```

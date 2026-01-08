@@ -29,33 +29,37 @@ This repository is NOT an introduction to data analysis. There are many availabl
 ### Bioinformatics pipelines based on data type
 
 - Single-cell RNA-seq:
+
   1. [scRNAseq general workflow](./scRNAseq_general_workflow)
   2. [scRNAseq 10x Flex preprocessing](./scRNAseq_10x_Flex_preprocessing)
   3. [scRNAseq trajectory_Slingshot](./scRNAseq_trajectory_Slingshot)
-  5. [scRNAseq CellCellCommunication](./scRNAseq_CellCellCommunication_branch)
-  6. [scRNAseq HPV branch](./scRNAseq_HPV_branch)
-  7. [scRNAseq_Seurat_to_Scanpy](./scRNAseq_Seurat_to_Scanpy)
-  8. [scRNAseq stomach branch](./scRNAseq_stomach_branch)
-  9. [scRNAseq_ShinyCell_portal](./scRNAseq_ShinyCell_portal)
-  10. [scRNAseq large dataset analysis](./sc_LargeData_Sketch-based_Analysis)
-  11. [scRNAseq_module_enrichent](./scRNAseq_module_enrichment)
-  12. [scRNAseq_iPSC_branch](./scRNAseq_iPSC_branch)
-  14. [scRNAseq_immune_branch](./scRNAseq_immune_branch)
-  15. [scRNAseq_inferCNV](./scRNAseq_inferCNV)
-  16. [scRNAseq_label_transfer](./scRNAseq_label_transfer_branch)
+  4. [scRNAseq CellCellCommunication](./scRNAseq_CellCellCommunication_branch)
+  5. [scRNAseq HPV branch](./scRNAseq_HPV_branch)
+  6. [scRNAseq_Seurat_to_Scanpy](./scRNAseq_Seurat_to_Scanpy)
+  7. [scRNAseq stomach branch](./scRNAseq_stomach_branch)
+  8. [scRNAseq_ShinyCell_portal](./scRNAseq_ShinyCell_portal)
+  9. [scRNAseq large dataset analysis](./sc_LargeData_Sketch-based_Analysis)
+  10. [scRNAseq_module_enrichent](./scRNAseq_module_enrichment)
+  11. [scRNAseq_iPSC_branch](./scRNAseq_iPSC_branch)
+  12. [scRNAseq_immune_branch](./scRNAseq_immune_branch)
+  13. [scRNAseq_inferCNV](./scRNAseq_inferCNV)
+  14. [scRNAseq_label_transfer](./scRNAseq_label_transfer_branch)
 
 - Single-cell ATAC-seq:
+
   1. [scATACseq_general_workflow R](./scATACseq_general_workflow)
-  3. [scATACseq ArchR branch](./scATACseq_ArchR_branch)
-  4. [scATACseq Cicero branch](./scATACseq_cicero_branch)
-  5. [scATACseq cisTopic branch](./scATACseq_cisTopic_branch)
-  6. [scATACseq_CellOracle_workflow](./CellOracle%20workflow)
-  7. [scATACseq_TF_motif_activity](./ChromVAR%20for%20single%20cell)
+  2. [scATACseq ArchR branch](./scATACseq_ArchR_branch)
+  3. [scATACseq Cicero branch](./scATACseq_cicero_branch)
+  4. [scATACseq cisTopic branch](./scATACseq_cisTopic_branch)
+  5. [scATACseq_CellOracle_workflow](./CellOracle%20workflow)
+  6. [scATACseq_TF_motif_activity](./ChromVAR%20for%20single%20cell)
 
 - Single-cell Multi-omics:
+
   1. [scMultiome AD branch](./scMultiome_AD_branch)
- 
+
 - Single-cell TCR-seq:
+
   1. [scTCRseq_analysis](./scTCRseq_analysis)
 
 - RNA-seq:
@@ -64,12 +68,11 @@ This repository is NOT an introduction to data analysis. There are many availabl
 - ATAC-seq:
   1. [ATACseq general workflow nf-core](./ATAC-seq_preprocessing)
   2. [ATACseq_general_workflow](./Bulk_ATAC_general_workflow)
-     
 - Chip-seq:
   1. [Chipseq general workflow](./ChipSeq_general_workflow)
   2. [Chipseq_general_workflow2](./Chipseq_general_workflow2)
-     
 - Spatial Transcriptomics(ST):
+
   1. [ST general workflow](./ST_general_workflow)
   2. [ST BayesSpace branch](./ST_BayesSpace_branch)
   3. [ST giotto branch](./ST_giotto_branch)
@@ -77,10 +80,10 @@ This repository is NOT an introduction to data analysis. There are many availabl
 
 - Bisulfite sequencing (BS-seq):
   1. [Bismark aligner](./BS-seq_Bismark_Aligner)
-     
+- Whole Genome Sequencing (WGS):
+  1. [Low-pass WGS karyotyping workflow](./Lowpass_WGS_karyotyping_workflow)
 - Motif analysis:
   1. [HOMER2](./HOMER)
-     
 - General downstream analysis:
   1. [Enrichment Analysis Using clusterProfiler](./Pathway_enrichment_analysis_clusterProfier)
   2. [Cellular_neighborhood](./Cellular_neighborhood)
@@ -91,17 +94,15 @@ This repository is NOT an introduction to data analysis. There are many availabl
 - ChatGPT prompts
   1. [ChatGPT_prompts](./ChatGPT_prompts)
 
-### Other Tutorials     
+### Other Tutorials
+
 - Server
   1. [Introduction OSC](./Introduction_OSC)
-     
 - Figure/Plot scripts
   1. [Figure codes](./figure_code)
-     
 - Data management guide
   1. [GEO data submission](./GEO_data_submission)
-     
-  3. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
+  2. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
 
 ### Contributing template
 
@@ -129,3 +130,7 @@ Contributors:
 - [Megan McNutt](https://github.com/meganmcnutt)
 - [Kevin Wang](https://github.com/kevinwang23)
 - [Grace Xu](https://github.com/gracexu27)
+
+---
+
+If you use these workflows in your research, please acknowledge: "Analysis workflows were supported by the BMBL lab and CATION (Center for AI and Translational Informatics in Oncology) at The Ohio State University Comprehensive Cancer Center."
