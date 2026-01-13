@@ -1,0 +1,351 @@
+---
+title: "Slingshot Trajectory Analysis"
+author: "Cankun Wang"
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE, fig.width = 10, fig.height = 8)
+```
+
+# 1. Load Libraries and Set Up Environment
+
+```{r libs}
+# Core Libraries
+library(Seurat)
+library(qs)
+library(tidyverse)
+
+# Trajectory Analysis
+library(slingshot)
+library(SingleCellExperiment)
+
+# For differential trajectory analysis
+library(tradeSeq)
+library(BiocParallel) # For parallel processing
+
+# For cell type proportion analysis
+library(speckle)
+
+# Plotting & Colors
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(viridis)
+
+# Set up output directory
+RESULT_DIR <- "./figures/"
+if (!dir.exists(RESULT_DIR)) {
+  dir.create(RESULT_DIR)
+}
+```
+
+# 2. Load and Prepare Main Seurat Object
+
+This section loads the fully annotated Seurat object and assigns the correct experimental group to each cell based on the provided sample IDs.
+
+**USER PARAMETERS - Modify these for your data:**
+
+```{r user-params}
+# Path to your Seurat object (.rds or .qsave format)
+DATA_PATH <- "your_seurat_object.qsave"  # <-- MODIFY THIS
+
+# Metadata column containing cell type annotations
+CELL_TYPE_COL <- "cell_type"  # <-- MODIFY THIS if different
+
+# Cell types to include in trajectory analysis
+CELL_TYPES_TO_USE <- c("Cardiac Fibroblasts", "Myofibroblasts")  # <-- MODIFY THIS
+
+# Metadata column for sample ID (used for group assignment)
+SAMPLE_COL <- "orig.ident"  # <-- MODIFY THIS if different
+
+# Group column name (will be created/overwritten)
+GROUP_COL <- "group"
+```
+
+```{r load-data}
+# Load the Seurat object (supports both .rds and .qsave formats)
+if (!file.exists(DATA_PATH)) {
+  stop(paste("Error: Seurat object not found at:", DATA_PATH))
+}
+
+if (grepl("\\.qsave$", DATA_PATH)) {
+  sobj_full <- qs::qread(DATA_PATH)
+} else {
+  sobj_full <- readRDS(DATA_PATH)
+}
+
+# --- GROUP ASSIGNMENT BASED ON SAMPLE ID ---
+# Modify these sample ID lists to match your experimental design
+no_injury_ko_samples <- c("19072-18-01-01-01", "19072-18-02-01-01", "19072-18-06-01-01")
+no_injury_ctrl_samples <- c("19072-18-03-01-01", "19072-18-04-01-01", "19072-18-05-01-01")
+injured_ko_samples <- c("19072-19-01-01-01", "19072-19-04-01-01")
+injured_ctrl_samples <- c("19072-19-02-01-01", "19072-19-03-01-01")
+
+# Create/overwrite the 'group' column with the correct assignments
+sobj_full[[GROUP_COL]] <- case_when(
+  sobj_full[[SAMPLE_COL, drop = TRUE]] %in% no_injury_ko_samples   ~ "No-injury_KO",
+  sobj_full[[SAMPLE_COL, drop = TRUE]] %in% no_injury_ctrl_samples ~ "No-injury_Control",
+  sobj_full[[SAMPLE_COL, drop = TRUE]] %in% injured_ko_samples     ~ "Injured_KO",
+  sobj_full[[SAMPLE_COL, drop = TRUE]] %in% injured_ctrl_samples   ~ "Injured_Control",
+  TRUE                                                              ~ "Unknown"
+)
+
+cat("Verifying group assignments:\n")
+print(table(sobj_full[[GROUP_COL]]))
+# --- END GROUP ASSIGNMENT ---
+
+cat("\nFull dataset overview:\n")
+print(table(sobj_full[[CELL_TYPE_COL]], sobj_full$injury_status))
+```
+
+# 3. Cell Type Proportion Analysis with `speckle`
+
+Before diving into the trajectory, we test if there are significant changes in the proportions of any cell types between the experimental groups.
+
+```{r speckle-analysis}
+cat("Running propeller test for cell type proportion differences...\n")
+
+# Run propeller using cell_type, sample ID, and the group column
+prop_results <- propeller(clusters = sobj_full[[CELL_TYPE_COL, drop = TRUE]],
+                          sample = sobj_full[[SAMPLE_COL, drop = TRUE]],
+                          group = sobj_full[[GROUP_COL, drop = TRUE]])
+
+cat("Propeller analysis complete. Results:\n")
+print(prop_results)
+
+# Save the results to a CSV file
+write.csv(prop_results, file.path(RESULT_DIR, "00_cell_type_proportion_results.csv"), row.names = TRUE)
+```
+
+### Visualize Cell Type Proportions
+
+```{r plot-proportions}
+cat("Generating bar plot of cell type proportions...\n")
+
+# Prepare counts and proportions per cell type
+counts_df <- sobj_full@meta.data %>%
+  dplyr::count(!!sym(CELL_TYPE_COL), !!sym(GROUP_COL), name = "n")
+
+props_df <- counts_df %>%
+  group_by(!!sym(CELL_TYPE_COL)) %>%
+  mutate(Proportion = n / sum(n)) %>%
+  ungroup()
+
+# Proportion plot: one bar per cell type, filled by group (vertical)
+p_proportions <- ggplot(props_df, aes(x = !!sym(CELL_TYPE_COL), y = Proportion, fill = !!sym(GROUP_COL))) +
+  geom_bar(stat = "identity", width = 0.9) +
+  labs(title = "Group Composition Within Each Cell Type",
+       x = "Cell Type",
+       y = "Proportion",
+       fill = "Group") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set1")
+
+# Counts plot: total counts per cell type by group (horizontal)
+p_counts <- ggplot(counts_df, aes(y = !!sym(CELL_TYPE_COL), x = n, fill = !!sym(GROUP_COL))) +
+  geom_bar(stat = "identity", width = 0.9) +
+  labs(title = "Total Cell Counts per Cell Type by Group",
+       x = "Cell Count",
+       y = "Cell Type",
+       fill = "Group") +
+  theme_classic(base_size = 14) +
+  scale_fill_brewer(palette = "Set1")
+
+print(p_proportions)
+ggsave(file.path(RESULT_DIR, "00_cell_type_proportion_barplot.png"), plot = p_proportions, width = 10, height = 8)
+
+print(p_counts)
+ggsave(file.path(RESULT_DIR, "00_cell_type_counts_barplot.png"), plot = p_counts, width = 10, height = 8)
+```
+
+
+# 4. Step 1: Data Subsetting and Re-processing for Trajectory
+
+We will now isolate the cell types of interest from all samples to model the full activation trajectory.
+
+```{r subset-reprocess, fig.width=12, fig.height=9}
+# 1. Isolate cell types of interest
+cat("Subsetting to specified cell types...\n")
+sobj_fib <- subset(sobj_full, subset = !!sym(CELL_TYPE_COL) %in% CELL_TYPES_TO_USE)
+
+# Ensure all groups are present
+cat("Cell counts in the subset:\n")
+print(table(sobj_fib[[GROUP_COL]]))
+
+# 2. Re-process the Subsetted Data
+cat("Re-processing the subset...\n")
+sobj_fib <- NormalizeData(sobj_fib)
+sobj_fib <- FindVariableFeatures(sobj_fib)
+sobj_fib <- ScaleData(sobj_fib)
+sobj_fib <- RunPCA(sobj_fib)
+sobj_fib <- RunUMAP(sobj_fib, dims = 1:20)
+
+# 3. Cluster the subset to identify cell states for Slingshot
+cat("Clustering the subset to identify states...\n")
+sobj_fib <- FindNeighbors(sobj_fib, dims = 1:20)
+sobj_fib <- FindClusters(sobj_fib, resolution = 0.3)
+
+# Visualize the new UMAP colored by clusters and the experimental groups
+p_clusters <- DimPlot(sobj_fib, reduction = "umap", label = TRUE, label.size = 6) +
+  labs(title = "UMAP by Cluster")
+
+p_groups <- DimPlot(sobj_fib, reduction = "umap", group.by = GROUP_COL) +
+  labs(title = "UMAP by Experimental Group")
+
+print(p_clusters + p_groups)
+ggsave(file.path(RESULT_DIR, "01_UMAP_clusters_and_groups.png"), plot = (p_clusters + p_groups), width = 16, height = 7)
+```
+
+# 5. Step 2: Trajectory Inference with Slingshot
+
+Now we convert the processed Seurat object to a SingleCellExperiment object and run Slingshot.
+
+### 5.1. Identify the Starting Cluster
+
+To properly order the trajectory, we must identify the cluster representing the starting state.
+
+```{r find-start-cluster}
+# Visualize clusters split by group to find the root
+p_group_split <- DimPlot(sobj_fib, reduction = "umap", split.by = GROUP_COL, label = TRUE, ncol = 2) +
+  labs(title = "UMAP Split by Experimental Group")
+
+print(p_group_split)
+ggsave(file.path(RESULT_DIR, "02_UMAP_split_by_group.png"), plot = p_group_split, width = 14, height = 10)
+
+# Visualize marker genes (modify for your analysis)
+marker_genes <- c("Pdgfra", "Fbn1", "Dcn", "Col1a1")
+p_markers <- FeaturePlot(sobj_fib, features = marker_genes, ncol = 2) &
+  plot_annotation(title = "Marker Expression on UMAP")
+
+print(p_markers)
+ggsave(file.path(RESULT_DIR, "02_Marker_Expression_for_Start_Cluster.png"), plot = p_markers, width = 12, height = 10)
+
+cat("\n--> ACTION REQUIRED: Examine the plots above. The cluster composed primarily of control/quiescent cells should be the starting cluster.\n")
+cat("--> Set the 'start_cluster' variable in the next chunk to this cluster number.\n")
+```
+
+### 5.2. Run Slingshot
+
+```{r run-slingshot}
+# --- SET THE STARTING CLUSTER HERE ---
+start_cluster <- "6" # <-- MODIFY THIS based on the plots above
+# ------------------------------------
+
+cat(paste("Running Slingshot with start cluster:", start_cluster, "\n"))
+
+# Convert to SingleCellExperiment object
+sce <- as.SingleCellExperiment(sobj_fib)
+sce$seurat_clusters <- as.character(sce$seurat_clusters) # ensure clusters are characters
+
+# Run Slingshot
+sce <- slingshot(sce,
+                 clusterLabels = "seurat_clusters",
+                 reducedDim = "UMAP",
+                 start.clus = start_cluster)
+
+# Add Slingshot pseudotime back to the Seurat object for easy plotting
+sobj_fib$slingPseudotime_1 <- sce$slingPseudotime_1
+sobj_fib$slingPseudotime_2 <- sce$slingPseudotime_2
+cat("Slingshot analysis complete.\n")
+```
+
+# 6. Step 3: Comparative Analysis and Visualization
+
+### 6.1. Visualize Trajectory by Condition and Pseudotime
+
+Here we visualize the learned trajectory, showing how cells from the experimental groups are distributed along it.
+
+```{r visualize-trajectory, fig.width=12, fig.height=10}
+# Extract lineage curve coordinates for plotting with ggplot
+sling_curves <- slingCurves(sce)
+curve_df <- data.frame()
+for (i in seq_along(sling_curves)) {
+    curve <- as.data.frame(sling_curves[[i]]$s[sling_curves[[i]]$ord, ])
+    colnames(curve) <- c("umap_1", "umap_2")
+    curve$lineage <- i
+    curve_df <- rbind(curve_df, curve)
+}
+
+# Create a data frame for plotting UMAP points
+umap_df <- as.data.frame(sobj_fib@reductions$umap@cell.embeddings)
+colnames(umap_df) <- c("umap_1", "umap_2")
+umap_df$group <- sobj_fib[[GROUP_COL, drop = TRUE]]
+
+# Plot 1: UMAP colored by the experimental groups, with the trajectory overlaid.
+p_traj_group <- ggplot(umap_df, aes(x = umap_1, y = umap_2, color = group)) +
+  geom_point(size = 0.5, alpha = 0.8) +
+  geom_path(data = curve_df, aes(x = umap_1, y = umap_2, group = lineage),
+            size = 1.5, color = "black", inherit.aes = FALSE) +
+  labs(title = "Trajectory by Experimental Group") +
+  theme_bw(base_size = 14) +
+  guides(color = guide_legend(override.aes = list(size=3)))
+
+# Plot 2: UMAP colored by pseudotime 1 with trajectory
+p_traj_pseudo1 <- FeaturePlot(sobj_fib, "slingPseudotime_1") +
+  geom_path(data = curve_df, aes(x = umap_1, y = umap_2, group = lineage), size = 1.5, color = "black", inherit.aes = FALSE) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(title = "Trajectory by Pseudotime 1") +
+  theme_bw(base_size = 14)
+
+# Plot 3: UMAP colored by pseudotime 2 with trajectory
+p_traj_pseudo2 <- FeaturePlot(sobj_fib, "slingPseudotime_2") +
+  geom_path(data = curve_df, aes(x = umap_1, y = umap_2, group = lineage), size = 1.5, color = "black", inherit.aes = FALSE) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(title = "Trajectory by Pseudotime 2") +
+  theme_bw(base_size = 14)
+
+
+# Combine and save
+p_combined_traj <- p_traj_group + p_traj_pseudo1 + p_traj_pseudo2
+print(p_combined_traj)
+ggsave(file.path(RESULT_DIR, "03_Trajectory_by_Group_and_Pseudotime.png"), plot = p_combined_traj, width = 12, height = 10)
+```
+
+### 6.2. Quantify Pseudotime Distributions
+
+```{r quantify-pseudotime}
+# Extract metadata for plotting
+meta_df <- sobj_fib@meta.data
+
+# Helper function to make density and violin plots for pseudotime
+make_pseudotime_plots <- function(pt_col, pt_label) {
+  # Density Plot
+  p_density <- ggplot(meta_df, aes_string(x = pt_col, fill = GROUP_COL)) +
+    geom_density(alpha = 0.7) +
+    labs(title = paste("Density of Cells Along", pt_label), x = pt_label, y = "Density") +
+    theme_classic(base_size = 14)
+
+  # Violin Plot
+  p_violin <- ggplot(meta_df, aes_string(x = GROUP_COL, y = pt_col, fill = GROUP_COL)) +
+    geom_violin(trim = FALSE) +
+    geom_boxplot(width = 0.1, fill = "white") +
+    labs(title = paste("Pseudotime Distribution by Group (", pt_label, ")", sep = ""), x = "Group", y = pt_label) +
+    theme_classic(base_size = 14) +
+    theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
+
+  # Combine
+  p_density | p_violin
+}
+
+# Plot for Pseudotime 1
+pt1_label <- "Slingshot Pseudotime 1"
+p_combined_dist1 <- make_pseudotime_plots("slingPseudotime_1", pt1_label)
+print(p_combined_dist1)
+ggsave(file.path(RESULT_DIR, "04_Pseudotime1_Distributions.png"), plot = p_combined_dist1, width = 14, height = 6)
+
+# Plot for Pseudotime 2
+pt2_label <- "Slingshot Pseudotime 2"
+p_combined_dist2 <- make_pseudotime_plots("slingPseudotime_2", pt2_label)
+print(p_combined_dist2)
+ggsave(file.path(RESULT_DIR, "04_Pseudotime2_Distributions.png"), plot = p_combined_dist2, width = 14, height = 6)
+```
