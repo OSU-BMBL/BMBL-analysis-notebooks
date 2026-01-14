@@ -1,6 +1,0 @@
-Sample ID,Phenotype,Expected Karyotype (XX/XY),Family
-Sample1,Healthy,Male,Family 1
-Sample2,Disease,Male,Family 1
-Sample3,Healthy,Female,Family 2
-Sample4,Isogenic control,Female,Family 3
-Sample5,DS,Female,Family 3

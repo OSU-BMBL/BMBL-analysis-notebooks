@@ -38,7 +38,7 @@ This repository is NOT an introduction to data analysis. There are many availabl
   6. [scRNAseq_Seurat_to_Scanpy](./scRNAseq_Seurat_to_Scanpy)
   7. [scRNAseq stomach branch](./scRNAseq_stomach_branch)
   8. [scRNAseq_ShinyCell_portal](./scRNAseq_ShinyCell_portal)
-  9. [scRNAseq large dataset analysis](./sc_LargeData_Sketch-based_Analysis)
+  9. [scRNAseq large dataset analysis](./scRNAseq_Sketch_LargeData)
   10. [scRNAseq_module_enrichent](./scRNAseq_module_enrichment)
   11. [scRNAseq_iPSC_branch](./scRNAseq_iPSC_branch)
   12. [scRNAseq_immune_branch](./scRNAseq_immune_branch)
@@ -51,8 +51,9 @@ This repository is NOT an introduction to data analysis. There are many availabl
   2. [scATACseq ArchR branch](./scATACseq_ArchR_branch)
   3. [scATACseq Cicero branch](./scATACseq_cicero_branch)
   4. [scATACseq cisTopic branch](./scATACseq_cisTopic_branch)
-  5. [scATACseq_CellOracle_workflow](./CellOracle%20workflow)
-  6. [scATACseq_TF_motif_activity](./ChromVAR%20for%20single%20cell)
+  5. [scATACseq CellOracle workflow](./GRN_CellOracle)
+  6. [scATACseq ChromVAR TF motif activity](./scATACseq_ChromVAR_motif)
+  7. [scATACseq Gene activity score](./scATACseq_Gene_activity)
 
 - Single-cell Multi-omics:
 
@@ -63,46 +64,55 @@ This repository is NOT an introduction to data analysis. There are many availabl
   1. [scTCRseq_analysis](./scTCRseq_analysis)
 
 - RNA-seq:
-  1. [RNAseq general workflow nf-core](./RNAseq_general_workflow_nfcore)
+  1. [RNAseq general workflow nf-core](./RNAseq_nfcore_workflow)
 
 - ATAC-seq:
-  1. [ATACseq general workflow nf-core](./ATAC-seq_preprocessing)
+  1. [ATACseq general workflow nf-core](./ATACseq_preprocessing)
   2. [ATACseq_general_workflow](./Bulk_ATAC_general_workflow)
+
 - Chip-seq:
   1. [Chipseq general workflow](./ChipSeq_general_workflow)
-  2. [Chipseq_general_workflow2](./Chipseq_general_workflow2)
+  2. [Chipseq general workflow v2](./ChipSeq_general_workflow_v2)
+  3. [ChipSeq HOMER motif analysis](./ChipSeq_HOMER_motif)
+
 - Spatial Transcriptomics(ST):
 
   1. [ST general workflow](./ST_general_workflow)
   2. [ST BayesSpace branch](./ST_BayesSpace_branch)
   3. [ST giotto branch](./ST_giotto_branch)
   4. [ST spotlight branch](./ST_spotlight_branch)
+  5. [Spatial Cellular neighborhood](./Spatial_Cellular_neighborhood)
 
 - Bisulfite sequencing (BS-seq):
-  1. [Bismark aligner](./BS-seq_Bismark_Aligner)
+  1. [Bismark aligner](./BSseq_Bismark_Aligner)
+
 - Whole Genome Sequencing (WGS):
-  1. [Low-pass WGS karyotyping workflow](./Lowpass_WGS_karyotyping_workflow)
-- Motif analysis:
-  1. [HOMER2](./HOMER)
+  1. [Low-pass WGS karyotyping workflow](./WGS_Lowpass_karyotyping)
+
+- Gene Regulatory Networks (GRN):
+  1. [CellOracle workflow](./GRN_CellOracle)
+
 - General downstream analysis:
-  1. [Enrichment Analysis Using clusterProfiler](./Pathway_enrichment_analysis_clusterProfier)
-  2. [Cellular_neighborhood](./Cellular_neighborhood)
-  3. [Gene_activate_score](./Gene_activate_score)
+  1. [Enrichment Analysis Using clusterProfiler](./Analysis_Pathway_enrichment)
+
+### Data Utilities
+
+1. [Download GEO supplementary files](./Data_GEO_download)
+2. [Convert data to H5AD format](./Data_H5AD_conversion)
+3. [GEO data submission guide](./Data_GEO_submission)
+4. [Download SRA data with SRA Toolkit](./Data_SRA_download)
 
 ### Artificial Intelligence
 
 - ChatGPT prompts
-  1. [ChatGPT_prompts](./ChatGPT_prompts)
+  1. [ChatGPT_prompts](./_ChatGPT_prompts)
 
 ### Other Tutorials
 
 - Server
-  1. [Introduction OSC](./Introduction_OSC)
+  1. [Introduction OSC](./_Introduction_OSC)
 - Figure/Plot scripts
-  1. [Figure codes](./figure_code)
-- Data management guide
-  1. [GEO data submission](./GEO_data_submission)
-  2. [Download SRA data with SRA Toolkit in parallel](./SRA_Data_Fetcher)
+  1. [Figure codes](./_figure_code)
 
 ### Contributing template
 

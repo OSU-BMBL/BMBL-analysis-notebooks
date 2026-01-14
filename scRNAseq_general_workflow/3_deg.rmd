@@ -48,7 +48,7 @@ print(paste("Current working directory:", here::here()))
 # Load data
 
 ```{r}
-source("./common/functions.R")
+source("../_common/functions.R")
 combined <- qs::qread('./combined.qsave')
 
 # To obtain all_gene_sets, please run msigdb

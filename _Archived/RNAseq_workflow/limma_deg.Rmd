@@ -1,0 +1,28 @@
+
+```{r}
+library(limma)
+
+# Ensure that the columns of your counts data match the rows of your metadata
+stopifnot(all(meta$sample_id == colnames(counts)))
+
+# Based on your metadata, I'm assuming you want to contrast different 'group' values
+# If 'group' is already a factor, great! If not, convert it.
+group <- as.factor(meta$group)
+
+# Create the design matrix
+design <- model.matrix(~0 + group)
+colnames(design) <- levels(group)
+
+# Since I'm not sure about the exact levels of your 'group' column, I'm providing a generic contrast
+# If for example, you have two levels "A" and "B" and you wish to contrast "A" vs "B", then use: contrast.matrix <- makeContrasts("A-B", levels = design)
+# Adjust the contrast matrix as per your requirements
+
+# Here's a generic way to make a contrast for the first two levels:
+contrast.matrix <- makeContrasts(paste0(levels(group)[1], "-", levels(group)[2]), levels=design)
+
+fit <- lmFit(counts, design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+top_genes <- topTable(fit2, adjust="BH", number=Inf)
+
+```
