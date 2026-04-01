@@ -1,0 +1,547 @@
+# BMBL Analysis Notebooks - Dependency Index
+# 
+# This file documents all workflows and their dependencies.
+# Machine-readable format for AI agents and automation tools.
+#
+# Last updated: April 2026
+
+metadata:
+  repository: OSU-BMBL/BMBL-analysis-notebooks
+  maintainer: Shaopeng Gu
+  contact: shaopeng.gu@osumc.edu
+  website: https://u.osu.edu/bmbl/
+
+# ========================================
+# R PACKAGES BY CATEGORY
+# ========================================
+
+r_packages:
+  core:
+    - Seurat
+    - SeuratObject
+    - tidyverse
+    - dplyr
+    - tidyr
+    - ggplot2
+    - patchwork
+    - cowplot
+  
+  single_cell:
+    - harmony          # Batch correction
+    - sctransform      # Normalization
+    - DoubletFinder    # Doublet detection
+    - SingleR          # Cell type annotation
+    - SingleCellExperiment
+  
+  atac:
+    - Signac           # Main scATAC-seq package
+    - chromVAR         # TF motif activity
+    - ArchR            # scATAC-seq analysis framework
+    - cisTopic         # Topic modeling
+    - cicero           # Cis-regulatory interactions
+    - JASPAR2020       # TF motif database
+    - TFBSTools        # TFBS tools
+  
+  spatial:
+    - BayesSpace
+    - Giotto
+    - SpatialExperiment
+  
+  enrichment:
+    - clusterProfiler
+    - enrichplot
+    - DOSE
+    - enrichR
+    - org.Hs.eg.db
+    - org.Mm.eg.db
+    - ReactomePA
+  
+  ccc:                 # Cell-cell communication
+    - CellChat
+    - NicheNet
+  
+  trajectory:
+    - monocle3
+    - slingshot
+  
+  utility:
+    - SeuratDisk       # H5AD conversion
+    - qs               # Fast serialization
+    - here             # Path management
+    - hdf5r            # HDF5 files
+    - Polychrome        # Color palettes
+
+# ========================================
+# PYTHON PACKAGES BY CATEGORY
+# ========================================
+
+python_packages:
+  core:
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib
+    - seaborn
+  
+  single_cell:
+    - scanpy
+    - anndata
+    - muon              # Multi-omics
+    - scirpy            # Immune repertoire
+    - celloracle        # Gene regulatory networks
+    - velocyto          # RNA velocity
+  
+  utilities:
+    - mygene            # Gene ID conversion
+    - requests           # HTTP requests
+    - jupyter
+
+# ========================================
+# SYSTEM TOOLS
+# ========================================
+
+system_tools:
+  alignment:
+    - samtools          # BAM/SAM manipulation
+    - bedtools2         # Genome arithmetic
+    - bwa               # Sequence alignment
+    - star              # RNA-seq alignment
+    - bowtie2           # Fast alignment
+  
+  qc:
+    - fastqc            # Quality control
+    - multiqc           # QC reports
+  
+  peak_calling:
+    - macs2             # ChIP-seq peak calling
+    - homer             # Motif discovery
+  
+  utilities:
+    - trim_galore       # Read trimming
+    - subread           # FeatureCounts
+    - sratoolkit        # SRA download
+    - igv               # Genome browser
+  
+  pipelines:
+    - nextflow          # Pipeline runner (for nf-core)
+
+# ========================================
+# WORKFLOWS
+# ========================================
+
+workflows:
+
+  # ----- Single-Cell RNA-seq -----
+  
+  - name: scRNAseq_general_workflow
+    path: scRNAseq_general_workflow/
+    category: single-cell-rna
+    languages: [R]
+    install_script: 0_install_packages.R
+    key_packages: [Seurat, harmony, sctransform]
+    input_format: 10X Genomics
+    status: complete
+    authors: [Cankun Wang, Yingjie Li]
+    
+  - name: scRNAseq_10x_Flex_preprocessing
+    path: scRNAseq_10x_Flex_preprocessing/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat, SeuratObject]
+    status: documented
+    
+  - name: scRNAseq_trajectory_Slingshot
+    path: scRNAseq_trajectory_Slingshot/
+    category: single-cell-rna
+    languages: [R]
+    install_script: 0_install_packages.R
+    key_packages: [slingshot, Seurat]
+    status: complete
+    
+  - name: scRNAseq_CellCellCommunication_branch
+    path: scRNAseq_CellCellCommunication_branch/
+    category: cell-cell-communication
+    languages: [R]
+    key_packages: [CellChat]
+    status: documented
+    
+  - name: scRNAseq_HPV_branch
+    path: scRNAseq_HPV_branch/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat]
+    status: documented
+    
+  - name: scRNAseq_Seurat_to_Scanpy
+    path: scRNAseq_Seurat_to_Scanpy/
+    category: data-conversion
+    languages: [R]
+    key_packages: [Seurat, SeuratDisk, qs]
+    input_format: Seurat (.rds, .qs)
+    output_format: H5AD
+    status: complete
+    authors: [Cankun Wang]
+    
+  - name: scRNAseq_stomach_branch
+    path: scRNAseq_stomach_branch/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat]
+    status: documented
+    
+  - name: scRNAseq_ShinyCell_portal
+    path: scRNAseq_ShinyCell_portal/
+    category: visualization
+    languages: [R]
+    key_packages: [Shiny, Seurat]
+    status: documented
+    
+  - name: scRNAseq_Sketch_LargeData
+    path: scRNAseq_Sketch_LargeData/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat, sctransform]
+    status: documented
+    
+  - name: scRNAseq_module_enrichment
+    path: scRNAseq_module_enrichment/
+    category: enrichment
+    languages: [R]
+    key_packages: [Seurat, clusterProfiler]
+    status: complete
+    
+  - name: scRNAseq_iPSC_branch
+    path: scRNAseq_iPSC_branch/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat, progeny, decoupleR]
+    status: documented
+    
+  - name: scRNAseq_immune_branch
+    path: scRNAseq_immune_branch/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat]
+    status: documented
+    
+  - name: scRNAseq_inferCNV
+    path: scRNAseq_inferCNV/
+    category: copy-number-analysis
+    languages: [R]
+    key_packages: [inferCNV]
+    status: complete
+    
+  - name: scRNAseq_label_transfer_branch
+    path: scRNAseq_label_transfer_branch/
+    category: cell-type-annotation
+    languages: [R]
+    key_packages: [SingleR, Seurat]
+    status: complete
+    
+  - name: scRNAseq_atlas_SCI
+    path: scRNAseq_atlas_SCI/
+    category: single-cell-rna
+    languages: [R]
+    key_packages: [Seurat]
+    status: complete
+
+  # ----- Single-Cell ATAC-seq -----
+  
+  - name: scATACseq_general_workflow
+    path: scATACseq_general_workflow/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [Signac, Seurat]
+    status: documented
+    notes: Uses hdf5r - see README for OSC installation tips
+    
+  - name: scATACseq_ArchR_branch
+    path: scATACseq_ArchR_branch/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [ArchR, Seurat]
+    status: documented
+    notes: ArchR requires significant memory
+    
+  - name: scATACseq_cicero_branch
+    path: scATACseq_cicero_branch/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [cicero, Signac]
+    status: documented
+    
+  - name: scATACseq_cisTopic_branch
+    path: scATACseq_cisTopic_branch/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [cisTopic, Signac]
+    status: documented
+    
+  - name: scATACseq_ChromVAR_motif
+    path: scATACseq_ChromVAR_motif/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [chromVAR, Signac, JASPAR2020]
+    status: documented
+    
+  - name: scATACseq_Gene_activity
+    path: scATACseq_Gene_activity/
+    category: single-cell-atac
+    languages: [R]
+    key_packages: [Signac]
+    status: documented
+
+  # ----- Multi-Omics -----
+  
+  - name: scMultiome_AD_branch
+    path: scMultiome_AD_branch/
+    category: multi-omics
+    languages: [R]
+    key_packages: [Seurat, Signac]
+    status: complete
+    authors: [Qi Guo]
+    
+  - name: GRN_CellOracle
+    path: GRN_CellOracle/
+    category: gene-regulatory-network
+    languages: [Python]
+    key_packages: [celloracle, scanpy]
+    status: documented
+    authors: [Ahmed Ghobashi]
+    notes: No requirements.txt - needs creation
+
+  # ----- Spatial Transcriptomics -----
+  
+  - name: ST_general_workflow
+    path: ST_general_workflow/
+    category: spatial-transcriptomics
+    languages: [R]
+    key_packages: [Seurat]
+    status: documented
+    
+  - name: ST_BayesSpace_branch
+    path: ST_BayesSpace_branch/
+    category: spatial-transcriptomics
+    languages: [R]
+    key_packages: [BayesSpace, Seurat]
+    status: documented
+    
+  - name: ST_giotto_branch
+    path: ST_giotto_branch/
+    category: spatial-transcriptomics
+    languages: [R]
+    key_packages: [Giotto, Seurat]
+    status: documented
+    
+  - name: ST_spotlight_branch
+    path: ST_spotlight_branch/
+    category: spatial-transcriptomics
+    languages: [R]
+    key_packages: [Seurat, SPOTlight]
+    status: documented
+    
+  - name: Spatial_Cellular_neighborhood
+    path: Spatial_Cellular_neighborhood/
+    category: spatial-transcriptomics
+    languages: [Python]
+    key_packages: [scanpy]
+    status: documented
+
+  # ----- Bulk RNA-seq -----
+  
+  - name: RNAseq_nfcore_workflow
+    path: RNAseq_nfcore_workflow/
+    category: bulk-rna
+    languages: [Shell]
+    system_tools: [nextflow]
+    status: complete
+    notes: nf-core pipeline - no R/Python scripts needed
+    authors: [Shaopeng Gu]
+
+  # ----- Bulk ATAC-seq -----
+  
+  - name: ATACseq_preprocessing
+    path: ATACseq_preprocessing/
+    category: bulk-atac
+    languages: [Shell]
+    system_tools: [macs2, fastqc, multiqc]
+    status: documented
+    
+  - name: Bulk_ATAC_general_workflow
+    path: Bulk_ATAC_general_workflow/
+    category: bulk-atac
+    languages: [R, Shell]
+    key_packages: [Seurat]
+    status: documented
+
+  # ----- ChIP-seq -----
+  
+  - name: ChipSeq_general_workflow
+    path: ChipSeq_general_workflow/
+    category: chip-seq
+    languages: [Shell]
+    system_tools: [nextflow]
+    status: complete
+    notes: nf-core pipeline
+    authors: [Shaopeng Gu]
+    
+  - name: ChipSeq_general_workflow_v2
+    path: ChipSeq_general_workflow_v2/
+    category: chip-seq
+    languages: [Shell]
+    system_tools: [nextflow]
+    status: documented
+    
+  - name: ChipSeq_HOMER_motif
+    path: ChipSeq_HOMER_motif/
+    category: chip-seq
+    languages: [Shell]
+    system_tools: [homer]
+    status: documented
+
+  # ----- Other Sequencing -----
+  
+  - name: BSseq_Bismark_Aligner
+    path: BSseq_Bismark_Aligner/
+    category: bisulfite-sequencing
+    languages: [Shell]
+    status: documented
+    
+  - name: WGS_Lowpass_karyotyping
+    path: WGS_Lowpass_karyotyping/
+    category: wgs
+    languages: [R]
+    install_script: 0_install_packages.R
+    key_packages: [DNAcopy]
+    status: complete
+    
+  - name: scTCRseq_analysis
+    path: scTCRseq_analysis/
+    category: tcr-sequencing
+    languages: [Python]
+    key_packages: [scirpy, muon]
+    status: documented
+    authors: [Xiaoying Wang]
+
+  # ----- Data Utilities -----
+  
+  - name: Data_GEO_download
+    path: Data_GEO_download/
+    category: data-utilities
+    languages: [Python]
+    key_packages: [requests]
+    status: complete
+    
+  - name: Data_SRA_download
+    path: Data_SRA_download/
+    category: data-utilities
+    languages: [Python]
+    system_tools: [sratoolkit]
+    status: complete
+    authors: [Shaohong Feng]
+    
+  - name: Data_H5AD_conversion
+    path: Data_H5AD_conversion/
+    category: data-conversion
+    languages: [Python]
+    key_packages: [anndata, mygene]
+    status: complete
+    
+  - name: Data_GEO_submission
+    path: Data_GEO_submission/
+    category: data-utilities
+    languages: []
+    status: documented
+
+  # ----- Analysis -----
+  
+  - name: Analysis_Pathway_enrichment
+    path: Analysis_Pathway_enrichment/
+    category: enrichment
+    languages: [R]
+    key_packages: [clusterProfiler, enrichR]
+    status: complete
+
+  # ----- Figure Code -----
+  
+  - name: figure_code_volcano
+    path: _figure_code/volcano/
+    category: visualization
+    languages: [R]
+    key_packages: [EnhancedVolcano]
+    status: complete
+    
+  - name: figure_code_heatmap
+    path: _figure_code/heatmap/
+    category: visualization
+    languages: [R]
+    key_packages: [tidyverse]
+    status: complete
+    
+  - name: figure_code_enrichment_barplot
+    path: _figure_code/enrichment_barplot/
+    category: visualization
+    languages: [R]
+    key_packages: [tidyverse]
+    status: complete
+    
+  - name: figure_code_pathway_dotplot
+    path: _figure_code/pathway_dotplot/
+    category: visualization
+    languages: [R]
+    key_packages: []
+    status: documented
+    
+  - name: figure_code_pathway_enrichment_heatmap
+    path: _figure_code/pathway_enrichment_heatmap/
+    category: visualization
+    languages: [R]
+    key_packages: [ggpubr, GSVA]
+    status: complete
+    
+  - name: figure_code_UMAP_plot
+    path: _figure_code/UMAP_plot/
+    category: visualization
+    languages: [R]
+    key_packages: [Seurat]
+    status: documented
+    
+  - name: figure_code_Circos_network
+    path: _figure_code/Circos_network/
+    category: visualization
+    languages: [R]
+    key_packages: [circlize]
+    status: documented
+    
+  - name: figure_code_Cytoscape_network
+    path: _figure_code/Cytoscape_network/
+    category: visualization
+    languages: [R]
+    key_packages: [RCy3]
+    status: documented
+
+# ========================================
+# USAGE EXAMPLES
+# ========================================
+
+usage:
+  conda_environment: |
+    # Create environment from file
+    conda env create -f environment.yml
+    conda activate bmbl-workflows
+    
+    # Or update existing environment
+    conda env update -f environment.yml --prune
+
+  osc_setup: |
+    # Load OSC modules
+    source setup_osc_env.sh
+    
+    # Then install R packages
+    Rscript install_r_packages.R
+
+  workflow_specific: |
+    # For individual workflows
+    cd scRNAseq_general_workflow/
+    Rscript 0_install_packages.R
+    # Then follow workflow README
