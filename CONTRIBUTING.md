@@ -1,210 +1,148 @@
-# Contributing to BMBL analysis notebooks
+# Contributing to BMBL Analysis Notebooks
 
-:+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
+:+1::tada: Thanks for contributing! :tada::+1:
 
-The following is a set of guidelines for contributing to BMBL notebooks.
+This guide explains how to contribute new workflows to the BMBL analysis notebooks repository.
 
-### Do you have a workflow that you would like to contribute?
+## How to Contribute
 
-If you have a workflow that you think would be helpful for other lab members, we would love for you to contribute it to our repository!
-#### Steps to contribute
-1. Have a workflow (R, python, etc.)!
-2. Try and annotate your workflow to describe each step taken-- this will make it much easier to share with the lab later
-3. Send your annotated workflow to Megan (megan.mcnutt@osumc.edu)
-  - please include (1) the annotated workflow, (2) example data, (3) any pertinent information you think is important
+### 1. Prepare Your Workflow
 
-Notes: 
-- You do not need to worry about variable names or cleaning your code too much! After you send your code, we can work to clean it to make it into a generic version for others to use.
-- The more different lab members contribute to this repository, the easier it will be for all of us to collaborate and get good work done!
-- If you would like to create a more detailed description of the workflow in the form of a Word Document, pdf, or MarkDown file, that would be very helpful but not necessary to contribute!
+Before submitting, prepare your workflow with:
 
-### Where do I go from here?
+- **Annotated code** describing each step
+- **Example data** (small test dataset)
+- **README.md** using the [template](README_template.md)
 
-If you've noticed a bug or have a feature request, [make one][new issue]! It's
-generally best if you get confirmation of your bug or approval for your feature
-request this way before starting to code.
+You don't need to:
+- Perfect variable names or code style
+- Remove all comments
+- Create publication-ready documentation
 
-If you have a general question about activeadmin, you can post it on [Stack
-Overflow], the issue tracker is only for bugs and feature requests.
+We'll help refine your code before merging.
 
-### Fork & create a branch
+### 2. Create Documentation
 
-If this is something you think you can fix, then [fork Active Admin] and create
-a branch with a descriptive name.
+Every workflow needs a README.md. Use the [template](README_template.md) and fill in:
 
-A good branch name would be (where issue #325 is the ticket you're working on):
+```markdown
+# Workflow Title
 
-```sh
-git checkout -b 325-add-japanese-translations
+## Introduction
+What does this workflow do?
+
+## Pipeline input
+What data format is expected?
+
+## Pipeline output
+What files are generated?
+
+## Directory structure
+List your files here
+
+## Contact
+Author: Your Name
+
+## Methods for manuscript
+Brief description of methods used
+
+## Session info
+R sessionInfo() output
 ```
 
-### Get the test suite running
+### 3. Follow Naming Conventions
 
-Make sure you're using a recent ruby and have the `bundler` gem installed, at
-least version `1.14.3`.
+See CLAUDE.md for detailed conventions. Key rules:
 
-You'll also need chrome installed in order to run cucumber scenarios.
+| Item | Convention | Example |
+|------|------------|---------|
+| Directories | `AssayType_description_branch/` | `scRNAseq_label_transfer_branch/` |
+| Scripts | `N_description.ext` (numbered) | `1_preprocess.rmd`, `2_annotate.rmd` |
+| README | Always `README.md` | (not `readme.md` or `README.MD`) |
 
-Now install the development dependencies:
+### 4. Include Dependencies
 
-```sh
-bundle install
+Add a `0_install_packages.R` file listing required packages:
+
+```r
+# Install required packages
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c(
+    "Seurat",
+    "SeuratObject",
+    "dplyr",
+    "ggplot2"
+))
 ```
 
-Then install javascript dependencies with [Yarn] (requires a current version of [Node.js]):
+### 5. Submit Your Workflow
 
-```sh
-bin/yarn install
+Email your workflow to:
+**Megan McNutt** (megan.mcnutt@osumc.edu)
+
+Include:
+1. Annotated workflow code
+2. Example data
+3. README.md
+4. Any relevant notes for the lab
+
+## Workflow Standards
+
+### File Organization
+
+```
+workflow_name/
+├── README.md                     # Required
+├── 0_install_packages.R         # Package installation
+├── 1_first_step.rmd              # Numbered R Markdown files
+├── 2_second_step.rmd
+├── data/                         # Example data
+│   ├── input_data/
+│   └── expected_output/          # Optional: expected results
+└── figures/                      # Generated figures (gitignored)
 ```
 
-JS assets are located in `app/javascript/active_admin`. The config will take care of compiling a complete bundle with [Rollup] using the `build` script and exported to `app/assets/javascripts/active_admin/base.js` ready to be used by Sprockets.
+### Code Style
 
-To update javascript bundle run (add `-w` flag for watch mode):
+- Use `suppressPackageStartupMessages()` for library loads
+- Source shared functions from `../common/functions.R`
+- Include session info at the end of notebooks
+- Use BiocManager for Bioconductor packages
 
-```sh
-bin/yarn build
-```
+### Data Guidelines
 
-Now you should be able to run the entire suite using:
+- Use small test datasets (< 100MB)
+- Include expected data formats in README
+- Don't commit large raw data files
+- Use `.gitignore` patterns for large files
 
-```sh
-bin/rake
-```
+## Common Issues
 
-The test run will generate a sample Rails application in `tmp/test_apps` to run the
-tests against.
+### My workflow uses Python, not R
 
-If you want to test against a Rails version different from the latest, make sure
-you use the correct Gemfile, for example:
+That's fine! Use `requirements.txt` or `environment.yml` instead of `0_install_packages.R`. See `scRNAseq_Seurat_to_Scanpy/` for a Python workflow example.
 
-```sh
-export BUNDLE_GEMFILE=gemfiles/rails_61/Gemfile
-```
+### I'm not sure about the data format
 
-**Warning** SCSS assets are aimed to be used indifferently with Sprockets **and** webpacker.
-As such, make sure not to use any sass-rails directives such as `asset-url` or `image-url`.
+Check similar workflows in the repository. Common formats:
+- 10X Genomics: `barcodes.tsv.gz`, `features.tsv.gz`, `matrix.mtx.gz`
+- Single-cell R: `.rds` (Seurat object)
+- Single-cell Python: `.h5ad` (AnnData)
 
-### Implement your fix or feature
+### My workflow needs OSC-specific setup
 
-At this point, you're ready to make your changes! Feel free to ask for help;
-everyone is a beginner at first :smile_cat:
+Include a `Preprocessing_code/` folder with SLURM scripts. See `scRNAseq_general_workflow/` for examples.
 
-### View your changes in a Rails application
+## Questions?
 
-Active Admin is meant to be used by humans, not cucumbers. So make sure to take
-a look at your changes in a browser.
+- General questions: Open an issue or contact Shaopeng Gu (shaopeng.gu@osumc.edu)
+- Submission questions: Megan McNutt (megan.mcnutt@osumc.edu)
+- OSC environment: See `_Introduction_OSC/`
 
-To boot up a test Rails app:
+## Acknowledgements
 
-```sh
-bin/rake local server
-```
+Contributors will be added to the main README.md contributor list.
 
-This will automatically create a Rails app if none already exists, and store it
-in the `tmp/development_apps` folder.
-
-You should now be able to open <http://localhost:3000/admin> in your browser.
-You can log in using:
-
-*User*: admin@example.com
-*Password*: password
-
-If you need to perform any other commands on the test application, just pass
-them to the `local` rake task. For example, to boot the rails console:
-
-```sh
-bin/rake local console
-```
-
-Or to migrate the database, if you create a new migration or just play around
-with the db:
-
-```sh
-bin/rake local db:migrate
-```
-
-### Get the style right
-
-Your patch should follow the same conventions & pass the same code quality
-checks as the rest of the project. `bin/rake lint` will give you feedback in
-this regard. You can check & fix style issues by running each linter
-individually. Run `bin/rake -T lint` to see the available linters.
-
-### Make a Pull Request
-
-At this point, you should switch back to your master branch and make sure it's
-up to date with Active Admin's master branch:
-
-```sh
-git remote add upstream git@github.com:activeadmin/activeadmin.git
-git checkout master
-git pull upstream master
-```
-
-Then update your feature branch from your local copy of master, and push it!
-
-```sh
-git checkout 325-add-japanese-translations
-git rebase master
-git push --set-upstream origin 325-add-japanese-translations
-```
-
-Finally, go to GitHub and [make a Pull Request][] :D
-
-Github Actions will run our test suite against all supported Rails versions. We
-care about quality, so your PR won't be merged until all tests pass. It's
-unlikely, but it's possible that your changes pass tests in one Rails version
-but fail in another. In that case, you'll have to setup your development
-environment (as explained in step 3) to use the problematic Rails version, and
-investigate what's going on!
-
-### Keeping your Pull Request updated
-
-If a maintainer asks you to "rebase" your PR, they're saying that a lot of code
-has changed, and that you need to update your branch so it's easier to merge.
-
-To learn more about rebasing in Git, there are a lot of [good][git rebasing]
-[resources][interactive rebase] but here's the suggested workflow:
-
-```sh
-git checkout 325-add-japanese-translations
-git pull --rebase upstream master
-git push --force-with-lease 325-add-japanese-translations
-```
-
-### Merging a PR (maintainers only)
-
-A PR can only be merged into master by a maintainer if:
-
-* It is passing CI.
-* It has been approved by at least two maintainers. If it was a maintainer who
-  opened the PR, only one extra approval is needed.
-* It has no requested changes.
-* It is up to date with current master.
-
-Any maintainer is allowed to merge a PR if all of these conditions are
-met.
-
-### Shipping a release (maintainers only)
-
-Maintainers need to do the following to push out a release:
-
-* Switch to the master branch and make sure it's up to date.
-* Make sure you have [chandler] properly configured. Chandler is used to
-  automatically submit github release notes from the changelog right after
-  pushing the gem to rubygems.
-* Run one of `bin/rake release:prepare_{prerelease,prepatch,patch,preminor,minor,premajor,major}`, push the result and create a PR.
-* Review and merge the PR. The generated changelog in the PR should include all user visible changes you intend to ship.
-* Run `bin/rake release` from the target branch once the PR is merged.
-
-[chandler]: https://github.com/mattbrictson/chandler#2-configure-credentials
-[Stack Overflow]: http://stackoverflow.com/questions/tagged/activeadmin
-[new issue]: https://github.com/activeadmin/activeadmin/issues/new
-[fork Active Admin]: https://help.github.com/articles/fork-a-repo
-[make a pull request]: https://help.github.com/articles/creating-a-pull-request
-[git rebasing]: http://git-scm.com/book/en/Git-Branching-Rebasing
-[interactive rebase]: https://help.github.com/en/github/using-git/about-git-rebase
-[shortcut reference links]: https://github.github.com/gfm/#shortcut-reference-link
-[Rollup]: https://rollupjs.org/guide/en/#quick-start
-[Yarn]: https://yarnpkg.com/en/docs/install
-[Node.js]: https://nodejs.org/en/
+Thank you for helping build this resource for the lab! :heart:

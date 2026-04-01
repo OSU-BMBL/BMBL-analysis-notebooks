@@ -1,10 +1,20 @@
-# RNA General Workflow
-nf-core/rnaseq is a bioinformatics pipeline that can be used to analyse RNA sequencing data obtained from organisms with a reference genome and annotation. It takes a samplesheet and FASTQ files as input, performs quality control (QC), trimming and (pseudo-)alignment, and produces a gene expression matrix and extensive QC report.
-# Data
-RNASeq data (fastq or fastq.gz)
-# Input format
-Prepare a samplesheet with your input data that looks as follows (you can use 'auto' if you do not know the strandedness):
-```
+# RNA-seq General Workflow (nf-core/rnaseq)
+
+**Date**: 2024
+
+## Introduction
+
+This workflow uses [nf-core/rnaseq](https://nf-co.re/rnaseq/), a bioinformatics pipeline for analyzing bulk RNA sequencing data. It takes FASTQ files as input, performs quality control, trimming, alignment, and produces a gene expression matrix with extensive QC reports.
+
+## Pipeline Input
+
+Raw RNA-seq data in FASTQ format (fastq or fastq.gz).
+
+### Samplesheet Format
+
+Prepare a samplesheet (`samplesheet.csv`) with your input data:
+
+```csv
 sample,fastq_1,fastq_2,strandedness
 CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz,forward
 CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz,forward
@@ -13,83 +23,97 @@ TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,,reverse
 TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,,reverse
 TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,,auto
 ```
-# Workflow
-nf-core/rnaseq includes mutiple steps, please select your own options based on [usage](https://nf-co.re/rnaseq/usage)
-1. Merge re-sequenced FastQ files (cat)
-1. Auto-infer strandedness by subsampling and pseudoalignment (fq, Salmon)
-1. Read QC (FastQC)
-1. UMI extraction (UMI-tools)
-1. Adapter and quality trimming (Trim Galore!)
-1. Removal of genome contaminants (BBSplit)
-1. Removal of ribosomal RNA (SortMeRNA)
-1. Choice of multiple alignment and quantification routes:
-    1. STAR -> Salmon
-    1. STAR -> RSEM
-    1. HiSAT2 -> NO QUANTIFICATION
-1. Sort and index alignments (SAMtools)
-1. UMI-based deduplication (UMI-tools)
-1. Duplicate read marking (picard MarkDuplicates)
-1. Transcript assembly and quantification (StringTie)
-1. Create bigWig coverage files (BEDTools, bedGraphToBigWig)
-1. Extensive quality control:
-    1. RSeQC
-    1. Qualimap
-    1. dupRadar
-    1. Preseq
-    1. DESeq2
-    1. Kraken2 -> Bracken on unaligned sequences 
-1. Pseudoalignment and quantification (Salmon or ‘Kallisto’; optional)
-1. Present QC for raw read, alignment, gene biotype, sample similarity, and strand-specificity checks (MultiQC, R)
 
-# Running the job in OSC
+**Columns:**
+- `sample`: Sample name
+- `fastq_1`: Path to first FASTQ file
+- `fastq_2`: Path to second FASTQ file (leave empty for single-end)
+- `strandedness`: `forward`, `reverse`, or `auto`
 
-1. Installnation:
-   - Pitzer: module load nextflow/24.10.4
-   - Ascend: module load nextflow/24.10.4
-     
-3. Command
-   ```
-    nextflow run nf-core/rnaseq \
-       --input samplesheet.csv \
-       --outdir <OUTDIR> \
-       --genome GRCh38 (GRCm38) \
-       -profile singularity
-   ```
-4. Example bash script
-   ```
-   #!/bin/bash
-   #SBATCH --job-name=RNAseq
-   #SBATCH --output="%j_log.txt"
-   #SBATCH --account=PCON0022
-   #SBATCH --nodes=1
-   #SBATCH --ntasks=1
-   #SBATCH --mem=80G
-   #SBATCH --mail-type=BEGIN,END,FAIL
-   #SBATCH --time=40:00:00
+## Pipeline Output
 
+Key output directories and files:
+
+```
+outdir/
+├── multiqc/                      # Merged QC report (start here)
+├── fastqc/                       # Individual QC reports
+├── star_salmon/
+│   ├── deseq2_qc/               # DESeq2 RData for downstream analysis
+│   ├── featurecounts/           # Feature counts per sample
+│   ├── quant/                   # TPM and read counts
+│   ├── merged_gene_counts/       # Merged count matrix (.tsv, .rds)
+│   ├── merged_gene_tpm/          # TPM matrix
+│   └── all_sorted_BAM/          # Aligned BAM files
+└── trimgalore/                   # Trimming reports
+```
+
+## Workflow Steps
+
+1. **Quality Control** - FastQC analysis
+2. **Trimming** - Adapter and quality trimming (Trim Galore!)
+3. **Alignment** - STAR alignment to reference genome
+4. **Quantification** - Salmon for gene expression
+5. **QC Reporting** - MultiQC for comprehensive reports
+6. **Count Matrix** - Merged gene counts for differential expression
+
+## Running the Workflow
+
+### On OSC Cluster
+
+1. Load Nextflow module:
+   ```bash
    module load nextflow/24.10.4
-   nextflow run nf-core/rnaseq --input loybulkrna.csv --outdir bulkRNA_pipeline_output --genome GRCm38 -profile singularity
    ```
-4. Pipeline output:
-   - fastqc: this folder contains QC reports for each sequence
-   - **multiqc**: this folder contains the merged QC report and all related data and plots (check this folder first)
-   - pipeline info
-   - **star_salmon**: this folder contains:
-     - bigwig: bigwig files for each sequence
-     - **deseq2_qc**: deseq2 RData and size factor Rdata. Loading these RData for DEG analysis
-     - dupradar: assessment of duplication rates in RNA-Seq datasets. Include all plots and gene data for duplication rates
-     - **featurecounts**: featurecounts for each sequence
-     - **quant**: Length, EffectiveLength, TPM, NumReads for each sequence
-     - picard_metrics: metrics for duplicated reads
-     - qualimap: mapping quality reports for each sequence
-     - rseqc: RNA-seq Quality Control (explore this folder if needed)
-     - samtools_stats: metircs for Bam file
-     - stringtie: transcript structure recovery and abundance estimation from bulk RNA-Seq reads aligned to a reference genome
-     - **all_sorted_BAM**
-     - **merged_gene_counts**: .tsv and .rds files
-     - **merged_transcript_counts**: .tsv and .rds files
-     - **merged_gene_tpm**: .tsv file
-     - merged_gene_length: .tsv file
-   - trimgalore: trimming report
+
+2. Run the pipeline:
+   ```bash
+   nextflow run nf-core/rnaseq \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --genome GRCh38 \
+      -profile singularity
+   ```
+
+### Example SLURM Script
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=RNAseq
+#SBATCH --output="%j_log.txt"
+#SBATCH --account=PCON0022
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --mem=80G
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --time=40:00:00
+
+module load nextflow/24.10.4
+nextflow run nf-core/rnaseq \
+   --input samplesheet.csv \
+   --outdir bulkRNA_pipeline_output \
+   --genome GRCm38 \
+   -profile singularity
+```
+
+## Directory Structure
+
+```
+RNAseq_nfcore_workflow/
+└── README.md                    # This file
+```
+
+**Note**: No additional scripts needed - nf-core handles everything through the pipeline.
+
+## Methods for Manuscript
+
+RNA sequencing data were processed using nf-core/rnaseq (version X.X.X). Raw reads were quality-controlled using FastQC and trimmed with Trim Galore! Adapter sequences and low-quality reads were removed. Trimmed reads were aligned to the [genome] reference using STAR. Gene expression quantification was performed using Salmon, and gene counts were generated using featureCounts. Quality control reports were generated using MultiQC.
+
+## Contact
 
 Author: Shaopeng Gu
+
+## See Also
+
+- [nf-core/rnaseq documentation](https://nf-co.re/rnaseq/)
+- [Differential expression analysis](../Analysis_Pathway_enrichment/) - Use DESeq2 outputs for DEG analysis
