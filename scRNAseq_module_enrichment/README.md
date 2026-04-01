@@ -6,11 +6,11 @@ In this tutorial, we will perform gene module enrichment analysis using both the
 
 ---
 
-## Pipeline Input
+## Input
 
 - **Gene List**: A list of genes for which enrichment analysis will be performed.
 
-## Pipeline Output
+## Output
 
 - **Module scores**: Enrichment scores computed via Seurat, ssGSEA, and GSVA methods.
 - **Visualization**: Violin plots for gene set enrichment scores across cell types.
@@ -18,7 +18,7 @@ In this tutorial, we will perform gene module enrichment analysis using both the
 ## Contact
 
 Author: Cankun Wang
-
+Tester: Hu Chen
 Citation:
 
 - Hao Y, Stuart T, Kowalski MH, Choudhary S, Hoffman P, Hartman A, Srivastava A, Molla G, Madad S, Fernandez-Granda C, Satija R (2023). “Dictionary learning for integrative, multimodal and scalable single-cell analysis.” Nature Biotechnology. doi:10.1038/s41587-023-01767-y, https://doi.org/10.1038/s41587-023-01767-y.
