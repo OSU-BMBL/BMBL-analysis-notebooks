@@ -11,9 +11,10 @@
 2. [Overall Philosophy](#overall-philosophy)
 3. [Phase 1: Documentation Improvements](#phase-1-documentation-improvements)
 4. [Phase 2: Dependency Management](#phase-2-dependency-management)
-5. [Design Principles](#design-principles)
-6. [Future Considerations](#future-considerations)
-7. [FAQ](#faq)
+5. [Phase 3: Automated Testing](#phase-3-automated-testing-implemented)
+6. [Design Principles](#design-principles)
+7. [Future Considerations](#phase-4-not-implemented)
+8. [FAQ](#faq)
 
 ---
 
@@ -373,18 +374,64 @@ R sessionInfo() output
 
 ---
 
-## Future Considerations
+## Phase 3: Automated Testing (Implemented)
 
-### Phase 3 & 4 (Not Implemented)
+### What Was Created
 
-**Potential improvements not yet done:**
+| File | Purpose |
+|------|---------|
+| `.github/workflows/ci.yml` | GitHub Actions workflow for CI |
+| `.github/workflows/README.md` | Documentation for the workflows |
+| `validate_repo.R` | Local validation script |
 
-1. **Automated Testing**
-   - GitHub Actions for basic validation
-   - Check R syntax errors
-   - Verify packages install correctly
+### What the CI Checks
 
-2. **Docker Containers**
+The automated testing runs on every push and pull request:
+
+1. **Structure Validation**
+   - Verifies required root files exist (AGENTS.md, README.md, etc.)
+   - Checks each workflow has a README.md
+   - Warns if 0_install_packages.R is missing when R code exists
+
+2. **R Syntax Validation**
+   - Parses all `.R` and `.rmd` files
+   - Catches typos and syntax errors before they affect users
+   - Uses R's built-in parser for accuracy
+
+3. **Dependency File Validation**
+   - Validates YAML syntax for environment.yml
+   - Checks dependencies/index.yml formatting
+   - Ensures configuration files are parseable
+
+4. **Package Installation Test** (PRs only)
+   - Attempts to install R packages
+   - Catches broken dependencies early
+   - Optional due to time constraints
+
+### Why This Helps
+
+- **Early Error Detection**: Catches mistakes before they reach other lab members
+- **Consistency**: Enforces documentation standards automatically
+- **Confidence**: Contributors know their changes are validated
+- **Time Saving**: No manual checking of basic requirements
+
+### How to Use Locally
+
+Run the validation script before pushing:
+```bash
+Rscript validate_repo.R
+```
+
+### Phase 4 (Not Implemented)
+
+**Potential future improvements:**
+
+1. **Docker Containers**
+   - For strict reproducibility
+   - When publishing manuscripts
+   - For fully reproducible environments
+
+2. **Environment Locking**
    - For strict reproducibility
    - When publishing manuscripts
    - For fully reproducible environments

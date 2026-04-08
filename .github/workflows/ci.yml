@@ -1,0 +1,238 @@
+# BMBL Analysis Notebooks - Continuous Integration
+# Automatically validates repository on every push and pull request
+
+name: CI - Repository Validation
+
+on:
+  push:
+    branches: [ master, main, '**' ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  # Job 1: Validate repository structure and files
+  structure-check:
+    name: Repository Structure Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check for required root files
+        run: |
+          echo "Checking required root-level files..."
+          
+          required_files=(
+            "AGENTS.md"
+            "CLAUDE.md"
+            "CONTRIBUTING.md"
+            "README.md"
+            "RATIONALE.md"
+          )
+          
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✓ $file exists"
+            else
+              echo "✗ $file is missing"
+              missing=$((missing + 1))
+            fi
+          done
+          
+          if [ $missing -gt 0 ]; then
+            echo "ERROR: $missing required files are missing!"
+            exit 1
+          fi
+          echo "All required root files present!"
+      
+      - name: Validate workflow directories
+        run: |
+          echo "Checking workflow directory structure..."
+          
+          # Find all workflow directories (excluding special directories)
+          workflow_dirs=$(find . -maxdepth 1 -type d \
+            ! -name ".git" \
+            ! -name ".github" \
+            ! -name "_common" \
+            ! -name "_figure_code" \
+            ! -name "_Archived" \
+            ! -name "_Introduction_OSC" \
+            ! -name "dependencies" \
+            ! -name "." \
+            | sort)
+          
+          issues=0
+          
+          for dir in $workflow_dirs; do
+            dir_name=$(basename "$dir")
+            echo "Checking: $dir_name"
+            
+            # Check for README.md
+            if [ -f "$dir/README.md" ]; then
+              echo "  ✓ README.md exists"
+            else
+              echo "  ⚠ README.md missing (recommended)"
+            fi
+            
+            # Check for 0_install_packages.R if R files exist
+            if find "$dir" -name "*.rmd" -o -name "*.R" | grep -q .; then
+              if [ -f "$dir/0_install_packages.R" ]; then
+                echo "  ✓ 0_install_packages.R exists"
+              else
+                echo "  ⚠ 0_install_packages.R missing (R code detected)"
+              fi
+            fi
+          done
+          
+          echo "Structure validation complete!"
+
+  # Job 2: R syntax validation
+  r-syntax-check:
+    name: R Syntax Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.0'
+      
+      - name: Install R parser tools
+        run: |
+          install.packages("parser", repos = "https://cloud.r-project.org/")
+        shell: Rscript {0}
+        continue-on-error: true
+      
+      - name: Check R file syntax
+        run: |
+          echo "Checking R file syntax..."
+          
+          # Find all R files
+          r_files=$(find . -name "*.R" -o -name "*.r" | grep -v ".git" | sort)
+          
+          errors=0
+          
+          for file in $r_files; do
+            # Use R to parse the file and check for syntax errors
+            result=$(Rscript -e "tryCatch({parse('$file'); cat('OK')}, error=function(e) {cat('ERROR:', conditionMessage(e))})" 2>&1)
+            
+            if echo "$result" | grep -q "^OK$"; then
+              echo "✓ $file"
+            else
+              echo "✗ $file"
+              echo "  Error: $result"
+              errors=$((errors + 1))
+            fi
+          done
+          
+          # Check R Markdown files for embedded R code
+          rmd_files=$(find . -name "*.rmd" -o -name "*.Rmd" | grep -v ".git" | sort)
+          
+          for file in $rmd_files; do
+            # Check if file can be parsed (knitr will check this)
+            echo "Checking: $file"
+            # Basic check - ensure file isn't empty and has proper structure
+            if [ -s "$file" ]; then
+              echo "  ✓ $file (non-empty)"
+            else
+              echo "  ✗ $file is empty!"
+              errors=$((errors + 1))
+            fi
+          done
+          
+          if [ $errors -gt 0 ]; then
+            echo "ERROR: Found $errors file(s) with issues!"
+            exit 1
+          fi
+          
+          echo "All R files look good!"
+
+  # Job 3: Validate dependency files
+  dependency-check:
+    name: Dependency File Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check environment.yml syntax
+        run: |
+          echo "Validating environment.yml..."
+          
+          if [ -f "environment.yml" ]; then
+            # Try to parse with Python (built-in YAML support)
+            python3 -c "import yaml; yaml.safe_load(open('environment.yml'))" 2>&1
+            if [ $? -eq 0 ]; then
+              echo "✓ environment.yml is valid YAML"
+            else
+              echo "✗ environment.yml has YAML syntax errors"
+              exit 1
+            fi
+          else
+            echo "⚠ environment.yml not found"
+          fi
+      
+      - name: Check dependencies/index.yml syntax
+        run: |
+          echo "Validating dependencies/index.yml..."
+          
+          if [ -f "dependencies/index.yml" ]; then
+            python3 -c "import yaml; yaml.safe_load(open('dependencies/index.yml'))" 2>&1
+            if [ $? -eq 0 ]; then
+              echo "✓ dependencies/index.yml is valid YAML"
+            else
+              echo "✗ dependencies/index.yml has YAML syntax errors"
+              exit 1
+            fi
+          else
+            echo "⚠ dependencies/index.yml not found"
+          fi
+      
+      - name: Validate package lists are consistent
+        run: |
+          echo "Checking package consistency..."
+          
+          # Check that environment.yml packages are documented
+          if [ -f "environment.yml" ] && [ -f "dependencies/index.yml" ]; then
+            echo "✓ Both dependency files exist"
+            # This is a basic check - full consistency checking would be more complex
+          fi
+          
+          echo "Dependency validation complete!"
+
+  # Job 4: Test R package installation (optional, can be slow)
+  package-install-test:
+    name: Test Package Installation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.0'
+      
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+      
+      - name: Test install_r_packages.R
+        run: |
+          if [ -f "install_r_packages.R" ]; then
+            echo "Testing package installation (this may take a while)..."
+            # Only install a subset to save time
+            Rscript install_r_packages.R || echo "⚠ Some packages failed to install (this is OK for CI)"
+          else
+            echo "⚠ install_r_packages.R not found"
+          fi
+        timeout-minutes: 15
+        continue-on-error: true

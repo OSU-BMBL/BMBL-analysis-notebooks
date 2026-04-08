@@ -67,7 +67,7 @@ ProjectLibraries(
     "ensembldb",
     "SingleCellExperiment",
     "scater",
-    "dittoSeq"
+    "dittoSeq",
     "fgsea"
     ) 
 )

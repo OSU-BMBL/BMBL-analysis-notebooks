@@ -93,6 +93,25 @@ Rscript -e "rmarkdown::render('workflow/1_preprocess.rmd')"
 - **_common/functions.R** - Shared R utilities (color schemes, plotting functions)
 - **_figure_code/** - Standalone visualization scripts
 
+## Validation & Testing
+
+Before submitting changes, validate your work:
+
+### Local Validation
+```bash
+Rscript validate_repo.R
+```
+
+This checks:
+- Required files exist
+- R syntax is valid
+- YAML files are properly formatted
+
+### Continuous Integration (CI)
+GitHub automatically runs validation on every push:
+- Check the **Actions** tab on GitHub to see results
+- Fixes issues before they affect other lab members
+
 ## Getting Help
 
 - Check the workflow's README.md first
