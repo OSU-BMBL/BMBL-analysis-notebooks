@@ -112,6 +112,33 @@ GitHub automatically runs validation on every push:
 - Check the **Actions** tab on GitHub to see results
 - Fixes issues before they affect other lab members
 
+## Reproducible Environments
+
+### Docker Containers
+For guaranteed reproducibility, use Docker:
+
+```bash
+# Start a workflow container
+docker-compose up scrnaseq
+
+# Access RStudio at http://localhost:8788
+```
+
+Available workflows: `scrnaseq`, `trajectory`, `scatacseq`, `rnaseq`, `spatial`
+
+See `docker/README.md` for details.
+
+### Binder (Cloud)
+Run workflows without installation:
+- Click Binder badge in main README
+- Or visit: https://mybinder.org/v2/gh/jyang95259/BMBL-analysis-notebooks/ai-friendly-docs
+
+### Environment Locking
+For manuscripts requiring exact reproducibility:
+- `environment.lock.yml` - Exact conda package versions
+- `renv/` - R package locking with renv
+- See `renv/README.md` for usage
+
 ## Getting Help
 
 - Check the workflow's README.md first

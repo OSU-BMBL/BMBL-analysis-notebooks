@@ -1,0 +1,19 @@
+#!/bin/bash
+# Binder post-build script
+# Runs after environment is created to set up additional dependencies
+
+echo "Setting up BMBL Analysis Notebooks for Binder..."
+
+# Install R packages via BiocManager
+R -e "install.packages('BiocManager', repos='https://cloud.r-project.org/')"
+
+# Install commonly used packages
+R -e "install.packages(c('Seurat', 'devtools'), repos='https://cloud.r-project.org/')" || echo "Some packages may have failed, continuing..."
+
+# Install IRkernel for Jupyter integration
+R -e "IRkernel::installspec(user = FALSE)"
+
+# Make script executable
+chmod +x binder/postBuild
+
+echo "Binder setup complete!"
