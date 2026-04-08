@@ -124,6 +124,33 @@ for (file in yaml_files) {
 }
 cat("\n")
 
+# 5. Check for AI context files (Phase 5)
+cat("5. Checking AI context files (Phase 5)...\n")
+major_workflows <- c(
+  "scRNAseq_general_workflow",
+  "scRNAseq_trajectory_Slingshot",
+  "scATACseq_general_workflow",
+  "RNAseq_nfcore_workflow",
+  "ST_general_workflow"
+)
+
+for (workflow in major_workflows) {
+  ai_context_file <- file.path(workflow, ".ai_context.md")
+  if (file.exists(ai_context_file)) {
+    check_pass(paste(workflow, "has .ai_context.md"))
+  } else {
+    check_warn(paste(workflow, "missing .ai_context.md"))
+  }
+}
+
+# Check for common recipes file
+if (file.exists("_common/ai_recipes.md")) {
+  check_pass("_common/ai_recipes.md exists")
+} else {
+  check_warn("_common/ai_recipes.md missing")
+}
+cat("\n")
+
 # Summary
 cat("========================================\n")
 cat("Validation Summary\n")
