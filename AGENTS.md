@@ -91,7 +91,75 @@ Rscript -e "rmarkdown::render('workflow/1_preprocess.rmd')"
 - **CLAUDE.md** - Detailed coding conventions and standards
 - **README_template.md** - Template for documenting new workflows
 - **_common/functions.R** - Shared R utilities (color schemes, plotting functions)
+- **_common/ai_recipes.md** - Common tasks and code patterns across workflows
 - **_figure_code/** - Standalone visualization scripts
+
+## AI Context Files (Phase 5)
+
+Major workflows include `.ai_context.md` files with detailed AI guidance:
+
+| Workflow | AI Context File |
+|----------|----------------|
+| scRNAseq General | `scRNAseq_general_workflow/.ai_context.md` |
+| Trajectory Analysis | `scRNAseq_trajectory_Slingshot/.ai_context.md` |
+| scATAC-seq | `scATACseq_general_workflow/.ai_context.md` |
+| Bulk RNA-seq | `RNAseq_nfcore_workflow/.ai_context.md` |
+| Spatial Transcriptomics | `ST_general_workflow/.ai_context.md` |
+
+**What's in these files:**
+- Detailed data flow diagrams
+- Common modifications with specific line numbers
+- Gotchas and troubleshooting
+- Parameter guidance
+- File relationships
+
+**For AI assistants:** Check the workflow's `.ai_context.md` BEFORE suggesting changes to that workflow. These files contain workflow-specific patterns that differ from general guidance.
+
+## Validation & Testing
+
+Before submitting changes, validate your work:
+
+### Local Validation
+```bash
+Rscript validate_repo.R
+```
+
+This checks:
+- Required files exist
+- R syntax is valid
+- YAML files are properly formatted
+
+### Continuous Integration (CI)
+GitHub automatically runs validation on every push:
+- Check the **Actions** tab on GitHub to see results
+- Fixes issues before they affect other lab members
+
+## Reproducible Environments
+
+### Docker Containers
+For guaranteed reproducibility, use Docker:
+
+```bash
+# Start a workflow container
+docker-compose up scrnaseq
+
+# Access RStudio at http://localhost:8788
+```
+
+Available workflows: `scrnaseq`, `trajectory`, `scatacseq`, `rnaseq`, `spatial`
+
+See `docker/README.md` for details.
+
+### Binder (Cloud)
+Run workflows without installation:
+- Click Binder badge in main README
+- Or visit: https://mybinder.org/v2/gh/jyang95259/BMBL-analysis-notebooks/ai-friendly-docs
+
+### Environment Locking
+For manuscripts requiring exact reproducibility:
+- `environment.lock.yml` - Exact conda package versions
+- `renv/` - R package locking with renv
+- See `renv/README.md` for usage
 
 ## Getting Help
 

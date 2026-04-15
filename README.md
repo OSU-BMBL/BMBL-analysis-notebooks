@@ -118,6 +118,44 @@ This repository is NOT an introduction to data analysis. There are many availabl
 
 - Template Readme for all new contributions: [README_template.md](./README_template.md)
 
+## Reproducible Environments (Docker & Binder)
+
+### Quick Start with Docker
+
+Run workflows in isolated, reproducible containers:
+
+```bash
+# Start scRNA-seq workflow
+docker-compose up scrnaseq
+
+# Access RStudio at http://localhost:8788
+# Username: rstudio, Password: bmbl2024
+```
+
+**Available containers:**
+- `scrnaseq` - Single-cell RNA-seq analysis
+- `trajectory` - Pseudotime and trajectory analysis
+- `scatacseq` - Single-cell ATAC-seq
+- `rnaseq` - Bulk RNA-seq
+- `spatial` - Spatial transcriptomics
+
+See [docker/README.md](./docker/README.md) for detailed instructions.
+
+### Run in the Cloud (No Installation)
+
+[![Launch in Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jyang95259/BMBL-analysis-notebooks/ai-friendly-docs?urlpath=rstudio)
+
+Click to launch RStudio in your browser - no setup required!
+
+### For Manuscripts
+
+For publication-ready reproducibility:
+- Use `environment.lock.yml` for exact package versions
+- Docker containers ensure identical environments
+- See [renv/README.md](./renv/README.md) for R package locking
+
+## Questions?
+
 If you have any questions or encounter any problems, please don't hesitate to reach out by creating an issue in this repository or contacting Shaopeng Gu at shaopeng.gu@osumc.edu.
 
 ## Acknowledgements

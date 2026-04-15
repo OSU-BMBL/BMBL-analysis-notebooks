@@ -1,0 +1,90 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# Documentation files (keep READMEs in workflows)
+*.md
+!**/README.md
+!README.md
+
+# Data files (mount as volumes instead)
+data/
+outputs/
+results/
+*.h5ad
+*.rds
+*.RDS
+*.h5
+*.loom
+*.mtx
+*.mtx.gz
+*.tsv
+*.tsv.gz
+*.csv
+*.csv.gz
+*.fastq
+*.fastq.gz
+*.bam
+*.bai
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# R specific
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.renv
+renv/
+renv.lock
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp

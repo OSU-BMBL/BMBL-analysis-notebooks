@@ -77,7 +77,33 @@ BiocManager::install(c(
 ))
 ```
 
-### 5. Submit Your Workflow
+### 5. Add AI Context (For Major Workflows)
+
+If your workflow is complex or widely used, consider adding an `.ai_context.md` file to help AI assistants provide better help:
+
+```markdown
+# AI Context: YourWorkflow
+
+## Quick Summary
+Brief description of what this workflow does
+
+## Data Flow
+Step-by-step data transformation
+
+## Common Modifications
+| Task | File | Variable | Notes |
+|------|------|----------|-------|
+
+## Gotchas & Warnings
+Common issues and how to avoid them
+
+## Testing
+How to verify the workflow works
+```
+
+See `.ai_context_TEMPLATE.md` in the repository root for a full template, and check `scRNAseq_general_workflow/.ai_context.md` for an example.
+
+### 6. Submit Your Workflow
 
 Email your workflow to:
 **Megan McNutt** (megan.mcnutt@osumc.edu)

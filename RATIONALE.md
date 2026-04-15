@@ -11,9 +11,12 @@
 2. [Overall Philosophy](#overall-philosophy)
 3. [Phase 1: Documentation Improvements](#phase-1-documentation-improvements)
 4. [Phase 2: Dependency Management](#phase-2-dependency-management)
-5. [Design Principles](#design-principles)
-6. [Future Considerations](#future-considerations)
-7. [FAQ](#faq)
+5. [Phase 3: Automated Testing](#phase-3-automated-testing-implemented)
+6. [Phase 4: Reproducible Environments](#phase-4-reproducible-environments-implemented)
+7. [Phase 5: AI Context Files](#phase-5-ai-context-files-implemented)
+8. [Design Principles](#design-principles)
+9. [Future Considerations](#future-considerations)
+10. [FAQ](#faq)
 
 ---
 
@@ -373,31 +376,168 @@ R sessionInfo() output
 
 ---
 
-## Future Considerations
+## Phase 3: Automated Testing (Implemented)
 
-### Phase 3 & 4 (Not Implemented)
+### What Was Created
 
-**Potential improvements not yet done:**
+| File | Purpose |
+|------|---------|
+| `.github/workflows/ci.yml` | GitHub Actions workflow for CI |
+| `.github/workflows/README.md` | Documentation for the workflows |
+| `validate_repo.R` | Local validation script |
 
-1. **Automated Testing**
-   - GitHub Actions for basic validation
-   - Check R syntax errors
-   - Verify packages install correctly
+### What the CI Checks
 
-2. **Docker Containers**
-   - For strict reproducibility
-   - When publishing manuscripts
-   - For fully reproducible environments
+The automated testing runs on every push and pull request:
 
-3. **Environment Locking**
-   - When exact reproducibility is needed
-   - For collaborative projects
-   - For manuscript supplementary
+1. **Structure Validation**
+   - Verifies required root files exist (AGENTS.md, README.md, etc.)
+   - Checks each workflow has a README.md
+   - Warns if 0_install_packages.R is missing when R code exists
 
-4. **Interactive Tutorials**
-   - Binder-ready notebooks
-   - Cloud-based environments
-   - Zero-setup learning
+2. **R Syntax Validation**
+   - Parses all `.R` and `.rmd` files
+   - Catches typos and syntax errors before they affect users
+   - Uses R's built-in parser for accuracy
+
+3. **Dependency File Validation**
+   - Validates YAML syntax for environment.yml
+   - Checks dependencies/index.yml formatting
+   - Ensures configuration files are parseable
+
+4. **Package Installation Test** (PRs only)
+   - Attempts to install R packages
+   - Catches broken dependencies early
+   - Optional due to time constraints
+
+### Why This Helps
+
+- **Early Error Detection**: Catches mistakes before they reach other lab members
+- **Consistency**: Enforces documentation standards automatically
+- **Confidence**: Contributors know their changes are validated
+- **Time Saving**: No manual checking of basic requirements
+
+### How to Use Locally
+
+Run the validation script before pushing:
+```bash
+Rscript validate_repo.R
+```
+
+## Phase 4: Reproducible Environments (Implemented)
+
+### Overview
+
+Phase 4 creates "time capsules" for complete computational reproducibility. This includes:
+- **Docker containers** - Portable, isolated environments
+- **Environment locking** - Exact package version recording
+- **Binder integration** - Cloud-based execution without installation
+
+### Component 1: Docker Containers
+
+**What We Created:**
+
+| File | Purpose |
+|------|---------|
+| `Dockerfile` | Base image with R, Python, and bioinformatics tools |
+| `docker-compose.yml` | Easy one-command container startup |
+| `.dockerignore` | Excludes unnecessary files from builds |
+| `docker/scRNAseq/Dockerfile` | Optimized for single-cell RNA-seq |
+| `docker/trajectory/Dockerfile` | Optimized for trajectory analysis |
+| `docker/scATACseq/Dockerfile` | Optimized for single-cell ATAC-seq |
+| `docker/RNAseq/Dockerfile` | Optimized for bulk RNA-seq |
+| `docker/spatial/Dockerfile` | Optimized for spatial transcriptomics |
+| `docker/README.md` | User documentation |
+
+**Why Docker:**
+
+1. **Reproducibility**: Identical environments across Mac, Windows, Linux
+2. **Portability**: Share containers with collaborators
+3. **Publication**: Journals increasingly require this for computational work
+4. **Isolation**: Doesn't interfere with host system
+
+**Usage:**
+```bash
+# Start specific workflow
+docker-compose up scrnaseq
+
+# Access RStudio at http://localhost:8788
+```
+
+### Component 2: Environment Locking
+
+**What We Created:**
+
+| File | Purpose |
+|------|---------|
+| `environment.lock.yml` | Exact conda package versions |
+| `renv-setup.R` | Script to initialize R package locking |
+| `renv/README.md` | Documentation for reproducibility |
+
+**Why Locking:**
+
+1. **Exact Reproducibility**: "Seurat 5.0.1" not just "Seurat"
+2. **Time Travel**: Recreate the exact environment from 6 months ago
+3. **Manuscripts**: Required for publication supplementary materials
+4. **Debugging**: Know exactly what versions worked
+
+**renv vs conda:**
+
+| Use Case | Tool |
+|----------|------|
+| Overall environment (R + Python + tools) | conda |
+| Precise R package versions within environment | renv |
+| Mixed R/Python workflows | Both |
+
+### Component 3: Binder Integration
+
+**What We Created:**
+
+| File | Purpose |
+|------|---------|
+| `binder/environment.yml` | Binder environment specification |
+| `binder/postBuild` | Post-setup script for R packages |
+| `binder/README.md` | Documentation |
+
+**Why Binder:**
+
+1. **Accessibility**: No installation required
+2. **Teaching**: Students click and start
+3. **Demonstration**: Share interactive analyses via link
+4. **Review**: Reviewers can run code without setup
+
+**Limitations:**
+- Sessions timeout after 10 minutes of inactivity
+- Limited resources (2GB RAM)
+- Not for large datasets or long analyses
+
+### Comparison: When to Use What
+
+| Scenario | Recommended Approach |
+|----------|---------------------|
+| Daily analysis | `environment.yml` (flexible) |
+| Manuscript submission | Docker + `environment.lock.yml` |
+| Teaching workshop | Binder |
+| Collaboration | Docker containers |
+| Publication review | Binder link in repository |
+| Long-term archiving | Docker + renv lock files |
+
+### Maintenance
+
+**Docker Images:**
+- Rebuild when base R/Python versions update
+- Test on clean systems before major releases
+- Document any breaking changes
+
+**Lock Files:**
+- Update quarterly or before major publications
+- Test `renv::restore()` works on fresh systems
+- Keep one "stable" lock file for reference
+
+**Binder:**
+- Build time increases with more packages
+- Monitor for dependency conflicts
+- Test launch before workshops
 
 ### Maintenance Recommendations
 
@@ -418,6 +558,146 @@ R sessionInfo() output
    - For manuscripts, capture exact versions used
    - Use `sessionInfo()` output
    - Consider `renv` for R-only projects
+
+---
+
+## Future Considerations
+
+## Phase 5: AI Context Files (IMPLEMENTED)
+
+### What We Created
+
+| File | Purpose |
+|------|---------|
+| `.ai_context_TEMPLATE.md` | Template for workflow-specific AI guidance |
+| `_common/ai_recipes.md` | Reusable code patterns across workflows |
+| `*/.ai_context.md` (5 files) | Deep contextual guidance for major workflows |
+| Updated `AGENTS.md` | Reference to AI context files |
+| Updated `validate_repo.R` | Validation check for AI context files |
+
+### The Problem
+
+While Phases 1-4 provided high-level navigation and infrastructure, AI assistants still lacked **deep, workflow-specific context**:
+
+**Without context:**
+- AI suggests changing the wrong variable
+- Misses downstream dependencies
+- Doesn't understand why certain methods were chosen
+- Provides generic instead of specific help
+
+**Example:** User asks "help modify the scRNAseq workflow to change normalization"
+- Generic AI: "Use NormalizeData()" (wrong - may need SCTransform)
+- With context: "Change `normalization.method` in 1_preprocess.rmd line 45. Note: this affects scaling in step 2."
+
+### The Solution: `.ai_context.md` Files
+
+Created workflow-specific context files that provide AI with:
+
+1. **Data flow understanding** - How data transforms step-by-step
+2. **Common modification patterns** - Typical changes with specific line numbers
+3. **Gotchas and warnings** - Things that commonly break
+4. **File relationships** - Dependencies between scripts
+5. **Testing guidance** - How to verify changes work
+
+### Why This Approach
+
+| Approach | Deep Context | Maintainable | Scalable | Human-Readable | Choice |
+|----------|--------------|--------------|----------|----------------|--------|
+| `.ai_context.md` | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ **WINNER** |
+| Inline comments | ✅ Yes | ❌ Clutters code | ❌ Hard | ✅ Yes | ❌ |
+| Prompt templates | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes | ❌ |
+
+**Key Advantages:**
+- **Just-in-time context**: AI reads only when working on that workflow
+- **Markdown format**: Easy to write, maintain, version control
+- **Human + AI readable**: Lab members can review and update
+- **Proven pattern**: Builds on success of AGENTS.md
+
+### Template Structure
+
+```markdown
+# AI Context: [Workflow Name]
+
+## Quick Summary
+One paragraph overview, runtime, resources
+
+## Data Flow
+Step-by-step transformation with file locations
+
+## Common Modifications
+Specific tasks with file, line numbers, impact
+
+## Gotchas & Warnings
+Critical issues and common mistakes
+
+## File Relationships
+Input/output maps and shared variables
+
+## Testing
+Quick test and full test procedures
+
+## External Dependencies
+Modules, packages, reference data
+```
+
+### Workflows with AI Context
+
+| Workflow | Status | Key Focus |
+|----------|--------|-----------|
+| scRNAseq_general_workflow | ✅ Complete | Seurat, clustering, annotation |
+| scRNAseq_trajectory_Slingshot | ✅ Complete | Pseudotime, gene dynamics |
+| scATACseq_general_workflow | ✅ Complete | Signac, peak analysis |
+| RNAseq_nfcore_workflow | ✅ Complete | nf-core pipeline |
+| ST_general_workflow | ✅ Complete | Spatial transcriptomics |
+
+### Common Recipes
+
+Created `_common/ai_recipes.md` with reusable patterns:
+- Data manipulation (subsetting, filtering)
+- Visualization (adding plots, aesthetics)
+- Export/import (format conversion)
+- Debugging (memory, errors)
+- Parameter optimization
+- Quality control
+
+### Integration
+
+**AGENTS.md**: Added lookup table for finding AI context files
+**validate_repo.R**: Added check for `.ai_context.md` in major workflows
+**CONTRIBUTING.md**: Added guidance for creating AI context files
+
+### Success Metrics
+
+- AI can answer 80%+ of workflow-specific questions correctly
+- Time to resolve workflow questions: < 5 minutes
+- Reduction in AI suggestion errors: 50%+
+- Users report AI is "more helpful" for workflow tasks
+
+---
+
+## Future Considerations
+
+While Phases 1-5 provide a comprehensive foundation, potential future enhancements include:
+
+### Workflow-Specific Enhancements
+- **Automated parameter optimization** - Auto-tune hyperparameters for common workflows
+- **Integration testing** - Test workflows end-to-end with real data
+- **Performance benchmarking** - Document runtime and memory requirements
+
+### Infrastructure Improvements
+- **Nextflow integration** - Convert more workflows to Nextflow for scalability
+- **Cloud deployment** - AWS/Azure templates for cloud-based analysis
+- **Workflow registry** - Register workflows on platforms like Dockstore
+
+### Documentation
+- **Video tutorials** - Screen recordings of workflow execution
+- **Interactive documentation** - Quarto-based dynamic docs
+- **API documentation** - Document shared R functions in `_common/`
+
+### Community
+- **Workflow submission portal** - Web form for new workflow submissions
+- **User forum** - Discussion board for Q&A
+- **Citation tracking** - Track publications using these workflows
 
 ---
 
@@ -454,7 +734,18 @@ The original contained 180+ lines from an unrelated Ruby project. We replaced it
 3. Add `0_install_packages.R` with dependencies
 4. Include example data in `data/` folder
 5. Update `dependencies/index.yml`
-6. Email Megan McNutt (megan.mcnutt@osumc.edu)
+6. (Optional) Add `.ai_context.md` for complex workflows
+7. Email Megan McNutt (megan.mcnutt@osumc.edu)
+
+### What are `.ai_context.md` files?
+
+Phase 5 added AI context files that provide detailed, workflow-specific guidance for AI assistants. They include:
+- Data flow diagrams
+- Common modifications with line numbers
+- Gotchas and troubleshooting
+- Testing procedures
+
+Major workflows have these files. See `.ai_context_TEMPLATE.md` for the template.
 
 ### Why use minimum versions instead of exact?
 
@@ -479,4 +770,4 @@ This documentation improvement project was conducted to make the BMBL Analysis N
 ---
 
 **Last Updated**: April 2026  
-**Version**: 1.0
+**Version**: 1.1 (Added Phase 5: AI Context Files)
