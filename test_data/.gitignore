@@ -1,0 +1,44 @@
+# Test data files - do not commit actual data
+# Only commit download scripts and documentation
+
+# Data files
+*.h5
+*.h5ad
+*.mtx
+*.mtx.gz
+*.tsv
+*.tsv.gz
+*.csv
+*.csv.gz
+*.rds
+*.RData
+*.loom
+
+# Cell Ranger output directories
+filtered_feature_bc_matrix/
+filtered_gene_bc_matrices/
+raw_feature_bc_matrix/
+raw_gene_bc_matrices/
+analysis/
+cloupe.cloupe
+
+# 10x Genomics specific
+*.bam
+*.bam.bai
+*.bed
+*.bed.gz
+*.fragments.tsv.gz
+*.fragments.tsv.gz.tbi
+*.peaks.bed
+
+# Output directories (these should be generated, not committed)
+output/
+results/
+cache/
+
+# Keep these files
+!README.md
+!*.R
+!expected_output/*.md
+!expected_output/*.txt
+!.gitignore

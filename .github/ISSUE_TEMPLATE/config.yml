@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or Discussion
+    url: https://github.com/BMBL-analysis/BMBL-analysis-notebooks/discussions
+    about: Please use Discussions for questions, usage help, or general conversation
+  - name: FAQ
+    url: https://github.com/BMBL-analysis/BMBL-analysis-notebooks/blob/main/FAQ.md
+    about: Check the FAQ for quick answers to common questions
+  - name: Workflow Documentation
+    url: https://github.com/BMBL-analysis/BMBL-analysis-notebooks#readme
+    about: See the README for workflow documentation and guides

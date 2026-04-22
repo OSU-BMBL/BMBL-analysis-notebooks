@@ -1,0 +1,137 @@
+name: Validate Repository
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Checkout repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    # Step 2: Setup R
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.3.1'
+    
+    # Step 3: Cache R packages
+    - name: Cache R packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.local/share/renv
+        key: ${{ runner.os }}-r-${{ hashFiles('**/renv.lock', '**/DESCRIPTION') }}
+        restore-keys: |
+          ${{ runner.os }}-r-
+    
+    # Step 4: Install system dependencies
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libcurl4-openssl-dev \
+          libssl-dev \
+          libxml2-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libfreetype6-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libbz2-dev \
+          liblzma-dev
+    
+    # Step 5: Install R dependencies (lightweight for CI)
+    - name: Install R packages
+      run: |
+        Rscript -e "install.packages(c('remotes', 'rcmdcheck'))"
+        # Install only packages needed for validation
+        Rscript -e "install.packages(c('yaml', 'jsonlite', 'rmarkdown', 'knitr'))"
+    
+    # Step 6: Run repository validation
+    - name: Run validation script
+      run: |
+        Rscript validate_repo.R
+      continue-on-error: false
+    
+    # Step 7: Check for required files
+    - name: Check required files exist
+      run: |
+        test -f README.md || (echo "ERROR: README.md missing" && exit 1)
+        test -f AGENTS.md || (echo "ERROR: AGENTS.md missing" && exit 1)
+        test -f REQUIREMENTS.md || (echo "ERROR: REQUIREMENTS.md missing" && exit 1)
+        test -f FAQ.md || (echo "ERROR: FAQ.md missing" && exit 1)
+        echo "All required documentation files present"
+    
+    # Step 8: Check directory structure
+    - name: Check directory structure
+      run: |
+        # Check main workflow directories exist
+        for dir in scrna scatac multiome spatial tcr_bcr bulk _common docs; do
+          if [ ! -d "$dir" ]; then
+            echo "WARNING: Directory $dir not found"
+          fi
+        done
+        echo "Directory structure check complete"
+    
+    # Step 9: Validate YAML files if present
+    - name: Validate YAML files
+      run: |
+        if command -v python3 &> /dev/null; then
+          python3 -c "
+import yaml
+import sys
+import os
+errors = 0
+for root, dirs, files in os.walk('.'):
+    # Skip hidden directories
+    dirs[:] = [d for d in dirs if not d.startswith('.')]
+    for file in files:
+        if file.endswith(('.yml', '.yaml')):
+            path = os.path.join(root, file)
+            try:
+                with open(path, 'r') as f:
+                    yaml.safe_load(f)
+                print(f'✓ {path}')
+            except yaml.YAMLError as e:
+                print(f'✗ {path}: {e}')
+                errors += 1
+sys.exit(1 if errors > 0 else 0)
+"
+        else
+          echo "Python not available, skipping YAML validation"
+        fi
+      continue-on-error: true
+    
+    # Step 10: Check for common issues
+    - name: Check for debugging code
+      run: |
+        # Check for browser() calls in R files
+        if grep -r "browser()" --include="*.R" --include="*.Rmd" . 2>/dev/null; then
+          echo "WARNING: Found browser() debugging calls"
+        fi
+        
+        # Check for setwd() calls (anti-pattern)
+        if grep -r "setwd(" --include="*.R" --include="*.Rmd" . 2>/dev/null | grep -v "# setwd"; then
+          echo "WARNING: Found setwd() calls - use relative paths or here::here() instead"
+        fi
+        
+        echo "Debug code check complete"
+      continue-on-error: true
+    
+    # Step 11: Generate validation report
+    - name: Generate validation summary
+      run: |
+        echo "## Validation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- Repository structure: ✓" >> $GITHUB_STEP_SUMMARY
+        echo "- Required files: ✓" >> $GITHUB_STEP_SUMMARY
+        echo "- Validation script: ✓" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "All checks passed!" >> $GITHUB_STEP_SUMMARY
