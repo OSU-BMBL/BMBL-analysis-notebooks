@@ -753,6 +753,25 @@ Minimum versions (`>=`) provide flexibility and automatic updates while minimum 
 
 ---
 
+## Post-Implementation Adjustments
+
+After supervisor review, overengineered components were removed:
+
+**Removed:**
+- Docker/Binder/renv - Too complex for daily lab use; simple conda environments sufficient
+- 42 AI context files - READMEs provide sufficient context per supervisor feedback
+- Workflow selector/integration map - Overkill for repository navigation
+- FAQ, test data, GitHub templates - Maintenance burden exceeds value
+
+**Kept:**
+- Basic validation (validate_repo.R)
+- Simple environment files (environment.yml, setup_osc_env.sh)
+- Core documentation (AGENTS.md, README.md, CLAUDE.md)
+
+**Lesson:** Start simple. Well-written READMEs provide sufficient context for both humans and AI agents. Early feedback prevents scope creep.
+
+---
+
 ## Contact
 
 **For questions about this rationale:**  
@@ -770,4 +789,4 @@ This documentation improvement project was conducted to make the BMBL Analysis N
 ---
 
 **Last Updated**: April 2026  
-**Version**: 1.1 (Added Phase 5: AI Context Files)
+**Version**: 1.2 (Removed overengineered components per supervisor feedback)
