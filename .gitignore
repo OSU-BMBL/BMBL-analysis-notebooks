@@ -286,3 +286,6 @@ dmypy.json
 
 # profiling data
 .prof
+
+/.quarto/
+**/*.quarto_ipynb
