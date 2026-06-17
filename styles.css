@@ -22,7 +22,7 @@ body {
   background:
     linear-gradient(180deg, var(--osu-white) 0%, var(--osu-gray-light-90) 100%);
   color: var(--osu-gray-dark-80);
-  font-family: "Source Serif 4", Georgia, serif;
+  font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
 }
 
 .navbar {
