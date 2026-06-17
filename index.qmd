@@ -1,0 +1,41 @@
+---
+title: "BMBL Analysis Notebooks"
+page-layout: full
+---
+
+::: {.hero-panel}
+![](https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/0/72768/files/2020/07/bmbl_logo1-300x124.png){.hero-logo}
+
+# BMBL Analysis Notebooks
+
+This site turns the repository into a browsable, static reference for bioinformatics workflows. It is designed for readers who already know the assays and analysis ecosystem and want a clearer way to review workflow usage, code, and existing figures.
+
+The current Phase 1 build focuses on a single RNA-seq workflow page so the layout, tone, and navigation pattern can be reviewed before the rest of the catalog is added.
+
+This pilot intentionally uses archived RNA-seq content as a layout and navigation test before the broader site expands in Phase 2.
+:::
+
+::: {.grid}
+::: {.g-col-12 .g-col-lg-8}
+## Purpose
+
+The repository contains practical bioinformatics notebooks and companion files for workflows used by the BMBL lab. This website keeps the materials in the same repo and presents them as a display-only reading experience rather than a runnable tutorial environment.
+:::
+
+::: {.g-col-12 .g-col-lg-4}
+::: {.pilot-card}
+### Featured Workflow
+
+[RNA-seq Workflow](rnaseq-workflow.qmd)
+
+Browse the RNA-seq workflow page for prerequisites, step-by-step usage notes, existing images, and links back to the source files on GitHub.
+:::
+:::
+:::
+
+## What To Expect
+
+- Static pages generated with Quarto
+- Existing prose, code snippets, and committed figures from the repo
+- No live execution, Binder launchers, or in-browser notebook runs
+- A documentation-first layout that will scale to the rest of the repository after pilot review

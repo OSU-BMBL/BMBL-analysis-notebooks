@@ -1,0 +1,158 @@
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap");
+
+:root {
+  --osu-scarlet: #ba0c2f;
+  --osu-scarlet-dark: #70071c;
+  --osu-scarlet-deep: #4a0513;
+  --osu-gray: #a7b1b7;
+  --osu-gray-light-40: #cfd4d8;
+  --osu-gray-light-60: #dfe3e5;
+  --osu-gray-light-80: #eff1f2;
+  --osu-gray-light-90: #f6f7f8;
+  --osu-gray-dark-20: #868e92;
+  --osu-gray-dark-40: #646a6e;
+  --osu-gray-dark-60: #3f4443;
+  --osu-gray-dark-80: #212325;
+  --osu-white: #ffffff;
+  --site-border: rgba(63, 68, 67, 0.12);
+  --site-shadow: rgba(33, 35, 37, 0.08);
+}
+
+body {
+  background:
+    linear-gradient(180deg, var(--osu-white) 0%, var(--osu-gray-light-90) 100%);
+  color: var(--osu-gray-dark-80);
+  font-family: "Source Serif 4", Georgia, serif;
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--site-border);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand,
+.nav-link,
+.sidebar-title,
+.sidebar-item-text,
+.quarto-title-meta-heading,
+.menu-text {
+  font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
+}
+
+.hero-panel {
+  padding: 2.5rem;
+  margin: 1.2rem 0 2rem;
+  border: 1px solid var(--site-border);
+  border-radius: 1.6rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(246, 247, 248, 0.98));
+  box-shadow: 0 20px 50px var(--site-shadow);
+}
+
+.hero-panel h1,
+.pilot-card h3,
+h1,
+h2,
+h3 {
+  font-family: "Atkinson Hyperlegible", "Avenir Next", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.hero-logo {
+  max-width: 210px;
+  margin-bottom: 1.2rem;
+}
+
+.pilot-card {
+  height: 100%;
+  padding: 1.4rem;
+  border: 1px solid var(--site-border);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, var(--osu-white), var(--osu-gray-light-90));
+  box-shadow: 0 16px 36px rgba(33, 35, 37, 0.06);
+}
+
+.pilot-card a,
+a {
+  color: var(--osu-scarlet);
+}
+
+a:hover,
+a:focus,
+.nav-link:hover,
+.nav-link:focus,
+.sidebar-link:hover,
+.sidebar-link:focus {
+  color: var(--osu-scarlet-dark);
+}
+
+.callout.callout-note {
+  border-left-color: var(--osu-scarlet);
+  background: var(--osu-gray-light-90);
+}
+
+.sidebar {
+  background: rgba(246, 247, 248, 0.88);
+  border-right: 1px solid var(--site-border);
+}
+
+.sidebar .active,
+.sidebar .sidebar-link.active,
+.sidebar nav[role="doc-toc"] a.active,
+.nav-link.active,
+.menu-text:hover {
+  color: var(--osu-scarlet);
+}
+
+.quarto-title-block .quarto-title-banner {
+  background:
+    linear-gradient(135deg, rgba(246, 247, 248, 0.98), rgba(223, 227, 229, 0.95));
+  color: var(--osu-gray-dark-80);
+}
+
+.quarto-title-block .subtitle {
+  color: var(--osu-gray-dark-40);
+}
+
+.code-copy-button {
+  border-radius: 999px;
+  color: var(--osu-scarlet);
+}
+
+img {
+  border-radius: 1rem;
+  box-shadow: 0 12px 32px rgba(33, 35, 37, 0.08);
+}
+
+pre,
+.sourceCode {
+  border: 1px solid rgba(167, 177, 183, 0.28);
+  border-radius: 1rem;
+}
+
+.quarto-grid-item,
+.quarto-title-meta,
+.table,
+.callout {
+  border-color: var(--site-border);
+}
+
+.navbar .nav-link,
+.sidebar .sidebar-item-text,
+.toc-actions,
+#TOC a {
+  color: var(--osu-gray-dark-60);
+}
+
+#TOC a:hover,
+#TOC a.active {
+  color: var(--osu-scarlet);
+}
+
+@media (max-width: 991px) {
+  .hero-panel {
+    padding: 1.6rem;
+  }
+}

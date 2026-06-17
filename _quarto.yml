@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - _Archived/RNAseq_workflow/img/*.png
+  post-render:
+    - bash scripts/ensure-nojekyll.sh
+  render:
+    - index.qmd
+    - rnaseq-workflow.qmd
+
+execute:
+  enabled: false
+
+website:
+  title: "BMBL Analysis Notebooks"
+  site-url: "https://osu-bmbl.github.io/BMBL-analysis-notebooks/"
+  repo-url: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks"
+  navbar:
+    logo: "https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/0/72768/files/2020/07/bmbl_logo1-300x124.png"
+    right:
+      - text: "RNA-seq Workflow"
+        href: rnaseq-workflow.qmd
+      - icon: github
+        href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks"
+        aria-label: "BMBL Analysis Notebooks on GitHub"
+  sidebar:
+    style: docked
+    search: true
+    contents:
+      - href: index.qmd
+        text: "Home"
+      - href: rnaseq-workflow.qmd
+        text: "RNA-seq Workflow"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+    smooth-scroll: true
