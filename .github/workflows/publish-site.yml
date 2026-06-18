@@ -1,0 +1,78 @@
+name: Publish Quarto Site
+
+on:
+  pull_request:
+    branches: [master, main]
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Render Quarto site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Generate site catalog artifacts
+        run: python3 scripts/build_site_catalog.py
+
+      - name: Verify generated artifacts are committed
+        run: git diff --exit-code -- _quarto.yml _generated/workflow-catalog.qmd
+
+      - name: Render site
+        run: quarto render
+
+      - name: Verify .nojekyll
+        run: test -f docs/.nojekyll
+
+      - name: Verify rendered site pages
+        run: |
+          test -f docs/index.html
+          test -f docs/rnaseq-workflow.html
+          test -f docs/CONTRIBUTING_to_site.html
+
+      - name: Verify archived RNA-seq images
+        run: |
+          test -f docs/_Archived/RNAseq_workflow/img/fastqs.png
+          test -f docs/_Archived/RNAseq_workflow/img/list.png
+          test -f docs/_Archived/RNAseq_workflow/img/outs.png
+          test -f docs/_Archived/RNAseq_workflow/img/multiqc.png
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
+  deploy:
+    name: Deploy Quarto site
+    if: github.event_name == 'push'
+    needs: render
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

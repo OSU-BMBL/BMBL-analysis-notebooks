@@ -1,0 +1,150 @@
+project:
+  type: "website"
+  output-dir: "docs"
+  resources:
+    - "_Archived/RNAseq_workflow/img/*.png"
+  post-render:
+    - "bash scripts/ensure-nojekyll.sh"
+  render:
+    - "index.qmd"
+    - "CONTRIBUTING_to_site.md"
+    - "rnaseq-workflow.qmd"
+execute:
+  enabled: false
+website:
+  title: "BMBL Analysis Notebooks"
+  site-url: "https://osu-bmbl.github.io/BMBL-analysis-notebooks/"
+  repo-url: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks"
+  navbar:
+    logo: "https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/0/72768/files/2020/07/bmbl_logo1-300x124.png"
+    right:
+      - text: "RNA-seq workflow pilot"
+        href: "rnaseq-workflow.qmd"
+      - text: "Add a Workflow"
+        href: "CONTRIBUTING_to_site.md"
+      - icon: "github"
+        href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks"
+        aria-label: "BMBL Analysis Notebooks on GitHub"
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 1
+    contents:
+      - href: "index.qmd"
+        text: "Home"
+      - section: "Single-cell RNA-seq"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow"
+            text: "General workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing"
+            text: "10x Flex preprocessing"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_trajectory_Slingshot"
+            text: "Trajectory analysis"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch"
+            text: "Cell-cell communication"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch"
+            text: "HPV branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Seurat_to_Scanpy"
+            text: "Seurat to Scanpy"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch"
+            text: "Stomach branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal"
+            text: "ShinyCell portal"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Sketch_LargeData"
+            text: "Large dataset analysis"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_module_enrichment"
+            text: "Module enrichment"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_iPSC_branch"
+            text: "iPSC branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_immune_branch"
+            text: "Immune branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_inferCNV"
+            text: "inferCNV"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_label_transfer_branch"
+            text: "Label transfer"
+      - section: "Single-cell ATAC-seq"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow"
+            text: "General workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ArchR_branch"
+            text: "ArchR branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch"
+            text: "Cicero branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch"
+            text: "cisTopic branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif"
+            text: "ChromVAR motif activity"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_Gene_activity"
+            text: "Gene activity score"
+      - section: "Single-cell Multi-omics"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch"
+            text: "AD branch"
+      - section: "Single-cell TCR-seq"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scTCRseq_analysis"
+            text: "TCR-seq analysis"
+      - section: "Spatial Transcriptomics"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_general_workflow"
+            text: "General workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_BayesSpace_branch"
+            text: "BayesSpace branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_giotto_branch"
+            text: "Giotto branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ST_spotlight_branch"
+            text: "Spotlight branch"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Spatial_Cellular_neighborhood"
+            text: "Cellular neighborhood"
+      - section: "Bulk RNA-seq / ATAC-seq / ChIP-seq"
+        contents:
+          - href: "rnaseq-workflow.qmd"
+            text: "RNA-seq workflow pilot"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_nfcore_workflow"
+            text: "RNA-seq nf-core workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATACseq_preprocessing"
+            text: "ATAC-seq nf-core workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow"
+            text: "Bulk ATAC workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow"
+            text: "ChIP-seq workflow"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow_v2"
+            text: "ChIP-seq workflow v2"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_HOMER_motif"
+            text: "HOMER motif analysis"
+      - section: "Bisulfite sequencing"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BSseq_Bismark_Aligner"
+            text: "Bismark aligner"
+      - section: "Whole Genome Sequencing"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/WGS_Lowpass_karyotyping"
+            text: "Low-pass karyotyping"
+      - section: "Gene Regulatory Networks"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/GRN_CellOracle"
+            text: "CellOracle workflow"
+      - section: "Enrichment / downstream analysis"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Analysis_Pathway_enrichment"
+            text: "Pathway enrichment"
+      - section: "Data utilities"
+        contents:
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_download"
+            text: "GEO download"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_submission"
+            text: "GEO submission"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_H5AD_conversion"
+            text: "H5AD conversion"
+          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_SRA_download"
+            text: "SRA download"
+      - href: "CONTRIBUTING_to_site.md"
+        text: "How to Add a Workflow"
+format:
+  html:
+    theme: "cosmo"
+    css: "styles.css"
+    toc: true
+    code-copy: true
+    code-overflow: "wrap"
+    smooth-scroll: true

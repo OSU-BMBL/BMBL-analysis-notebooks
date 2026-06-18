@@ -4,6 +4,8 @@
 
 This guide explains how to contribute new workflows to the BMBL analysis notebooks repository.
 
+For Quarto website additions, use the dedicated checklist in [CONTRIBUTING_to_site.md](CONTRIBUTING_to_site.md).
+
 ## How to Contribute
 
 ### 1. Prepare Your Workflow
