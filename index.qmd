@@ -1,0 +1,45 @@
+---
+title: "BMBL Analysis Notebooks"
+page-layout: full
+---
+
+::: {.hero-panel}
+![](https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/0/72768/files/2020/07/bmbl_logo1-300x124.png){.hero-logo}
+
+# BMBL Analysis Notebooks
+
+This site turns the repository into a browsable, static reference for bioinformatics workflows. It is designed for readers who already know the assays and analysis ecosystem and want a clearer way to review workflow usage, code, and existing figures.
+
+The repository is not an introduction to sequencing analysis, so this site focuses on workflow usage, expected inputs and outputs, committed figures, and source links rather than runnable notebooks or beginner lessons.
+
+Today the site includes one internal RNA-seq pilot page and a full catalog of the remaining workflow folders. As Phase 3 expands coverage, those GitHub links can be replaced with additional Quarto pages without changing the site structure.
+:::
+
+::: {.grid}
+::: {.g-col-12 .g-col-lg-8}
+## Purpose
+
+The repository contains practical bioinformatics notebooks and companion files for workflows used by the BMBL lab. This website keeps the materials in the same repo and presents them as a display-only reading experience rather than a runnable tutorial environment.
+
+::: {.callout-note}
+## Current coverage
+
+- The RNA-seq pilot is available as a full internal site page: [RNA-seq workflow pilot](rnaseq-workflow.qmd)
+- All other entries currently link to their source folders on GitHub while they wait for full migration
+- Contributor instructions for future site pages live in [How to Add a Workflow](CONTRIBUTING_to_site.md)
+:::
+:::
+
+::: {.g-col-12 .g-col-lg-4}
+::: {.pilot-card}
+### Featured Workflow Page
+
+[RNA-seq workflow pilot](rnaseq-workflow.qmd)
+
+Browse the current pilot page for prerequisites, step-by-step usage notes, committed images, and links back to the source files on GitHub.
+:::
+:::
+:::
+
+## Workflow catalog
+{{< include /_generated/workflow-catalog.qmd >}}
