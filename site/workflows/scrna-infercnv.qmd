@@ -1,0 +1,80 @@
+---
+title: "inferCNV"
+subtitle: "Infer copy-number structure from a clustered scRNA-seq object"
+workflow:
+  id: "scrna-infercnv"
+  repo_path: "scRNAseq_inferCNV"
+---
+
+## What it does
+
+This workflow prepares a clustered scRNA-seq object for inferCNV and runs CNV inference with denoising and HMM enabled. Its goal is to distinguish likely malignant or aneuploid cells from diploid reference populations using expression-derived copy-number patterns.
+
+## When to use it
+
+Use this workflow when you already have a preprocessed Seurat object and a suitable gene-order file and want a branch for tumor-versus-reference CNV screening. It is most relevant after clustering, when a plausible normal reference cluster can be identified.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_inferCNV`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_inferCNV)
+- Main files:
+  - [`README.MD`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_inferCNV/README.MD)
+  - [`infercnv_workflow.r`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_inferCNV/infercnv_workflow.r)
+- Required inputs:
+  - `combined.qsave`
+  - a gene-order file such as `hg38_gencode_v27.txt`
+  - one or more reference clusters representing normal cells
+
+## Steps
+
+### Load the clustered Seurat object and prepare annotations
+
+The script reads the Seurat object, switches to the RNA assay, sets cluster identities, and extracts a count matrix plus a cell-to-cluster annotation table.
+
+```r
+combined <- qs::qread("combined.qsave")
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$seurat_clusters
+
+this_meta <- data.frame(cell = rownames(combined@meta.data), cluster = as.character(combined$seurat_clusters))
+this_expr <- GetAssayData(combined, assay = "RNA", slot = "counts")
+```
+
+### Create the inferCNV object
+
+The committed example uses cluster `"11"` as the normal reference group and points inferCNV to a gene-order file based on hg38.
+
+```r
+infercnv_obj <- CreateInfercnvObject(
+  raw_counts_matrix = as.matrix(this_expr),
+  annotations_file = this_meta %>% column_to_rownames("cell"),
+  delim = "\t",
+  gene_order_file = "hg38_gencode_v27.txt",
+  ref_group_names = c("11")
+)
+```
+
+### Run inferCNV with denoising and HMM enabled
+
+The final run call writes results into `./infercnv_1` and enables the workflow's main CNV smoothing and state-calling options.
+
+```r
+infercnv_obj <- infercnv::run(
+  infercnv_obj,
+  cutoff = 0.1,
+  out_dir = "./infercnv_1",
+  cluster_by_groups = TRUE,
+  denoise = TRUE,
+  HMM = TRUE,
+  num_threads = 8
+)
+```
+
+## Gotchas / notes
+
+- The README explicitly notes that this tutorial cannot be run on OSC because `infercnv` was not installable there in the tested environment.
+- The reference cluster choice is experiment-specific; the committed example's cluster `"11"` should not be treated as a universal default.
+- This workflow has no committed local figure assets, so the site page relies on the README and script content only.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_inferCNV)

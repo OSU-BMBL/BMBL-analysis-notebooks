@@ -1,19 +1,19 @@
 ### Single-cell RNA-seq
 
-- [General workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
-- [10x Flex preprocessing](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
-- [Trajectory analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_trajectory_Slingshot)
-- [Cell-cell communication](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)
-- [HPV branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_HPV_branch)
-- [Seurat to Scanpy](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Seurat_to_Scanpy)
-- [Stomach branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
-- [ShinyCell portal](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)
-- [Large dataset analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Sketch_LargeData)
-- [Module enrichment](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_module_enrichment)
-- [iPSC branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_iPSC_branch)
-- [Immune branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_immune_branch)
-- [inferCNV](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_inferCNV)
-- [Label transfer](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_label_transfer_branch)
+- [General workflow](site/workflows/scrna-general.qmd)
+- [10x Flex preprocessing](site/workflows/scrna-10x-flex.qmd)
+- [Trajectory analysis](site/workflows/scrna-trajectory.qmd)
+- [Cell-cell communication](site/workflows/scrna-cellchat.qmd)
+- [HPV branch](site/workflows/scrna-hpv.qmd)
+- [Seurat to Scanpy](site/workflows/scrna-seurat-scanpy.qmd)
+- [Stomach branch](site/workflows/scrna-stomach.qmd)
+- [ShinyCell portal](site/workflows/scrna-shinycell.qmd)
+- [Large dataset analysis](site/workflows/scrna-large.qmd)
+- [Module enrichment](site/workflows/scrna-module.qmd)
+- [iPSC branch](site/workflows/scrna-ipsc.qmd)
+- [Immune branch](site/workflows/scrna-immune.qmd)
+- [inferCNV](site/workflows/scrna-infercnv.qmd)
+- [Label transfer](site/workflows/scrna-label-transfer.qmd)
 
 ### Single-cell ATAC-seq
 

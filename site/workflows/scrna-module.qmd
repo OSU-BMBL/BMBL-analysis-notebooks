@@ -1,0 +1,101 @@
+---
+title: "Module Enrichment"
+subtitle: "Compare Seurat module scores with ssGSEA and GSVA"
+workflow:
+  id: "scrna-module"
+  repo_path: "scRNAseq_module_enrichment"
+---
+
+## What it does
+
+This workflow compares several ways to score a gene module in scRNA-seq data. It uses Seurat's `AddModuleScore()` alongside GSVA-based ssGSEA and GSVA scoring, then visualizes those scores across cell types.
+
+## When to use it
+
+Use this workflow when you already have a Seurat object and a curated gene list and want a quick way to compare enrichment-style summaries across cells or cell types. It is a compact downstream analysis branch rather than a full end-to-end pipeline.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_module_enrichment`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_module_enrichment)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_module_enrichment/README.md)
+  - [`module_enrichment.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_module_enrichment/module_enrichment.Rmd)
+  - rendered reference: [`module_enrichment.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_module_enrichment/module_enrichment.html)
+- Required packages include `Seurat` and `GSVA`
+- Inputs: a Seurat object and a gene list
+
+## Steps
+
+### Load the gene list and prepare the Seurat object
+
+The example notebook uses a short placeholder gene set and a committed example object path, then normalizes and scales the RNA assay before enrichment scoring.
+
+```r
+example_gene_list <- c("Gpx3", "Glrx", "Lbp", "Cryab")
+example_obj <- read_rds("combined.rds")
+
+DefaultAssay(example_obj) <- "RNA"
+example_obj <- NormalizeData(example_obj)
+example_obj <- ScaleData(example_obj)
+```
+
+The setup is intentionally minimal: a gene list, a Seurat object, and a `celltype` metadata field are enough to run the comparison branch.
+
+### Compute Seurat module scores
+
+The first scoring method adds a per-cell module score directly into metadata.
+
+```r
+example_obj <- AddModuleScore(
+  example_obj,
+  features = list(example_gene_list = example_gene_list),
+  name = "example_gene_list"
+)
+```
+
+This gives a Seurat-native score that can be compared directly against GSVA-family methods on the same object.
+
+### Compute ssGSEA and GSVA-style scores from the expression layer
+
+The notebook then extracts the expression layer and applies GSVA package utilities to derive enrichment scores that can be compared against the Seurat module score.
+
+```r
+exp_data <- LayerData(example_obj, layer = "data")
+ssgseaPar <- ssgseaParam(exp_data, list(example_gene_list = example_gene_list))
+ssgsea.score <- gsva(ssgseaPar, verbose = TRUE)
+example_obj@meta.data[, "example_ssgsea_score"] <- as.numeric(ssgsea.score)
+
+gsvaPar <- ssgseaParam(exp_data, list(example_gene_list = example_gene_list))
+gsva.score <- gsva(gsvaPar, verbose = TRUE)
+example_obj@meta.data[, "example_gsva_score"] <- as.numeric(gsva.score)
+```
+
+The committed notebook uses the same matrix source for both methods, which makes the result a method comparison rather than a broader pathway-analysis pipeline.
+
+### Visualize score distributions across cell types
+
+The first visualization pass is a set of violin plots, one for the Seurat module score and one each for the ssGSEA and GSVA metadata columns.
+
+```r
+VlnPlot(example_obj, "example_gene_list1", group.by = "celltype")
+VlnPlot(example_obj, "example_ssgsea_score", group.by = "celltype")
+VlnPlot(example_obj, "example_gsva_score", group.by = "celltype")
+```
+
+### Summarize module genes with a heatmap
+
+The notebook then uses `AverageExpression()` on the scale-data layer and sends the result into `pheatmap`, giving a complementary view of the underlying genes rather than just the aggregate score.
+
+```r
+heatmap_matrix <- AverageExpression(example_obj[example_gene_list, ], assays = "RNA", slot = "scale.data")$RNA
+pheatmap::pheatmap(heatmap_matrix, cluster_rows = TRUE, cluster_cols = FALSE)
+```
+
+## Gotchas / notes
+
+- The example object path (`combined.rds`) and metadata field (`celltype`) are placeholders that need to match the user's own object.
+- This workflow is intentionally short and does not include committed figure assets beyond the rendered HTML.
+- The notebook is a downstream scoring example, so upstream preprocessing and annotation are assumed to be complete already.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_module_enrichment)

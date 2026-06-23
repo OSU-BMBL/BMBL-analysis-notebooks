@@ -272,6 +272,10 @@ pythonenv*
 
 # mkdocs documentation
 /site
+!/site/
+!/site/catalog.yml
+!/site/workflows/
+!/site/workflows/*.qmd
 
 # mypy
 .mypy_cache/

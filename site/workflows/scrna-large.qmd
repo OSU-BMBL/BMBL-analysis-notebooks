@@ -1,0 +1,120 @@
+---
+title: "Sketch-based Large Dataset Analysis"
+subtitle: "Seurat v5 and BPCells for million-cell scRNA-seq data"
+workflow:
+  id: "scrna-large"
+  repo_path: "scRNAseq_Sketch_LargeData"
+---
+
+## What it does
+
+This workflow demonstrates sketch-based analysis for a very large single-cell dataset using Seurat v5 and BPCells. It keeps the full count matrix on disk, analyzes a representative in-memory sketch, and projects results back to the full dataset.
+
+## When to use it
+
+Use this workflow when a standard Seurat pipeline is too memory-intensive for the size of the dataset. It is especially useful for exploratory clustering on million-cell atlases where you still want a path back to full-resolution projection and optional subclustering.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_Sketch_LargeData`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Sketch_LargeData)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Sketch_LargeData/README.md)
+  - [`sketch_based_analysis_workflow.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Sketch_LargeData/sketch_based_analysis_workflow.Rmd)
+  - rendered reference: [`sketch_based_analysis_workflow.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Sketch_LargeData/sketch_based_analysis_workflow.html)
+- Package stack centered on `BPCells`, `Seurat` v5, `SeuratDisk`, and `Azimuth`
+
+## Steps
+
+### Download the public 10x dataset and keep the count matrix on disk
+
+The README starts with the 10x mouse brain download step and frames the whole branch as a memory-management strategy for very large datasets. The matrix is opened from HDF5, written into a BPCells directory, and reused from disk rather than loaded fully into memory.
+
+```r
+brain.data <- open_matrix_10x_hdf5(path = "./data/1M_neurons_filtered_gene_bc_matrices_h5.h5")
+write_matrix_dir(mat = brain.data, dir = "./data/brain_counts", overwrite = TRUE)
+brain.mat <- open_matrix_dir(dir = "./data/brain_counts")
+brain.mat <- Azimuth:::ConvertEnsembleToSymbol(mat = brain.mat, species = "mouse")
+brain <- CreateSeuratObject(counts = brain.mat)
+```
+
+The README emphasizes why this matters: the full matrix holds roughly 1.3 million cells, but the Seurat object can stay under 1 GB in memory because the counts live on disk.
+
+### Create the Seurat v5 object and save the on-disk representation
+
+The notebook sets `Seurat.object.assay.version = "v5"` before object creation and saves the lightweight object for reuse.
+
+```r
+options(Seurat.object.assay.version = "v5")
+saveRDS(object = brain, file = "obj.Rds", destdir = "./data/brain_object")
+```
+
+### Build the in-memory sketch with leverage-score sampling
+
+The sketch itself is created with leverage-score sampling, then processed with the usual variable-feature, scaling, PCA, neighbor, clustering, and UMAP steps.
+
+```r
+obj <- NormalizeData(obj)
+obj <- FindVariableFeatures(obj)
+obj <- SketchData(object = obj, ncells = 50000, method = "LeverageScore", sketched.assay = "sketch")
+
+DefaultAssay(obj) <- "sketch"
+obj <- ScaleData(obj)
+obj <- RunPCA(obj)
+obj <- FindNeighbors(obj, dims = 1:50)
+obj <- FindClusters(obj, resolution = 2)
+obj <- RunUMAP(obj, dims = 1:50, return.model = TRUE)
+```
+
+The source material explicitly uses assay switching here: `RNA` for the on-disk full dataset and `sketch` for the in-memory subset.
+
+### Inspect marker expression on the sketch before full projection
+
+The sketch phase is not just about clustering. The notebook also uses marker plots to decide whether the sketch captures the expected broad cell classes before anything is projected back to the full atlas.
+
+```r
+FeaturePlot(
+  object = obj,
+  features = c("Igfbp7", "Neurod6", "Dlx2", "Gad2", "Eomes", "Vim", "Reln", "Olig1", "C1qa"),
+  ncol = 3
+)
+```
+
+### Project sketch labels and embeddings back to the full dataset
+
+After clustering the sketch, the workflow transfers the low-dimensional structure and cluster labels to all cells.
+
+```r
+obj <- ProjectData(
+  object = obj,
+  assay = "RNA",
+  full.reduction = "pca.full",
+  sketched.assay = "sketch",
+  sketched.reduction = "pca",
+  umap.model = "umap",
+  dims = 1:50,
+  refdata = list(cluster_full = "seurat_clusters")
+)
+```
+
+The notebook then compares the projected full-dataset UMAP with sketch-level and full-dataset `FeaturePlot()` calls, which is useful for checking whether the projection preserved expected expression structure.
+
+### Optionally subcluster a selected population in memory
+
+The final section subsets selected full-data clusters, converts only the `data` layer into an in-memory sparse matrix, and reruns PCA, UMAP, neighbors, clustering, and marker review for a more focused lineage or cell-class analysis.
+
+```r
+obj.sub <- subset(obj, subset = cluster_full %in% c(2, 15, 18, 28, 40))
+obj.sub[["RNA"]]$data <- as(obj.sub[["RNA"]]$data, Class = "dgCMatrix")
+obj.sub <- FindVariableFeatures(obj.sub)
+obj.sub <- RunUMAP(obj.sub, dims = 1:30)
+FeaturePlot(obj.sub, features = c("Dlx2", "Gad2", "Lhx6", "Nr2f2", "Sst", "Mef2c"), ncol = 3)
+```
+
+## Gotchas / notes
+
+- This workflow depends on Seurat v5 behavior and on-disk assay support; it is not a drop-in replacement for older Seurat objects.
+- The committed materials point to a public 10x mouse brain dataset rather than a bundled in-repo example matrix.
+- There are no committed local PNG assets in this folder, so the site page relies on the README and R Markdown content only.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Sketch_LargeData)

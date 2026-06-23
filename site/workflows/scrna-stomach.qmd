@@ -1,0 +1,118 @@
+---
+title: "Stomach and Colon Branch"
+subtitle: "GI-specific QC and marker-guided annotation on top of the general workflow"
+workflow:
+  id: "scrna-stomach"
+  repo_path: "scRNAseq_stomach_branch"
+---
+
+## What it does
+
+This branch specializes the general scRNA-seq workflow for gastrointestinal tissue, especially stomach and colon datasets. It adds tissue-aware QC choices and marker panels for epithelial, vascular, and lymphatic compartments.
+
+## When to use it
+
+Use this workflow when the general Seurat steps are still appropriate but the dataset is from GI mucosa and you need stomach- or colon-specific marker interpretation. It is best viewed as a tissue-specific annotation branch rather than a standalone pipeline from raw sequencing through publication.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_stomach_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_stomach_branch/README.md)
+  - [`stomach_processing.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_stomach_branch/stomach_processing.Rmd)
+  - rendered reference: [`Stomach processing.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_stomach_branch/Stomach%20processing.html)
+- Input example: `stomach_filtered_feature_bc_matrix.h5`
+
+## Steps
+
+### Read the Cell Ranger H5 matrix and create the Seurat object
+
+The notebook starts directly from a filtered H5 matrix and keeps the object small enough for standard Seurat preprocessing.
+
+```r
+A1.data <- Read10X_h5("stomach_filtered_feature_bc_matrix.h5")
+combined <- CreateSeuratObject(
+  A1.data,
+  project = "stomach",
+  assay = "RNA",
+  min.cells = 3,
+  min.features = 200
+)
+```
+
+The notebook also includes a commented raw-matrix alternative for cases where the user wants to inspect unfiltered gene detection before choosing which H5 input to start from.
+
+### Compute ribosomal and mitochondrial QC covariates
+
+Compared with the general workflow, this branch explicitly tracks both ribosomal and mitochondrial content. The QC section explains why these covariates matter for stomach tissue and visualizes them with violin plots.
+
+```r
+rb.genes <- rownames(combined)[grep("^Rp[sl][[:digit:]]", rownames(combined))]
+percent.ribo <- colSums(combined[rb.genes, ]) / Matrix::colSums(combined) * 100
+combined <- AddMetaData(combined, percent.ribo, col.name = "percent.ribo")
+combined <- PercentageFeatureSet(combined, "^mt-", col.name = "percent.mito")
+VlnPlot(combined, features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"))
+```
+
+### Filter with stomach-oriented thresholds and optional MAD logic
+
+The committed example retains a direct thresholding path and also documents a MAD-based outlier strategy. The thresholded example is more permissive than the general workflow because the source notes that stomach biopsies can show elevated mitochondrial content.
+
+```r
+combined_qc <- subset(
+  combined,
+  subset =
+    nFeature_RNA < 7500 &
+    nCount_RNA < 70000 &
+    percent.ribo < 20 &
+    percent.mito < 15
+)
+```
+
+The notebook also writes a before/after frequency table by sample so the impact of these filters is visible before moving on.
+
+### Normalize, select variable genes, and cluster the combined object
+
+After QC, the notebook uses the standard Seurat normalization, HVG selection, scaling, PCA, neighbor graph, clustering, and UMAP steps before moving into tissue-specific marker review and optional subclustering.
+
+```r
+combined_qc <- NormalizeData(combined_qc, normalization.method = "LogNormalize", scale.factor = 10000)
+combined_qc <- FindVariableFeatures(combined_qc, selection.method = "vst", nfeatures = 2000)
+combined_qc <- ScaleData(combined_qc, features = all.genes)
+combined_qc <- RunPCA(combined_qc, npcs = 15, verbose = FALSE)
+combined_qc <- FindClusters(combined_qc, graph.name = "test", resolution = 0.1)
+combined_qc <- RunUMAP(combined_qc, dims = 1:15)
+```
+
+### Review GI marker groups with violin and feature plots
+
+The richer part of this notebook is the marker-review section. It breaks marker inspection into epithelial, blood-vessel endothelial, and lymphatic endothelial groups, using both `VlnPlot()` and `FeaturePlot()` to support manual interpretation.
+
+```r
+VlnPlot(combined_qc, features = c("Atp4a", "Muc6", "Muc5ac", "Lgr5", "Msi1", "Sox9"), ncol = 3)
+FeaturePlot(combined_qc, features = c("Pecam1", "Cdh5", "Fabp4", "Nkx2-3", "Scgb3a1", "Sox17"), ncol = 3)
+FeaturePlot(combined_qc, features = c("Flt4", "Prox1", "Pdpn", "Lyve1", "Mmrn1"), ncol = 3)
+```
+
+This lines up with the README marker tables and makes the page more of a GI-specific annotation reference than a generic clustering walkthrough.
+
+### Subcluster epithelial, BEC, and LEC compartments when needed
+
+After the top-level labels are assigned, the notebook subsets the main GI compartments and re-runs focused marker checks for epithelial, BEC, and LEC subclusters. It also includes optional `FindMarkers()` calls for those subclusters.
+
+```r
+subclusters <- subset(x = combined_qc, idents = c("Epithelial", "BEC", "LEC"))
+DimPlot(subclusters, reduction = "umap", label = TRUE, label.size = 6)
+
+cluster0 <- subset(x = sub_cluster, idents = "Epithelial")
+FeaturePlot(cluster0, features = c("Atp4a", "Muc6", "Muc5ac", "Gif", "Lgr5", "Msi1", "Sox9"), ncol = 3)
+```
+
+## Gotchas / notes
+
+- The README explicitly frames this folder as a customization layer on top of `scRNAseq_general_workflow`, not a replacement for the full general pipeline.
+- The tissue-specific marker table is one of the main value-adds here; epithelial, BEC, and LEC markers are curated in the README.
+- The workflow has a committed rendered HTML file, but it does not ship with separate local figure assets in a `figures/` folder.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_stomach_branch)

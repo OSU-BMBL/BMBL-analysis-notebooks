@@ -1,0 +1,151 @@
+---
+title: "scRNA-seq General Workflow"
+subtitle: "Core Seurat preprocessing, annotation, and DEG reference"
+workflow:
+  id: "scrna-general"
+  repo_path: "scRNAseq_general_workflow"
+---
+
+## What it does
+
+This workflow is the lab's baseline Seurat pipeline for two-condition single-cell RNA-seq data. It walks from raw 10x matrices through quality control, clustering, manual cell type annotation, and cell-type-specific differential expression with pathway enrichment.
+
+## When to use it
+
+Use this workflow when you have standard 10x gene-expression matrices and want a general-purpose starting point for preprocessing and downstream comparison between conditions. It is especially useful when you need a committed example of the lab's default QC thresholds, clustering settings, marker-based annotation style, and DEG handoff.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_general_workflow`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)
+- Required setup script: [`0_install_packages.R`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_general_workflow/0_install_packages.R)
+- Main notebooks:
+  - [`1_preprocess.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_general_workflow/1_preprocess.rmd)
+  - [`2_annotate_cell_type.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_general_workflow/2_annotate_cell_type.rmd)
+  - [`3_deg.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_general_workflow/3_deg.rmd)
+- Example inputs in committed 10x format under `data/ctrl_raw_feature_bc_matrix/` and `data/stim_raw_feature_bc_matrix/`
+- Shared utilities expected by the notebooks: [`_common/functions.R`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/_common/functions.R)
+
+## Steps
+
+### Load raw 10x matrices and merge the starting object
+
+The preprocessing notebook reads the committed control and stimulation matrices, creates Seurat objects, merges them, and adds mitochondrial and ribosomal QC metrics before any filtering.
+
+```r
+tmp <- Read10X(data_dirs[i], unique.features = TRUE, strip.suffix = FALSE)
+data_list[i] <- CreateSeuratObject(
+  tmp,
+  assay = "RNA",
+  min.cells = 3,
+  min.features = 200,
+  project = basename(data_dirs[i])
+)
+
+combined <- purrr::reduce(data_list, function(x, y) merge(x = x, y = y, merge.data = TRUE))
+combined <- PercentageFeatureSet(combined, "^MT-", col.name = "percent.mito")
+```
+
+This stage also uses `JoinLayers()` so downstream Seurat v5 operations work from a single merged object, and the notebook prints per-sample cell counts before any thresholds are applied.
+
+### Inspect QC covariates and choose filtering thresholds
+
+The source notebook explicitly frames these thresholds as dataset-specific choices. It plots `nFeature_RNA`, `nCount_RNA`, `percent.mito`, and `percent.ribo`, then writes a before/after retention table so the effect of filtering is visible by sample.
+
+```r
+combined_qc <- subset(
+  combined,
+  subset =
+    percent.mito < 5 &
+    percent.ribo < 50 &
+    nFeature_RNA > 200 &
+    nFeature_RNA < 1500 &
+    nCount_RNA < 6000
+  )
+freq_df[1, 1] <- "Total"
+knitr::kable(freq_df)
+VlnPlot(combined_qc, features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"))
+```
+
+The committed example keeps cells with fewer than 5% mitochondrial reads, fewer than 50% ribosomal reads, more than 200 but fewer than 1500 detected genes, and fewer than 6000 total counts.
+
+### Normalize, determine dimensionality, and cluster without integration
+
+After QC, the default path stays in the RNA assay and runs a standard Seurat preprocessing stack. The notebook explicitly uses `DimHeatmap()` and `ElbowPlot()` to decide how many principal components should feed UMAP and clustering.
+
+```r
+DefaultAssay(combined_qc) <- "RNA"
+
+combined_qc <- NormalizeData(combined_qc, verbose = FALSE)
+combined_qc <- FindVariableFeatures(combined_qc, verbose = FALSE)
+combined_qc <- ScaleData(combined_qc, verbose = FALSE)
+combined_qc <- RunPCA(combined_qc, verbose = FALSE)
+DimHeatmap(combined_qc, dims = 1:40, cells = 1000)
+ElbowPlot(combined_qc, ndims = 50)
+combined_qc <- RunUMAP(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindNeighbors(combined_qc, reduction = "pca", dims = 1:30, verbose = FALSE)
+combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE)
+```
+
+### Use the optional integration block only if batch effects are real
+
+The same notebook includes an alternative integration branch based on `SplitObject()`, `FindIntegrationAnchors()`, and `IntegrateData()`, but it is clearly marked as optional rather than the default path.
+
+```r
+combine.list <- SplitObject(combined_qc, split.by = "orig.ident")
+combine.anchors <- FindIntegrationAnchors(object.list = combine.list, dims = 1:30)
+combined_qc <- IntegrateData(anchorset = combine.anchors, dims = 1:30)
+DefaultAssay(combined_qc) <- "integrated"
+```
+
+This is consistent with the README, which warns against over-correcting away real biology and suggests checking whether batch effects are actually distorting PCA or UMAP structure before integrating.
+
+### Review marker panels and assign manual cell types
+
+The annotation notebook reloads the processed object, normalizes the RNA assay for visualization, and then walks through several marker panels rather than relying on a single automatic label-transfer step. The committed source covers monocytes, dendritic cells, B cells, T-cell subsets, NK cells, megakaryocytes, and erythrocytes.
+
+```r
+DefaultAssay(combined) <- "RNA"
+combined <- NormalizeData(combined, verbose = FALSE)
+
+FeaturePlot(
+  combined,
+  reduction = "umap",
+  features = c("CD14", "LYZ"),
+  order = TRUE,
+  min.cutoff = "q10",
+  label = TRUE
+)
+```
+
+After this marker review, the notebook remaps cluster identities into a `cell_type` column and plots both the relabeled UMAP and sample-split views.
+
+### Run cell-type-specific DEG plus GO and KEGG enrichment
+
+The DEG notebook subsets by condition and then by annotated cell type, runs `FindMarkers()`, and derives ranked statistics for `fgsea` against GO Biological Process and KEGG collections.
+
+```r
+Idents(combined) <- combined$orig.ident
+combined <- subset(combined, ident = c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix"))
+
+cts_markers <- FindMarkers(
+  this_combined,
+  ident.1 = "stim_raw_feature_bc_matrix",
+  ident.2 = "ctrl_raw_feature_bc_matrix"
+) %>%
+  rownames_to_column("gene") %>%
+  filter(p_val_adj < 0.05)
+
+fgseaRes <- fgsea(pathways = m_list, stats = res_gsea)
+```
+
+The committed code writes out both DEG tables and enrichment summaries for each cell type, using GO Biological Process and KEGG-derived collections from `msigdbr`. It also checks that both conditions are represented with enough cells before attempting the per-cell-type comparison.
+
+## Gotchas / notes
+
+- The QC cutoffs in `1_preprocess.rmd` are example settings, not universal defaults.
+- The integration block is intentionally optional; the README warns against applying batch correction unless it is clearly needed.
+- The annotation notebook assumes a preprocessed `combined.qsave` handoff and manual marker review rather than automatic label transfer.
+- The DEG notebook expects `cell_type` annotations to be present before per-cell-type comparisons are run.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_general_workflow)

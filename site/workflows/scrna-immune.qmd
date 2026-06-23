@@ -1,0 +1,95 @@
+---
+title: "Immune Annotation Branch"
+subtitle: "Immune-focused marker review on top of the general scRNA-seq workflow"
+workflow:
+  id: "scrna-immune"
+  repo_path: "scRNAseq_immune_branch"
+---
+
+## What it does
+
+This branch focuses on manual immune-cell annotation for a preprocessed scRNA-seq Seurat object. It reuses the general workflow structure but substitutes immune and blood-cell marker panels for the annotation step.
+
+## When to use it
+
+Use this workflow when preprocessing and clustering are already complete and the main need is immune-specific cell type annotation. It is intended as a branch that replaces the generic annotation notebook for immune datasets rather than a standalone end-to-end pipeline.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_immune_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_immune_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_immune_branch/README.md)
+  - [`2_annotate_cell_type.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_immune_branch/2_annotate_cell_type.rmd)
+  - rendered reference: [`2_annotate_cell_type.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_immune_branch/2_annotate_cell_type.html)
+- Expected input: `../scRNAseq_preprocess_main/combined.qsave`
+
+## Steps
+
+### Load the processed Seurat object
+
+The branch assumes a previously clustered Seurat object and jumps directly into marker review.
+
+```r
+combined <- qs::qread(paste0("../scRNAseq_preprocess_main/combined.qsave"))
+DefaultAssay(combined) <- "RNA"
+Idents(combined) <- combined$seurat_clusters
+```
+
+### Start from the cluster UMAP and normalize the RNA assay for marker review
+
+The notebook first plots cluster identities on the UMAP, then normalizes the RNA assay specifically for visualization. This keeps the branch aligned with the general workflow while swapping in immune-specific annotation logic.
+
+```r
+DimPlot(combined, reduction = "umap", label = TRUE, pt.size = 0.4, cols = cell_type_color)
+combined <- NormalizeData(combined, verbose = FALSE)
+```
+
+### Review immune and blood-cell marker panels
+
+The notebook uses `FeaturePlot()` to inspect canonical markers for monocytes, dendritic cells, B cells, T-cell subsets, NK cells, megakaryocytes, and erythrocytes.
+
+```r
+FeaturePlot(combined, features = c("CD14", "LYZ"), order = TRUE, min.cutoff = "q10", label = TRUE)
+FeaturePlot(combined, features = c("FCGR3A", "MS4A7"), order = TRUE, min.cutoff = "q10", label = TRUE)
+FeaturePlot(combined, features = c("GNLY", "NKG7", "PPBP", "HBB", "HBA2"), ncol = 2, label = TRUE)
+```
+
+The source table in the notebook makes the intended mapping explicit, covering CD14+ monocytes, FCGR3A+ monocytes, conventional and plasmacytoid dendritic cells, B cells, CD4/CD8 T cells, NK cells, megakaryocytes, and erythrocytes.
+
+### Recode cluster IDs into immune cell labels
+
+After reviewing marker patterns, the notebook manually remaps cluster identities into a `cell_type` column. The code is explicit about the cluster-to-label mapping rather than inferring it implicitly.
+
+```r
+tmp_ident <- as.factor(combined$seurat_clusters)
+tmp_levels <- levels(tmp_ident)
+tmp_levels[c(1)] <- "CD14+ monocytes"
+tmp_levels[c(7)] <- "FCGR3A+ monocytes"
+tmp_levels[c(10, 11)] <- "Conventional dendritic cells"
+levels(tmp_ident) <- tmp_levels
+combined <- AddMetaData(combined, tmp_ident, col.name = "cell_type")
+```
+
+### Check the relabeled UMAP, sample splits, and composition summaries
+
+The notebook then replots the object grouped by `cell_type`, splits the UMAP by `orig.ident`, and uses `dittoBarPlot()` to summarize cell-type composition by sample in both percent and count space.
+
+```r
+Idents(combined) <- combined$cell_type
+DimPlot(combined, reduction = "umap", split.by = "orig.ident", label = TRUE, ncol = 2)
+dittoBarPlot(combined, "orig.ident", group.by = "cell_type", scale = "percent")
+dittoBarPlot(combined, "orig.ident", group.by = "cell_type", scale = "count")
+```
+
+### Save the updated Seurat object
+
+After reviewing marker expression, the notebook relabels clusters as immune cell types and writes the updated metadata back into the Seurat object.
+
+## Gotchas / notes
+
+- The README explicitly says this folder is a branch of the complete workflow and should be paired with the corresponding preprocessing notebooks from `scRNAseq_general_workflow`.
+- The source material is narrowly focused on annotation, so there are no committed preprocessing figures or separate local images here.
+- The marker lists are hard-coded in the notebook and should be checked against the species and experiment.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_immune_branch)

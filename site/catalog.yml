@@ -37,86 +37,100 @@ workflows:
   - id: scrna-general
     label: "General workflow"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_general_workflow"
+    page: "site/workflows/scrna-general.qmd"
     order: 10
   - id: scrna-10x-flex
     label: "10x Flex preprocessing"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_10x_Flex_preprocessing"
+    page: "site/workflows/scrna-10x-flex.qmd"
     order: 20
   - id: scrna-trajectory
     label: "Trajectory analysis"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_trajectory_Slingshot"
+    page: "site/workflows/scrna-trajectory.qmd"
     order: 30
   - id: scrna-cellchat
     label: "Cell-cell communication"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_CellCellCommunication_branch"
+    page: "site/workflows/scrna-cellchat.qmd"
     order: 40
   - id: scrna-hpv
     label: "HPV branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_HPV_branch"
+    page: "site/workflows/scrna-hpv.qmd"
     order: 50
   - id: scrna-seurat-scanpy
     label: "Seurat to Scanpy"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_Seurat_to_Scanpy"
+    page: "site/workflows/scrna-seurat-scanpy.qmd"
     order: 60
   - id: scrna-stomach
     label: "Stomach branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_stomach_branch"
+    page: "site/workflows/scrna-stomach.qmd"
     order: 70
   - id: scrna-shinycell
     label: "ShinyCell portal"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_ShinyCell_portal"
+    page: "site/workflows/scrna-shinycell.qmd"
     order: 80
   - id: scrna-large
     label: "Large dataset analysis"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_Sketch_LargeData"
+    page: "site/workflows/scrna-large.qmd"
     order: 90
   - id: scrna-module
     label: "Module enrichment"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_module_enrichment"
+    page: "site/workflows/scrna-module.qmd"
     order: 100
   - id: scrna-ipsc
     label: "iPSC branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_iPSC_branch"
+    page: "site/workflows/scrna-ipsc.qmd"
     order: 110
   - id: scrna-immune
     label: "Immune branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_immune_branch"
+    page: "site/workflows/scrna-immune.qmd"
     order: 120
   - id: scrna-infercnv
     label: "inferCNV"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_inferCNV"
+    page: "site/workflows/scrna-infercnv.qmd"
     order: 130
   - id: scrna-label-transfer
     label: "Label transfer"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_label_transfer_branch"
+    page: "site/workflows/scrna-label-transfer.qmd"
     order: 140
 
   - id: scatac-general
