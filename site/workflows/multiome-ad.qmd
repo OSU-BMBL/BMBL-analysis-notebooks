@@ -1,0 +1,223 @@
+---
+title: "Single-cell Multi-omics AD Branch"
+subtitle: "Integrated snRNA-seq and snATAC-seq analysis with Seurat, Signac, and WNN"
+workflow:
+  id: "multiome-ad"
+  repo_path: "scMultiome_AD_branch"
+---
+
+## What it does
+
+This workflow integrates single-nucleus RNA-seq and ATAC-seq data from Alzheimer's disease brain samples into a joint Seurat object. The committed materials cover modality-specific preprocessing, cross-sample integration for RNA and ATAC, weighted nearest neighbor embedding, marker-based annotation, and differential accessibility analysis across disease stages.
+
+## When to use it
+
+Use this workflow when matched multiome data need to be analyzed jointly rather than as separate RNA and ATAC branches. It is most useful as a reference for human 10x multiome projects that need WNN integration, cluster annotation from marker lists, and downstream comparison of accessible regions across conditions.
+
+## Prerequisites
+
+- Source folder: [`scMultiome_AD_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scMultiome_AD_branch/README.md)
+  - [`snMulti-omics-integration.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scMultiome_AD_branch/snMulti-omics-integration.rmd)
+- Required package stack centered on `Seurat`, `Signac`, `EnsDb.Hsapiens.v86`, `BSgenome.Hsapiens.UCSC.hg38`, `sctransform`, `qs`, `readxl`, and `pheatmap`
+- Expected inputs:
+  - `filtered_feature_bc_matrix.h5` files for each sample
+  - ATAC fragment files
+  - marker gene spreadsheet from the Fu lab
+  - human annotation and genome packages for hg38
+
+## Steps
+
+### Build a reference multiome object and run ATAC-side QC
+
+The notebook starts from a reference sample (`18-64`) and creates a Seurat RNA assay plus a Signac `ChromatinAssay` from the 10x multiome matrix and fragment file. It then computes ATAC QC metrics such as nucleosome signal and TSS enrichment before filtering cells.
+
+```r
+counts <- Read10X_h5("18-64_results/filtered_feature_bc_matrix.h5")
+fragpath <- "18-64_results/atac_fragments.tsv.gz"
+
+multi <- CreateSeuratObject(counts = counts$`Gene Expression`, assay = "RNA")
+annotation <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v86)
+seqlevelsStyle(annotation) <- "UCSC"
+
+multi[["peaks"]] <- CreateChromatinAssay(
+  counts = counts$Peaks,
+  sep = c(":", "-"),
+  fragments = fragpath,
+  annotation = annotation
+)
+
+multi <- NucleosomeSignal(multi)
+multi <- TSSEnrichment(multi)
+```
+
+One practical detail preserved from the notebook: the ATAC filter thresholds are explicit and fairly strict, including upper bounds on RNA and peak counts plus cutoffs on nucleosome signal and TSS enrichment.
+
+### Normalize the reference sample and preprocess the remaining ATAC samples
+
+After QC, the workflow normalizes RNA with `SCTransform`, runs PCA on the RNA assay, and then applies the standard Signac TF-IDF and SVD path on the ATAC assay. The notebook then defines a helper that re-quantifies fragments from the other samples against the reference feature set.
+
+```r
+DefaultAssay(multi) <- "RNA"
+multi <- SCTransform(multi)
+multi <- RunPCA(multi)
+
+DefaultAssay(multi) <- "peaks"
+multi <- RunTFIDF(multi)
+multi <- FindTopFeatures(multi, min.cutoff = 5)
+multi <- RunSVD(multi)
+```
+
+```r
+pre_integration <- function(fragpath) {
+  fragcounts <- CountFragments(fragments = fragpath)
+  atac.cells <- fragcounts[fragcounts$frequency_count > 2000, "CB"]
+  atac.frags <- CreateFragmentObject(path = fragpath, cells = atac.cells)
+  counts <- FeatureMatrix(fragments = atac.frags, features = granges(multi), cells = atac.cells)
+  atac.assay <- CreateChromatinAssay(counts = counts, min.features = 1000, fragments = atac.frags)
+  CreateSeuratObject(counts = atac.assay, assay = "peaks")
+}
+```
+
+The notebook's committed example only walks through one late-AD sample plus the control reference, but the function structure makes clear that the intended workflow scales to the full sample set.
+
+### Add metadata and integrate snATAC-seq samples
+
+The ATAC branch then adds per-sample metadata such as `orig.ident`, disease stage, and condition before running LSI-based integration. `FindIntegrationAnchors()` is used with `reduction = "rlsi"`, and the merged object is embedded with an integrated LSI reduction followed by UMAP.
+
+```r
+ATAC_integration <- function(obj.list, k_weight) {
+  for (i in 1:length(obj.list)) {
+    DefaultAssay(obj.list[[i]]) <- "peaks"
+    obj.list[[i]] <- FindTopFeatures(obj.list[[i]], min.cutoff = 10)
+    obj.list[[i]] <- RunTFIDF(obj.list[[i]])
+    obj.list[[i]] <- RunSVD(obj.list[[i]])
+  }
+
+  integration.anchors <- FindIntegrationAnchors(
+    object.list = obj.list,
+    anchor.features = rownames(obj.list[["18-64"]]),
+    reduction = "rlsi",
+    dims = 2:30
+  )
+
+  combined <- merge(obj.list[[1]], obj.list[[2]])
+  combined <- FindTopFeatures(combined, min.cutoff = 10)
+  combined <- RunTFIDF(combined)
+  combined <- RunSVD(combined)
+
+  atac_int <- IntegrateEmbeddings(
+    anchorset = integration.anchors,
+    reductions = combined[["lsi"]],
+    new.reduction.name = "integrated_lsi",
+    k.weight = k_weight
+  )
+  atac_int <- RunUMAP(atac_int, reduction = "integrated_lsi", dims = 2:30)
+  atac_int
+}
+```
+
+### Integrate the snRNA-seq samples with SCT anchors
+
+The RNA branch is handled separately: create Seurat RNA objects, add stage and condition metadata, filter by feature counts and mitochondrial percentage, and then integrate with the SCT workflow.
+
+```r
+RNA_integration <- function(obj.list, k_weight) {
+  for (i in 1:length(obj.list)) {
+    DefaultAssay(obj.list[[i]]) <- "RNA"
+  }
+  obj.list <- lapply(X = obj.list, FUN = SCTransform)
+  features <- SelectIntegrationFeatures(object.list = obj.list, nfeatures = 3000)
+  obj.list <- PrepSCTIntegration(object.list = obj.list, anchor.features = features)
+  anchors <- FindIntegrationAnchors(
+    object.list = obj.list,
+    normalization.method = "SCT",
+    anchor.features = features
+  )
+  combined.sct <- IntegrateData(anchorset = anchors, normalization.method = "SCT", k.weight = k_weight)
+  combined.sct <- RunPCA(combined.sct, verbose = FALSE)
+  combined.sct
+}
+```
+
+This separation between ATAC integration and RNA integration is an important design choice in the committed notebook: each modality is stabilized on its own first, and only then are the modalities combined.
+
+### Combine RNA and ATAC with WNN and cluster the joint object
+
+The core multiome section intersects the cell barcodes shared by both integrated objects, copies the ATAC assay and reductions into the RNA-centered object, and then runs weighted nearest neighbor analysis.
+
+```r
+multi_integration <- function(object_rna, object_atac) {
+  object_rna <- subset(object_rna, cells = intersect(colnames(object_rna), colnames(object_atac)))
+  object_atac <- subset(object_atac, cells = intersect(colnames(object_rna), colnames(object_atac)))
+  object_rna[["peaks"]] <- object_atac@assays$peaks
+  DefaultAssay(object_rna) <- "peaks"
+  object_rna@reductions$lsi <- object_atac@reductions$integrated_lsi
+  object_rna@reductions$umap.atac <- object_atac@reductions$umap
+  object_rna <- FindMultiModalNeighbors(
+    object_rna,
+    reduction.list = list("pca", "lsi"),
+    dims.list = list(1:50, 2:50)
+  )
+  object_rna <- RunUMAP(
+    object_rna,
+    nn.name = "weighted.nn",
+    reduction.name = "wnn.umap",
+    reduction.key = "wnnUMAP_"
+  )
+  object_rna
+}
+
+integrate <- multi_integration(rna_int, atac_int)
+integrate <- FindClusters(integrate, resolution = 0.2, graph.name = "wsnn", algorithm = 3)
+```
+
+The notebook then visualizes the integrated object by cluster, disease stage, and sample identity using the `wnn.umap` reduction.
+
+### Use marker lists for annotation and summarize differential accessibility
+
+The annotation branch loads a curated marker spreadsheet, computes average expression across WNN clusters, and renders a heatmap for major cell types. The final analysis block then switches to the ATAC assay and runs cell-type-specific peak comparisons across `Late-AD`, `Mid-AD`, and `Control`.
+
+```r
+marker <- read_excel("7 Cell types markers in scREADs,  ATAC UMAP.xlsx", sheet = 1)
+marker <- as.data.frame(marker)
+
+avg_data <- data.frame(rep(0, length(intersect(marker_f$value, rownames(rna_int@assays$SCT)))))
+Idents(int) <- int$wsnn_res.0.2
+DefaultAssay(int) <- "SCT"
+```
+
+```r
+cellspecifc_deg <- function(int, ident1, ident2) {
+  DefaultAssay(int) <- "peaks"
+  output <- list()
+  celltype <- unique(int$celltype)
+  Idents(int) <- int$celltype
+  for (i in 1:7) {
+    subdata <- subset(int, idents = celltype[i])
+    Idents(subdata) <- subdata$stage
+    temp1 <- FindMarkers(
+      subdata,
+      ident.1 = ident1,
+      ident.2 = ident2,
+      test.use = "LR",
+      latent.vars = "nCount_peaks"
+    )
+    output[[i]] <- temp1
+  }
+  output
+}
+```
+
+The committed example notes that full annotation is not completed inline in the notebook, but the marker-driven inspection and downstream DAP export steps show the intended endpoint of the workflow.
+
+## Gotchas / notes
+
+- The committed notebook uses OSC-specific working directories and external data paths, so readers will need to replace those with their own locations.
+- The tutorial example only demonstrates a subset of the full eight-sample study, even though the README describes a larger cohort.
+- Marker-based annotation depends on an Excel marker list from the Fu lab that is not committed in this repository.
+- The notebook explicitly notes that real package-version records should be taken from OSC rather than inferred from this static page.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)

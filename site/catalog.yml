@@ -179,15 +179,17 @@ workflows:
   - id: multiome-ad
     label: "AD branch"
     category: multiome
-    kind: github
+    kind: page
     repo_path: "scMultiome_AD_branch"
+    page: "site/workflows/multiome-ad.qmd"
     order: 10
 
   - id: tcr-analysis
     label: "TCR-seq analysis"
     category: tcr
-    kind: github
+    kind: page
     repo_path: "scTCRseq_analysis"
+    page: "site/workflows/tcr-analysis.qmd"
     order: 10
 
   - id: spatial-general

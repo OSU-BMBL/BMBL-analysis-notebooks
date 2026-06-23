@@ -26,11 +26,11 @@
 
 ### Single-cell Multi-omics
 
-- [AD branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch)
+- [AD branch](site/workflows/multiome-ad.qmd)
 
 ### Single-cell TCR-seq
 
-- [TCR-seq analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scTCRseq_analysis)
+- [TCR-seq analysis](site/workflows/tcr-analysis.qmd)
 
 ### Spatial Transcriptomics
 

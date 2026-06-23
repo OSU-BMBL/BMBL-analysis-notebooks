@@ -8,9 +8,11 @@ project:
   render:
     - "index.qmd"
     - "CONTRIBUTING_to_site.md"
+    - "site/workflows/multiome-ad.qmd"
     - "site/workflows/scrna-general.qmd"
     - "site/workflows/scatac-general.qmd"
     - "rnaseq-workflow.qmd"
+    - "site/workflows/tcr-analysis.qmd"
     - "site/workflows/scrna-10x-flex.qmd"
     - "site/workflows/scatac-archr.qmd"
     - "site/workflows/scatac-cicero.qmd"
@@ -98,11 +100,11 @@ website:
             text: "Gene activity score"
       - section: "Single-cell Multi-omics"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scMultiome_AD_branch"
+          - href: "site/workflows/multiome-ad.qmd"
             text: "AD branch"
       - section: "Single-cell TCR-seq"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scTCRseq_analysis"
+          - href: "site/workflows/tcr-analysis.qmd"
             text: "TCR-seq analysis"
       - section: "Spatial Transcriptomics"
         contents:
