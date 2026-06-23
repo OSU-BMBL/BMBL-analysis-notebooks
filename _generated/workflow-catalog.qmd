@@ -17,12 +17,12 @@
 
 ### Single-cell ATAC-seq
 
-- [General workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
-- [ArchR branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ArchR_branch)
-- [Cicero branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch)
-- [cisTopic branch](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch)
-- [ChromVAR motif activity](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif)
-- [Gene activity score](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_Gene_activity)
+- [General workflow](site/workflows/scatac-general.qmd)
+- [ArchR branch](site/workflows/scatac-archr.qmd)
+- [Cicero branch](site/workflows/scatac-cicero.qmd)
+- [cisTopic branch](site/workflows/scatac-cistopic.qmd)
+- [ChromVAR motif activity](site/workflows/scatac-chromvar.qmd)
+- [Gene activity score](site/workflows/scatac-gene-activity.qmd)
 
 ### Single-cell Multi-omics
 

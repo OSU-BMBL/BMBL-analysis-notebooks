@@ -136,38 +136,44 @@ workflows:
   - id: scatac-general
     label: "General workflow"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_general_workflow"
+    page: "site/workflows/scatac-general.qmd"
     order: 10
   - id: scatac-archr
     label: "ArchR branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_ArchR_branch"
+    page: "site/workflows/scatac-archr.qmd"
     order: 20
   - id: scatac-cicero
     label: "Cicero branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_cicero_branch"
+    page: "site/workflows/scatac-cicero.qmd"
     order: 30
   - id: scatac-cistopic
     label: "cisTopic branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_cisTopic_branch"
+    page: "site/workflows/scatac-cistopic.qmd"
     order: 40
   - id: scatac-chromvar
     label: "ChromVAR motif activity"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_ChromVAR_motif"
+    page: "site/workflows/scatac-chromvar.qmd"
     order: 50
   - id: scatac-gene-activity
     label: "Gene activity score"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_Gene_activity"
+    page: "site/workflows/scatac-gene-activity.qmd"
     order: 60
 
   - id: multiome-ad

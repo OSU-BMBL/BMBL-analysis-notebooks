@@ -1,0 +1,87 @@
+---
+title: "scATAC-seq Cicero Branch"
+subtitle: "Co-accessibility and CCAN analysis with Cicero"
+workflow:
+  id: "scatac-cicero"
+  repo_path: "scATACseq_cicero_branch"
+---
+
+## What it does
+
+This workflow uses Cicero to infer co-accessible chromatin relationships from scATAC-seq data. The committed tutorial covers conversion into a Cicero-compatible CDS object, dimensional reduction, cell aggregation, co-accessibility scoring, CCAN discovery, and gene-activity summarization.
+
+## When to use it
+
+Use this workflow when the main question is regulatory linkage between accessible regions rather than only clustering or annotation. It is most helpful after scATAC-seq preprocessing is complete and you want to build cis-coaccessibility networks or derive gene-activity summaries from those connections.
+
+## Prerequisites
+
+- Source folder: [`scATACseq_cicero_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cicero_branch/README.md)
+  - [`cicero_tutorial.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cicero_branch/cicero_tutorial.rmd)
+  - rendered reference: [`cicero_tutorial.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cicero_branch/cicero_tutorial.html)
+- Package stack centered on `cicero`
+
+## Steps
+
+### Load the tutorial data and create the ATAC CDS
+
+The notebook starts by loading tutorial data and converting peak accessibility counts plus peak coordinates into a Cicero-compatible cell data set.
+
+```r
+input_cds <- make_atac_cds(
+  cicero_counts,
+  binarize = TRUE
+)
+```
+
+### Reduce dimensions and prepare the embedding for aggregation
+
+Before Cicero is run, the workflow detects features, estimates size factors, and computes a low-dimensional representation that will define neighborhood structure for cell aggregation.
+
+```r
+input_cds <- detectGenes(input_cds)
+input_cds <- estimateSizeFactors(input_cds)
+input_cds <- reduceDimension(
+  input_cds,
+  max_components = 2,
+  num_dim = 6,
+  reduction_method = "tSNE"
+)
+```
+
+### Aggregate nearby cells and run Cicero
+
+The core Cicero branch groups nearby cells and then computes co-accessibility relationships for genomic windows, using chromosome coordinates as the scaffold.
+
+```r
+cicero_cds <- make_cicero_cds(
+  input_cds,
+  reduced_coordinates = reduced_coordinates
+)
+
+conns <- run_cicero(
+  cicero_cds,
+  genomic_coords = chromosome_subset
+)
+```
+
+### Filter connections, build CCANs, and derive gene activity
+
+After co-accessibility scores are computed, the notebook filters for stronger positive relationships, identifies CCANs, and computes gene activity scores from those networks.
+
+```r
+positive_conns <- conns[conns$coaccess > 0, ]
+ccan_list <- generate_ccans(positive_conns)
+gene_activity <- build_gene_activity_matrix(cicero_cds, conns)
+```
+
+## Gotchas / notes
+
+- The tutorial is oriented around Cicero's CDS and aggregation model, so it assumes preprocessing has already produced a usable accessibility matrix.
+- The notebook uses a subset of chromosome 18 for demonstration in one branch, which is useful for runtime control but not a full-genome default.
+- This folder does not include a committed figure asset set beyond the rendered HTML output.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cicero_branch)

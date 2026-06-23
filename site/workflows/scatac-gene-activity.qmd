@@ -1,0 +1,63 @@
+---
+title: "Gene Activity Score"
+subtitle: "Convert peak accessibility into gene activity and peak-gene scores"
+workflow:
+  id: "scatac-gene-activity"
+  repo_path: "scATACseq_Gene_activity"
+---
+
+## What it does
+
+This workflow calculates gene activity scores and peak-gene regulatory scores from a scATAC-seq peak count matrix. It uses MAESTRO-based gene score calculations and returns gene-by-cell plus gene-by-peak summaries for downstream regulatory analysis.
+
+## When to use it
+
+Use this workflow when the input is already a peak-by-cell matrix and the next step is to derive gene-centric summaries from accessibility rather than to cluster cells. It is a focused utility page for turning peak counts into gene activity features.
+
+## Prerequisites
+
+- Source folder: [`scATACseq_Gene_activity`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_Gene_activity)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_Gene_activity/README.md)
+  - [`gene_active_score.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_Gene_activity/gene_active_score.Rmd)
+- Required packages include `Seurat`, `MAESTRO`, `reticulate`, and `qs`
+- Input: a peak-by-cell matrix, with the notebook example loading a `.qsave` object
+
+## Steps
+
+### Load the peak count matrix and Python-backed dependencies
+
+The notebook loads a serialized peak matrix, configures the Python environment through `reticulate`, and then computes a gene-by-cell activity matrix.
+
+```r
+atac_matrix <- qread("/bmbl_data/xiaoying/Example_Data.qsave")
+use_python("~/.local/share/r-miniconda/envs/r-reticulate/bin/python", required = TRUE)
+pbmc.gene <- ATACCalculateGenescore(atac_matrix)
+```
+
+### Compute peak-gene regulatory scores
+
+The second branch defines a helper that passes an identity-style matrix into `ATACCalculateGenescore()` so the result becomes a gene-by-peak regulatory potential matrix instead of a gene-by-cell activity matrix.
+
+```r
+CalGenePeakScore <- function(peak_count_matrix, organism = "GRCh38") {
+  pbmc_peak <- peak_count_matrix
+  n <- nrow(pbmc_peak)
+  dia <- diag(n)
+  rownames(dia) <- rownames(pbmc_peak)
+  gene_peak <- ATACCalculateGenescore(dia, organism = organism, decaydistance = 10000, model = "Enhanced")
+  colnames(gene_peak) <- rownames(peak_count_matrix)
+  return(gene_peak)
+}
+
+peak_gene_reg <- CalGenePeakScore(atac_matrix, "GRCh38")
+```
+
+## Gotchas / notes
+
+- The committed notebook uses an absolute example-data path outside the repo, so users will need to replace that with their own matrix location.
+- This workflow is compact and does not include committed figures or a rendered HTML example.
+- The README explicitly calls out species selection (`GRCh38` vs `GRCm38`) as a key input parameter.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_Gene_activity)
