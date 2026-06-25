@@ -1,0 +1,106 @@
+---
+title: "BS-seq Bismark Aligner Workflow"
+subtitle: "Bisulfite read QC, alignment, deduplication, and methylation extraction"
+workflow:
+  id: "bsseq-bismark"
+  repo_path: "BSseq_Bismark_Aligner"
+---
+
+## What it does
+
+This workflow is a concise operational guide for running Bismark on bisulfite sequencing data. The committed README covers module setup, converted-genome preparation, read QC, adapter trimming, paired-end alignment, deduplication, and methylation extraction outputs such as coverage files and bedgraphs.
+
+## When to use it
+
+Use this workflow when you already have BS-seq FASTQ files and want a lab-ready outline for processing them with Bismark and Bowtie2. It is most useful as a command reference for paired-end alignment and methylation calling rather than as a full downstream differential methylation workflow.
+
+## Prerequisites
+
+- Source folder: [`BSseq_Bismark_Aligner`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BSseq_Bismark_Aligner)
+- Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/BSseq_Bismark_Aligner/readme.md)
+- Required tools called out in the README:
+  - `bowtie2`
+  - `bismark`
+  - `FastQC`
+  - `TrimGalore`
+- Expected inputs:
+  - paired-end FASTQ files organized by sample
+  - a reference genome FASTA directory prepared for Bowtie2/Bismark
+  - enough working-directory space for trimmed FASTQs, BAMs, cytosine reports, coverage files, and bedgraphs
+
+## Steps
+
+### Load Bismark and Bowtie2 in the cluster environment
+
+The README assumes an OSC shell environment where `bowtie2` and `bismark` are already available as modules.
+
+```sh
+module load bowtie2
+module load bismark
+```
+
+It also recommends keeping each sample's run inside its own target directory because this workflow produces many intermediate alignment and report files.
+
+### Prepare the converted reference genome and inspect raw reads
+
+Before alignment, the workflow prepares the bisulfite-converted reference with `bismark_genome_preparation`. It then uses `FastQC` on the paired FASTQs to inspect sequence quality, base content, GC content, and overrepresented sequences.
+
+```sh
+bismark_genome_preparation --path_to_aligner $bowtie2 --verbose /[Your Genome Directory with FASTAs]/
+```
+
+```sh
+read1=( *R1*.gz )
+read2=( *R2*.gz )
+core=[amount of cores to allocate for all steps]
+fastqc -f fastq -o ${basename}_QC --threads $core $read1 $read2
+```
+
+The committed notes make QC an explicit checkpoint before any alignment work.
+
+### Trim adapters and align the paired-end reads
+
+The next stage uses `TrimGalore` with built-in FastQC output, then aligns the trimmed read pairs with Bismark and requests nucleotide coverage reporting.
+
+```sh
+mkdir trimGalored
+mkdir ${basename}.trim.fastQC
+[directory containing TrimGalore]/TrimGalore-0.6.6/trim_galore \
+  --cores $core --paired --gzip -o trimGalored/ $read1 $read2 \
+  --fastqc_args "-f fastq -o ${basename}.trim.fastQC -t $core"
+```
+
+```sh
+tRead1=trimGalored/*R1*.gz
+tRead2=trimGalored/*R2*.gz
+bismark --parallel 6 --nucleotide_coverage /[Your Genome Directory with FASTAs]/ $tRead1 $tRead2
+```
+
+The README specifically calls out adapter content as the main metric to compare before and after trimming.
+
+### Deduplicate BAMs and extract methylation calls
+
+After alignment, the guide removes duplicate reads with Bismark's deduplication helper and then runs `bismark_methylation_extractor` to generate cytosine-level summaries, coverage files, bedgraphs, and M-bias reports.
+
+```sh
+BAM=( *.bam )
+deduplicate_bismark --bam ${BAM[0]}
+```
+
+```sh
+dedupedBAM=( *deduplicated.bam )
+bismark_methylation_extractor -s --gzip --parallel 6 --bedGraph \
+  --genome_folder /[Your Genome Directory with FASTAs]/ ${dedupedBAM[0]}
+```
+
+The listed outputs include aligned BAMs, filtered/sorted BAM or SAM files, cytosine reports, CpG coverage files, and visualization-ready bedgraphs.
+
+## Gotchas / notes
+
+- This source is README-only and does not include a committed downstream differential methylation notebook in the same folder.
+- The examples are written for paired-end data; the README notes that single-end runs need parameter adjustments.
+- Paths such as `/[Your Genome Directory with FASTAs]/`, `$bowtie2`, and the TrimGalore install directory are placeholders that must be replaced locally.
+- The final note points readers to a separate DNMTools guide for differential methylation, but that follow-up workflow is not committed here.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BSseq_Bismark_Aligner)

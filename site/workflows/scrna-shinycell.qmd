@@ -1,0 +1,79 @@
+---
+title: "ShinyCell Portal Export"
+subtitle: "Package a Seurat object into a shareable ShinyCell app"
+workflow:
+  id: "scrna-shinycell"
+  repo_path: "scRNAseq_ShinyCell_portal"
+---
+
+## What it does
+
+This workflow exports a pre-analyzed Seurat object into a ShinyCell application. It generates the app files needed for interactive exploration of metadata, embeddings, and gene expression outside the notebook environment.
+
+## When to use it
+
+Use this workflow when analysis is already complete and the next goal is to share results with collaborators through a hosted viewer. It is a deployment-oriented utility rather than a preprocessing or modeling workflow.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_ShinyCell_portal`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_ShinyCell_portal/README.md)
+  - [`prepare_shiny.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_ShinyCell_portal/prepare_shiny.rmd)
+- Required package: `ShinyCell`
+- Input: a pre-analyzed Seurat object saved as `.qsave`
+
+## Steps
+
+### Load the processed Seurat object and initialize ShinyCell config
+
+The notebook reads `combined.qsave`, builds a ShinyCell config object, and leaves room to remove or rename metadata before export.
+
+```r
+seu <- qs::qread(paste0(this_sample_name, ".qsave"))
+scConf1 <- createConfig(seu)
+# scConf1 <- delMeta(scConf1, c("orig.ident", "RNA_snn_res.0.2"))
+```
+
+### Generate the Shiny app files
+
+The core export step writes the app bundle into `shinyAppMulti/`, including default genes and the embedding coordinates that should appear first in the app.
+
+```r
+makeShinyFiles(
+  seu,
+  scConf1,
+  gex.assay = "RNA",
+  gex.slot = "data",
+  gene.mapping = TRUE,
+  shiny.prefix = this_display_name,
+  shiny.dir = "shinyAppMulti/",
+  default.gene1 = "Nrgn",
+  default.gene2 = "Gad1",
+  default.multigene = c("Nrgn", "Gad1", "Gad2"),
+  default.dimred = c("UMAP_1", "UMAP_2")
+)
+```
+
+### Build the multi-sample wrapper and archive for deployment
+
+The notebook finishes by generating the Shiny code wrapper. The README instructs users to archive `shinyAppMulti/` and coordinate deployment to the BMBL server.
+
+```r
+makeShinyCodesMulti(
+  shiny.title = "scRNAseq AD",
+  shiny.footnotes = "",
+  shiny.prefix = gsub(" ", "_", basename(sample_list)),
+  shiny.headers = gsub(" ", "_", basename(sample_list)),
+  shiny.dir = "shinyAppMulti/"
+)
+```
+
+## Gotchas / notes
+
+- This workflow assumes the Seurat object is already fully annotated and ready for sharing; it does not perform any upstream analysis.
+- The committed example uses hard-coded default genes and a fixed output directory that you will usually want to review before deployment.
+- There are no committed local screenshots in this folder, but the README includes a live demo link to an already deployed ShinyCell app.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_ShinyCell_portal)

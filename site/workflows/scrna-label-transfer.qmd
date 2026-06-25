@@ -1,0 +1,60 @@
+---
+title: "Label Transfer"
+subtitle: "Reference-atlas annotation with HLCA and related notebooks"
+workflow:
+  id: "scrna-label-transfer"
+  repo_path: "scRNAseq_label_transfer_branch"
+---
+
+## What it does
+
+This workflow groups together atlas-based label transfer notebooks for annotating new scRNA-seq datasets. The committed materials emphasize HLCA-based lung annotation and a more general reference-to-query transfer pattern using Seurat or SCANVI-style tooling.
+
+## When to use it
+
+Use this workflow when clustering is complete but biological labels still need to be transferred from a curated reference atlas. It is most useful for lung datasets or for projects that already have a trusted annotated reference object.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_label_transfer_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_label_transfer_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_label_transfer_branch/README.md)
+  - [`Introduction of annotating new lung datasets using HLCA.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_label_transfer_branch/Introduction%20of%20annotating%20new%20lung%20datasets%20using%20HLCA.md)
+  - [`HLCA_atlas_annotation.ipynb`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_label_transfer_branch/HLCA_atlas_annotation.ipynb)
+  - [`scRNAseq_label_transfer.ipynb`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_label_transfer_branch/scRNAseq_label_transfer.ipynb)
+- Expected inputs: a query dataset plus a pre-annotated reference atlas
+
+## Steps
+
+### Prepare the query and reference inputs
+
+The README describes the core inputs as a processed query matrix, a pre-annotated reference dataset, and metadata needed for preprocessing and batch handling.
+
+### Use the HLCA-specific notebook for lung datasets
+
+The HLCA branch is intended for Human Lung Cell Atlas-based annotation, aligning a new query dataset to the reference before transferring labels.
+
+```text
+Notebook: HLCA_atlas_annotation.ipynb
+Inputs: query scRNA-seq matrix + preprocessed HLCA reference
+Outputs: transferred cell type labels + visualization plots
+```
+
+### Use the general label-transfer notebook for other references
+
+The second notebook covers a broader transfer pattern using reference/query integration, predicted labels, and confidence checks.
+
+```text
+Notebook: scRNAseq_label_transfer.ipynb
+Inputs: query dataset + annotated reference dataset
+Outputs: predicted labels, confidence summaries, and integrated UMAP views
+```
+
+## Gotchas / notes
+
+- The committed source material for this workflow is thinner than some other `scrna` folders: the README is high-level, and most implementation detail lives inside Jupyter notebooks.
+- There are no committed local figure assets in this folder.
+- The HLCA note is lung-focused, so projects outside that assay/tissue context will likely rely more heavily on the general notebook.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_label_transfer_branch)

@@ -1,0 +1,141 @@
+---
+title: "Bulk ATAC-seq General Workflow"
+subtitle: "Recommended-practice bulk ATAC processing, peak calling, and DAR analysis"
+workflow:
+  id: "bulk-atac-general"
+  repo_path: "Bulk_ATAC_general_workflow"
+---
+
+## What it does
+
+This workflow is a stepwise bulk ATAC-seq processing guide based on recommended practices for robust ATAC analysis. The committed README walks from read QC and adapter trimming through alignment, chromosome filtering, duplicate removal, Tn5 shifting, broad-peak calling, and csaw-based differential accessibility analysis in R.
+
+## When to use it
+
+Use this workflow when you want a more transparent, step-by-step bulk ATAC-seq process than an nf-core wrapper provides, especially if you need to inspect each intermediate BAM/BEDPE stage or customize downstream DAR analysis. It is strongest as an operational reference for paired-end bulk ATAC experiments.
+
+## Prerequisites
+
+- Source folder: [`Bulk_ATAC_general_workflow`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)
+- Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Bulk_ATAC_general_workflow/readme.md)
+- Required tools called out in the README:
+  - `FastQC`
+  - `TrimGalore`
+  - `bowtie2`
+  - `samtools`
+  - `picard`
+  - `bedtools`
+  - `macs2`
+  - R packages including `GenomicRanges`, `edgeR`, `csaw`, and `ggplot2`
+- Required inputs:
+  - paired-end FASTQ files
+  - a Bowtie2 genome index
+  - blacklist BED file
+  - helper scripts such as `removeChrom.py`, `bedpeTn5shift.sh`, and `bedpeMinimalConvert.sh`
+
+## Steps
+
+### Inspect raw reads and trim sequencing adapters
+
+The workflow starts with `FastQC` on paired FASTQs, then uses `TrimGalore` to remove adapters and rerun FastQC on the trimmed reads.
+
+```sh
+read1=( *R1*.gz )
+read2=( *R2*.gz )
+core=[amount of cores to allocate for all steps]
+fastqc -f fastq -o ${basename}_QC --threads $core $read1 $read2
+```
+
+```sh
+mkdir trimGalored
+mkdir ${basename}.trim.fastQC
+[directory containing TrimGalore]/TrimGalore-0.6.6/trim_galore \
+  --cores $core --paired --gzip -o trimGalored/ $read1 $read2 \
+  --fastqc_args "-f fastq -o ${basename}.trim.fastQC -t $core"
+```
+
+The README makes adapter content the main metric to compare before and after trimming.
+
+### Align with Bowtie2 and remove unwanted reads
+
+After trimming, the guide aligns reads with `bowtie2`, converts to BAM, sorts and indexes, removes mitochondrial reads, and keeps only properly paired reads.
+
+```sh
+bowtie2 --very-sensitive -p $core -x [YOUR GENOME REFERENCE DIRECTORY] \
+  -1 trimGalored/\${read1/.fastq}_val_1.fq \
+  -2 trimGalored/\${read2/.fastq}_val_2.fq | samtools view -bS - > ${basename}.bam
+samtools sort -o ${basename}.s.bam ${basename}.bam
+samtools index ${basename}.s.bam
+```
+
+```sh
+samtools view -h ${basename}.s.bam | python ${ATACtools}/removeChrom.py - - chrM | samtools view -bh - > ${basename}.noMT.bam
+samtools view -bh -f 3 ${basename}.s.noMT.bam > ${basename}.filt.noMT.bam
+```
+
+This is a stronger workflow than the nf-core README for users who need to understand exactly how filtering is being done.
+
+### Deduplicate, fix mates, and perform Tn5 shifting
+
+The next stage removes duplicates with Picard, name-sorts the BAM, applies `fixmate`, converts to BEDPE, and shifts coordinates to account for Tn5 insertion offsets.
+
+```sh
+java -jar $PICARD MarkDuplicates \
+  INPUT=${basename}.s.filt.noMT.bam \
+  OUTPUT=${basename}.rms.filt.noMT.bam \
+  METRICS_FILE=${basename}.PicardMetrics.txt \
+  REMOVE_DUPLICATES=true
+```
+
+```sh
+samtools sort -n -o ${basename}.namesort.rms.filt.noMT.bam ${basename}.s.rms.filt.noMT.bam
+samtools fixmate ${basename}.namesort.rms.filt.noMT.bam ${basename}.fixed.bam
+
+samtools view -bf 0x2 ${basename}.fixed.bam | bedtools bamtobed -i stdin -bedpe > ${basename}.fixed.bedpe
+bash bedpeTn5shift.sh ${basename}.fixed.bedpe > ${basename}.tn5.bedpe
+bash bedpeMinimalConvert.sh ${basename}.tn5.bedpe > ${basename}.minimal.bedpe
+```
+
+The committed guide is explicit that the coordinate shift is meant to account for the +4 / -5 Tn5 insertion offset.
+
+### Call broad peaks and normalize counts in R
+
+Peak calling is done with `macs2` in broad-peak mode, followed by blacklist filtering and then a csaw-centered R workflow for counting, normalization, and differential accessibility.
+
+```sh
+macs2 callpeak -t ${basename}.minimal.bedpe -f BEDPE -n ${basename} -g mm --broad --broad-cutoff 0.05 --keep-dup all
+bedtools intersect -v -a ${basename}_peaks.broadPeak -b [Blacklist bed file] | grep -P 'chr[\\dXY]+[ \\t]' > ${basename}_peaks.filt.broadPeak
+```
+
+```r
+peakCounts_XXX <- regionCounts(BAM_list, XXX, param = param)
+peakAbundance_XXX <- aveLogCPM(asDGEList(peakCounts_XXX))
+pC_filt_XXX <- peakCounts_XXX[peakAbundance_XXX > -3, ]
+binned_XXX <- windowCounts(XXX, bin = TRUE, width = 10000, param = param)
+```
+
+```r
+y_macs2_XXX <- estimateDisp(y_macs2_XXX, design_macs2_XXX)
+fit_macs2_XXX <- glmQLFit(y_macs2_XXX, design_macs2_XXX, robust = TRUE)
+res_macs2_XXX <- glmQLFTest(fit_macs2_XXX, contrast = makeContrasts(treat-control, levels = design_macs2_XXX))
+```
+
+### Merge nearby windows and define significant DARs
+
+The workflow finishes by merging nearby significant regions, applying FDR filtering, and preparing outputs suitable for interpretation and plotting.
+
+```r
+mergedPeaks_macs2_XXX <- mergeWindows(rowRanges(workWindows_macs2_XXX), tol = 500L, max.width = 5000L)
+tabBest_macs2_XXX <- getBestTest(mergedPeaks_macs2_XXX$id, res_macs2_XXX$table)
+sig_finMergPeaks_macs2_XXX <- finMergPeaks_macs2_XXX[finMergPeaks_macs2_XXX@elementMetadata$FDR < 0.05, ]
+```
+
+## Gotchas / notes
+
+- This workflow assumes paired-end data throughout most of the examples; single-end data need parameter adjustments.
+- Several helper scripts and reference files are required but not bundled in this folder.
+- The README uses placeholder variable names like `XXX`, `basename`, and `[YOUR GENOME REFERENCE DIRECTORY]`, so users must substitute their own paths carefully.
+- The later csaw section is more advanced and assumes familiarity with experimental design and replicate structure.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)

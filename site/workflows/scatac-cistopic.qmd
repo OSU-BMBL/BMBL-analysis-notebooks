@@ -1,0 +1,89 @@
+---
+title: "scATAC-seq cisTopic Branch"
+subtitle: "Topic modeling for regulatory state discovery in scATAC-seq"
+workflow:
+  id: "scatac-cistopic"
+  repo_path: "scATACseq_cisTopic_branch"
+---
+
+## What it does
+
+This workflow applies cisTopic topic modeling to scATAC-seq data to identify groups of co-accessible regulatory regions. The committed materials cover LDA model building, model selection, topic-cell dimensional reduction, density-based clustering, and topic interpretation.
+
+## When to use it
+
+Use this workflow when you want a topic-modeling view of chromatin accessibility rather than only graph clustering in latent semantic indexing space. It is useful for discovering regulatory programs and cell states that emerge from topic probabilities across cells and regions.
+
+## Prerequisites
+
+- Source folder: [`scATACseq_cisTopic_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cisTopic_branch/README.md)
+  - [`Cistopic_tutorial.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cisTopic_branch/Cistopic_tutorial.rmd)
+  - rendered reference: [`Cistopic_tutorial.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_cisTopic_branch/Cistopic_tutorial.html)
+- Package stack centered on `cisTopic`, `Rtsne`, and `densityClust`
+
+## Steps
+
+### Load the cisTopic object and inspect its structure
+
+The notebook begins from a prebuilt `cisTopicObject_pbmc.Rds` example and uses that object as the central container for cells, regions, the binary accessibility matrix, and any model results.
+
+```r
+cisTopicObject <- readRDS("cisTopicObject_pbmc.Rds")
+dim(cisTopicObject@binary.count.matrix)
+```
+
+### Build multiple LDA models across candidate topic numbers
+
+The first major modeling stage runs collapsed Gibbs sampling for a range of topic numbers so later steps can choose an appropriate model.
+
+```r
+topic_numbers <- c(2, 5, 10, 15, 20, 25, 30, 35, 40)
+
+cisTopicObject <- runCGSModels(
+  cisTopicObject,
+  topic = topic_numbers,
+  seed = 987,
+  nCores = 9,
+  burnin = 20,
+  iterations = 50,
+  addModels = FALSE
+)
+```
+
+### Select and validate the optimal model
+
+After model generation, the notebook selects the preferred topic count and checks convergence through likelihood plots.
+
+```r
+cisTopicObject <- selectModel(cisTopicObject)
+```
+
+The committed text makes this model-selection step central rather than optional: topic quality is defined by the likelihood-vs-complexity tradeoff, not just by a fixed user choice.
+
+### Embed topic-cell distributions and cluster cells
+
+The next branch works from topic-cell probabilities, using tSNE plus density-based clustering to assign cell states in topic space.
+
+```r
+DR <- Rtsne(t(cellassign), pca = FALSE)
+DRdist <- dist(DR$Y)
+dclust <- densityClust(DRdist, gaussian = TRUE)
+
+densityClust <- as.data.frame(dclust$clusters)
+cisTopicObject <- addCellMetadata(cisTopicObject, densityClust)
+```
+
+### Visualize topics and interpret regulatory programs
+
+The notebook then plots tSNE embeddings colored by metadata and topic weights, creates topic heatmaps, and sketches the path toward regulatory-topic interpretation.
+
+## Gotchas / notes
+
+- This workflow assumes a preprocessed cisTopic object rather than raw fragment files or count matrices in the repo.
+- Topic-model runtime and memory use can grow quickly with more topics and more iterations, so the candidate list is part of the practical tuning surface.
+- The tutorial includes a placeholder note for full enrichment analysis rather than a fully committed downstream signature workflow.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_cisTopic_branch)

@@ -1,0 +1,93 @@
+---
+title: "SRA Download Workflow"
+subtitle: "Parallel SRA Toolkit retrieval with optional OSC batch execution"
+workflow:
+  id: "data-sra"
+  repo_path: "Data_SRA_download"
+---
+
+## What it does
+
+This workflow downloads SRA run accessions in parallel using SRA Toolkit. The committed materials include a Python launcher that reads a JSON list of SRR IDs, dispatches `fasterq-dump` jobs with multiprocessing, and an OSC-oriented Slurm script for cluster execution.
+
+## When to use it
+
+Use this workflow when you need to retrieve raw sequencing runs from SRA rather than supplementary files from GEO. It is most useful for batches of SRR accessions where parallel downloads and an HPC-friendly wrapper save time compared with running `fasterq-dump` one accession at a time.
+
+## Prerequisites
+
+- Source folder: [`Data_SRA_download`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_SRA_download)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_SRA_download/README.md)
+  - [`fetch-with-sratoolkit.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_SRA_download/fetch-with-sratoolkit.py)
+  - [`osc_script.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_SRA_download/osc_script.sh)
+- Required software called out in the README:
+  - Python 3.12
+  - SRA Toolkit 3.0.2
+- Expected input:
+  - a JSON file with an `sraIds` list of SRR accessions
+
+## Steps
+
+### Prepare the SRA accession list and choose output directories
+
+The workflow expects a JSON file with the structure below, plus optional output and temporary directories passed on the command line.
+
+```json
+{
+  "sraIds": [
+    "SRR2932830",
+    "SRR2932831",
+    "SRR2932832"
+  ]
+}
+```
+
+```bash
+python fetch-with-sratoolkit.py -o /output -t /tmp ./sra_ids.json
+```
+
+### Launch parallel `fasterq-dump` jobs from Python
+
+The main script reads the SRR IDs from JSON, builds one `fasterq-dump` command per accession, and uses a multiprocessing pool of eight workers to run them.
+
+```python
+for id in ids:
+    fasterq_dump = f"fasterq-dump -p -t {temp_dir} -O {output_dir} " + id
+    cmds.append(fasterq_dump)
+
+with Pool(8) as p:
+    result = p.map(execute_cmd, cmds)
+```
+
+That makes this workflow a direct retrieval utility rather than a downstream preprocessing workflow.
+
+### Run the same fetcher on OSC through the provided Slurm wrapper
+
+For the Ohio Supercomputer Center, the committed shell script loads Python and SRA Toolkit modules and launches the same Python fetcher as an eight-task batch job.
+
+```bash
+#!/usr/bin/bash
+#SBATCH --job-name fetch_sra_with_sratoolkit
+#SBATCH --account PCON0100
+#SBATCH --time=8:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=8
+#SBATCH --mem=128GB
+
+module load python/3.12
+module load sratoolkit/3.0.2
+python ./fetch-with-sratoolkit.py -o ./ -t ./ ./sra_ids.json
+```
+
+The README presents this as the main cluster integration pattern for larger downloads.
+
+## Gotchas / notes
+
+- The Python script is thin and assumes a fixed worker count of eight in `Pool(8)`.
+- The helper function `read_sra_files` ignores its filename parameter and instead reads from the parsed CLI args, which is workable here but a real source-code quirk worth noting.
+- The committed workflow retrieves SRA data only; it does not include subsequent FASTQ conversion or downstream QC steps beyond what `fasterq-dump` already produces.
+- There are no committed example JSON inputs or rendered outputs in this folder.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_SRA_download)

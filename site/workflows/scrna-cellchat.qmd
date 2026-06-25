@@ -1,0 +1,106 @@
+---
+title: "Cell-cell Communication with CellChat"
+subtitle: "Infer ligand-receptor networks from a single-cell dataset"
+workflow:
+  id: "scrna-cellchat"
+  repo_path: "scRNAseq_CellCellCommunication_branch"
+---
+
+## What it does
+
+This workflow applies CellChat to a single dataset to infer and visualize cell-cell communication networks. The committed materials use a human skin example and walk through object creation, database selection, interaction scoring, pathway aggregation, and downstream network visualization.
+
+## When to use it
+
+Use this workflow when you already have normalized single-cell expression data and cell labels and want to identify likely ligand-receptor interactions between cell groups. It fits best as a downstream branch after clustering and annotation are already complete.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_CellCellCommunication_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)
+- Main files:
+  - [`cellchat.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_CellCellCommunication_branch/cellchat.rmd)
+  - [`Infer ccc using cellchat.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_CellCellCommunication_branch/Infer%20ccc%20using%20cellchat.md)
+  - committed example data: [`data/data_humanSkin_CellChat.rda`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_CellCellCommunication_branch/data/data_humanSkin_CellChat.rda)
+- Required package stack centered on `CellChat`
+
+## Steps
+
+### Load normalized expression data and cell metadata
+
+The example starts from an `.rda` object containing an expression matrix and metadata, then prepares inputs in the format CellChat expects.
+
+```r
+load("./data/data_humanSkin_CellChat.rda")
+cellchat <- createCellChat(object = data.input, meta = meta, group.by = "labels")
+```
+
+The notebook is written as a single-dataset workflow, so it expects normalized expression values and one grouping column that defines the cell labels used throughout the communication analysis.
+
+### Choose the interaction database and preprocess signaling genes
+
+The committed example uses the human CellChat database and restricts the analysis to secreted signaling interactions before subsetting signaling genes and identifying overexpressed features.
+
+```r
+CellChatDB <- CellChatDB.human
+CellChatDB.use <- subsetDB(CellChatDB, search = "Secreted Signaling")
+cellchat@DB <- CellChatDB.use
+
+cellchat <- subsetData(cellchat)
+cellchat <- identifyOverExpressedGenes(cellchat)
+```
+
+The source also documents an optional PPI projection step for shallow data, while noting that users can skip it and rely on `raw.use = TRUE` in `computeCommunProb()` if they want to avoid that smoothing stage.
+
+### Infer communication probabilities, filter sparse groups, and aggregate pathways
+
+The central scoring step computes interaction probabilities, filters sparse groups, aggregates pathway-level networks, and prepares them for visualization.
+
+```r
+cellchat <- computeCommunProb(cellchat)
+cellchat <- filterCommunication(cellchat, min.cells = 10)
+cellchat <- computeCommunProbPathway(cellchat)
+cellchat <- aggregateNet(cellchat)
+```
+
+The notebook spends extra time explaining that the number of inferred interactions depends strongly on how average expression is computed, including a note about `trimean` versus truncated-mean settings.
+
+### Visualize pathway-level and ligand-receptor-level networks
+
+After inference, the page branches into hierarchy, circle, chord, heatmap, and contribution plots for named signaling pathways and for individual ligand-receptor pairs.
+
+```r
+netVisual_aggregate(cellchat, signaling = pathways.show, vertex.receiver = vertex.receiver)
+netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
+netAnalysis_contribution(cellchat, signaling = pathways.show)
+netVisual_individual(cellchat, signaling = pathways.show, pairLR.use = LR.show, layout = "chord")
+```
+
+### Compare specific sources and targets with bubble and chord views
+
+The notebook then moves from whole-pathway summaries to selected source-target contrasts, using `netVisual_bubble()` and `netVisual_chord_gene()` to zoom in on specific communication patterns.
+
+```r
+netVisual_bubble(cellchat, sources.use = 4, targets.use = c(5:11), remove.isolate = FALSE)
+netVisual_chord_gene(cellchat, sources.use = c(1,2,3,4), targets.use = c(5:11), signaling = c("CCL", "CXCL"))
+```
+
+### Run systems-level role and pattern analysis
+
+The final section computes signaling centrality, sender/receiver roles, outgoing and incoming communication patterns, and structural/functional embeddings before saving the CellChat object.
+
+```r
+cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
+gg1 <- netAnalysis_signalingRole_scatter(cellchat)
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing")
+netVisual_embedding(cellchat, type = "functional", label.size = 3.5)
+```
+
+## Gotchas / notes
+
+- The committed example is adapted from a CellChat-style vignette and uses a bundled human skin dataset rather than a lab-specific object.
+- Database choice is species-specific; the notebook notes switching to `CellChatDB.mouse` for mouse data.
+- Interaction counts can change materially with the averaging method and filtering choices described in the notebook.
+- There are no committed standalone figure assets in this folder beyond the rendered HTML output.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_CellCellCommunication_branch)

@@ -1,0 +1,138 @@
+---
+title: "scATAC-seq General Workflow"
+subtitle: "Signac-based preprocessing, integration, and accessibility analysis"
+workflow:
+  id: "scatac-general"
+  repo_path: "scATACseq_general_workflow"
+---
+
+## What it does
+
+This workflow is the lab's general Signac-based reference for single-cell ATAC-seq analysis. It starts from 10x scATAC-seq outputs, computes quality metrics, performs TF-IDF/LSI-based clustering, builds gene activity scores, integrates with scRNA-seq labels, and finishes with differential accessibility and coverage-style genome views.
+
+## When to use it
+
+Use this workflow when you have standard 10x scATAC-seq outputs and want a general reference path for preprocessing and annotation with Signac. It is most useful when you need a committed example of ATAC-specific QC, LSI-based dimensional reduction, gene activity scoring, and label transfer from a matched or comparable scRNA-seq object.
+
+## Prerequisites
+
+- Source folder: [`scATACseq_general_workflow`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_general_workflow/README.md)
+  - [`Signac_study.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_general_workflow/Signac_study.Rmd)
+  - rendered reference: [`Signac_study.html`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_general_workflow/Signac_study.html)
+- Required package stack centered on `Signac`, `Seurat`, `hdf5r`, and the appropriate genome/annotation packages such as `EnsDb.Hsapiens.v75`
+- Required tutorial inputs:
+  - 10x peak-by-cell H5 matrix
+  - single-cell metadata CSV
+  - fragments file plus `.tbi` index
+  - a preprocessed scRNA-seq Seurat object for the integration step
+
+## Steps
+
+### Download the 10x PBMC tutorial inputs and install the Signac stack
+
+The README and notebook both use the 10x PBMC scATAC-seq tutorial dataset as the committed reference example. The notebook begins with Bioconductor and Signac installation plus species-specific genome and annotation packages for human and mouse.
+
+```sh
+wget https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_filtered_peak_bc_matrix.h5
+wget https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_singlecell.csv
+wget https://cf.10xgenomics.com/samples/cell-atac/1.0.1/atac_v1_pbmc_10k/atac_v1_pbmc_10k_fragments.tsv.gz
+```
+
+### Create the `ChromatinAssay` and attach gene annotations
+
+The main setup step reads the peak matrix and metadata, creates a Signac `ChromatinAssay`, and then wraps that assay in a Seurat object. The notebook also adds UCSC-style gene annotations from `EnsDb.Hsapiens.v75` so downstream visualization and gene-centric functions can use them directly.
+
+```r
+counts <- Read10X_h5(filename = "./Data/atac_v1_pbmc_10k_filtered_peak_bc_matrix.h5")
+metadata <- read.csv(file = "./Data/atac_v1_pbmc_10k_singlecell.csv", header = TRUE, row.names = 1)
+
+chrom_assay <- CreateChromatinAssay(
+  counts = counts,
+  sep = c(":", "-"),
+  genome = "hg19",
+  fragments = "./Data/atac_v1_pbmc_10k_fragments.tsv.gz",
+  min.cells = 10,
+  min.features = 200
+)
+
+pbmc <- CreateSeuratObject(counts = chrom_assay, assay = "peaks", meta.data = metadata)
+annotations <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v75)
+```
+
+### Compute ATAC-specific QC metrics and filter low-quality cells
+
+The notebook emphasizes five ATAC-centric QC metrics: nucleosome signal, TSS enrichment, fragment depth, fraction of reads in peaks, and blacklist ratio. It then inspects those metrics with `TSSPlot()`, `FragmentHistogram()`, and violin plots before removing low-quality cells.
+
+```r
+pbmc <- NucleosomeSignal(object = pbmc)
+pbmc <- TSSEnrichment(object = pbmc, fast = FALSE)
+
+pbmc$pct_reads_in_peaks <- pbmc$peak_region_fragments / pbmc$passed_filters * 100
+pbmc$blacklist_ratio <- pbmc$blacklist_region_fragments / pbmc$peak_region_fragments
+
+TSSPlot(pbmc, group.by = "high.tss") + NoLegend()
+FragmentHistogram(object = pbmc, group.by = "nucleosome_group")
+```
+
+One committed caveat worth preserving: `fast = TRUE` in `TSSEnrichment()` saves memory but prevents the downstream grouped `TSSPlot()` shown in the notebook.
+
+### Run TF-IDF normalization, LSI, UMAP, and clustering
+
+The general Signac path then follows the standard ATAC dimensional-reduction workflow: TF-IDF normalization, `FindTopFeatures()`, singular value decomposition, UMAP, nearest-neighbor graph construction, and clustering.
+
+```r
+pbmc <- RunTFIDF(pbmc)
+pbmc <- FindTopFeatures(pbmc, min.cutoff = "q0")
+pbmc <- RunSVD(pbmc)
+
+pbmc <- RunUMAP(object = pbmc, reduction = "lsi", dims = 2:30)
+pbmc <- FindNeighbors(object = pbmc, reduction = "lsi", dims = 2:30)
+pbmc <- FindClusters(object = pbmc, verbose = FALSE, algorithm = 3)
+```
+
+The notebook notes that excluding the first LSI dimension is deliberate because it is often correlated with sequencing depth rather than biology.
+
+### Build a gene activity assay and integrate with scRNA-seq labels
+
+After clustering, the workflow computes gene activity from promoter-extended gene coordinates, adds that matrix as a new assay, and then transfers labels from a preprocessed scRNA-seq Seurat object.
+
+```r
+gene.activities <- GeneActivity(pbmc)
+
+predicted.labels <- TransferData(
+  anchorset = transfer.anchors,
+  refdata = pbmc.rna$seurat_annotations,
+  weight.reduction = pbmc[["lsi"]],
+  dims = 2:30
+)
+```
+
+This is the main annotation handoff for the tutorial: ATAC clusters are interpreted through gene activity plus reference RNA labels rather than through peak-space clustering alone.
+
+### Find differentially accessible peaks and inspect genome coverage
+
+The closing sections switch back to the `peaks` assay, identify differentially accessible regions between clusters, link peaks to genes where appropriate, and visualize accessibility around genomic loci using `CoveragePlot()`.
+
+```r
+DefaultAssay(pbmc) <- "peaks"
+da_peaks <- FindMarkers(object = pbmc, ident.1 = "CD14+ Monocytes", ident.2 = "CD8 Naive T")
+
+CoveragePlot(
+  object = pbmc,
+  region = "CD8A",
+  features = "CD8A",
+  expression.assay = "RNA"
+)
+```
+
+## Gotchas / notes
+
+- The tutorial depends on an external 10x dataset and a preprocessed scRNA-seq reference object; those are not committed into this repo.
+- The first LSI component is intentionally excluded in the downstream UMAP/neighbor steps because of depth correlation.
+- `TSSEnrichment(fast = TRUE)` is lighter-weight but incompatible with the grouped TSS plotting shown in the notebook.
+- The integration step assumes the scRNA-seq reference has already been preprocessed outside this workflow.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_general_workflow)

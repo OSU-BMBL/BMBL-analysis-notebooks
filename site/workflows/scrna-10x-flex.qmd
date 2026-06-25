@@ -1,0 +1,71 @@
+---
+title: "scRNA-seq 10x Flex Preprocessing"
+subtitle: "Cell Ranger multi setup for pooled 10x Flex libraries"
+workflow:
+  id: "scrna-10x-flex"
+  repo_path: "scRNAseq_10x_Flex_preprocessing"
+---
+
+## What it does
+
+This workflow covers the preprocessing step for pooled 10x Genomics Flex scRNA-seq libraries. It focuses on turning one multiplexed FASTQ set into per-sample filtered feature-barcode matrices using `cellranger multi`.
+
+## When to use it
+
+Use this workflow when your wet-lab setup produced a 10x Flex experiment with multiple samples pooled into the same sequencing files. It is meant for the preprocessing stage only, before clustering or downstream single-cell analysis.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_10x_Flex_preprocessing`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)
+- Main documentation: [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_10x_Flex_preprocessing/README.md)
+- Submission assets:
+  - [`Y12696_GraysonM_Naive-i_V1G_1.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_10x_Flex_preprocessing/Y12696_GraysonM_Naive-i_V1G_1.sh)
+  - [`Y12696_GraysonM_Naive-i_V1G_1.csv`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_10x_Flex_preprocessing/Y12696_GraysonM_Naive-i_V1G_1.csv)
+- Required inputs:
+  - pooled Flex FASTQ files
+  - a transcriptome reference
+  - a Chromium probe-set CSV
+  - a correctly filled 10x `multi` configuration CSV
+
+## Steps
+
+### Prepare the Flex `multi` configuration
+
+The README treats the configuration CSV as the key handoff between the wet-lab sample sheet and Cell Ranger. It maps the raw FASTQ identifier, FASTQ directory, reference, probe set, sample IDs, and probe barcode IDs into one file for `cellranger multi`.
+
+### Submit the Cell Ranger job on OSC
+
+The committed Slurm script is an OSC-style example that sets account, runtime, memory, working directory, and the `cellranger multi` command.
+
+```bash
+#!/usr/bin/bash
+#SBATCH --account PAS2505
+#SBATCH --time=10:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=8
+#SBATCH --mem=64GB
+
+CellRanger=/fs/ess/PCON0022/tools/cellranger-7.1.0/cellranger
+cd /fs/ess/PAS2505/230801_Grayson_GSL-RH-3496/alignment/alignment_epi_data
+${CellRanger} multi --id=Y12696_GraysonM_Naive-i_V1G_1 --csv=Y12696_GraysonM_Naive-i_V1G_1.csv --localcores=8 --localmem=64
+```
+
+### Collect the filtered matrix and alignment summary
+
+The documented outputs are per-sample `web_summary.html` reports and filtered feature-barcode matrices suitable for downstream Seurat or Scanpy workflows.
+
+```text
+sample_filtered_feature_bc_matrix/
+├── barcodes.tsv.gz
+├── features.tsv.gz
+└── matrix.mtx.gz
+```
+
+## Gotchas / notes
+
+- The CSV content is the critical sample-demultiplexing input; mismatched probe barcode IDs or sample descriptions will propagate into the output.
+- The committed paths are OSC-specific examples and should be adapted to the actual project storage and account.
+- The README includes an externally hosted screenshot of the CSV layout, but there are no committed local figure assets in this workflow folder.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)

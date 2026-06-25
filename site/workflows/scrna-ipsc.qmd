@@ -1,0 +1,129 @@
+---
+title: "NOTCH1 iPSC Cardiac Differentiation"
+subtitle: "Multi-timepoint scRNA-seq analysis with trajectory and velocity branches"
+workflow:
+  id: "scrna-ipsc"
+  repo_path: "scRNAseq_iPSC_branch"
+---
+
+## What it does
+
+This workflow analyzes a 12-sample iPSC cardiac differentiation scRNA-seq study spanning six timepoints and two genotypes. The committed materials cover loading 10x data, QC, integration, clustering, annotation, DEG testing, cell composition, trajectory analysis, RNA velocity, and downstream pathway summaries.
+
+## When to use it
+
+Use this workflow when the dataset resembles a multi-timepoint developmental design and you need a rich reference for integrating condition, time, and lineage analyses in one project. It is especially relevant for cardiac differentiation studies and NOTCH1-focused comparisons.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_iPSC_branch`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_iPSC_branch)
+- Main tutorial: [`NOTCH1_iPSC_tutorial.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/NOTCH1_iPSC_tutorial.rmd)
+- Detailed stepwise notebooks in `rmarkdown/`, including:
+  - [`1_load_count_data.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/1_load_count_data.rmd)
+  - [`2_quality_control.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/2_quality_control.rmd)
+  - [`3_dimension_reduction.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/3_dimension_reduction.rmd)
+  - [`4_cell_type_annotation.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/4_cell_type_annotation.rmd)
+  - [`5_deg.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/5_deg.rmd)
+  - [`8_trajectory.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/8_trajectory.rmd)
+  - [`10_velocity.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_iPSC_branch/rmarkdown/10_velocity.rmd)
+- Required inputs include 10x H5 files, sample metadata, and loom files for the velocity branch
+
+## Steps
+
+### Load and merge the 12 timepoint-by-genotype samples
+
+The source materials define a fixed experimental layout with control and NOTCH1 knockout samples at days 0, 2, 5, 10, 14, and 30. The first stepwise notebook reads one 10x H5 file per sample, creates one Seurat object per library, and merges all 12 into a shared starting object.
+
+```r
+data <- Read10X_h5(sample_paths[[sample_name]])
+seurat_obj <- CreateSeuratObject(counts = data, project = sample_name)
+combined <- merge(x = seurat_objects[[1]], y = seurat_objects[-1])
+```
+
+The README and main tutorial both treat this as a multi-timepoint design rather than a simple two-condition comparison, so sample metadata and timepoint labels matter from the start.
+
+### Apply QC and keep a record of filtering decisions
+
+The main tutorial and the more granular QC notebook both compute mitochondrial fractions, inspect QC summaries, and filter low-quality cells. The richer stepwise notebook also shows a MAD-based filtering option in addition to direct thresholding.
+
+```r
+combined[["percent.mt"]] <- PercentageFeatureSet(combined, pattern = "^MT-")
+combined_filtered <- subset(
+  combined,
+  subset = nFeature_RNA > 200 & percent.mt < 20
+)
+```
+
+The README records the tested guideline as roughly 200 to 6000 detected features per cell and less than 20% mitochondrial content, with more restrictive choices available when quality metrics justify them.
+
+### Normalize, integrate with Harmony, and cluster the combined object
+
+After QC, the main tutorial uses log normalization, variable-feature selection, scaling, PCA, Harmony integration, UMAP, neighbors, and graph clustering to align the full time course.
+
+```r
+combined_filtered <- NormalizeData(combined_filtered, normalization.method = "LogNormalize", scale.factor = 10000)
+combined_filtered <- FindVariableFeatures(combined_filtered, selection.method = "vst", nfeatures = 2000)
+combined_filtered <- RunPCA(combined_filtered, features = VariableFeatures(object = combined_filtered))
+combined_filtered <- RunHarmony(combined_filtered, group.by.vars = "sample", dims.use = 1:50)
+combined_filtered <- RunUMAP(combined_filtered, reduction = "harmony", dims = 1:50)
+```
+
+The older stepwise dimension-reduction notebook uses a PCA-based path without Harmony, which makes this folder useful both as a current integrated workflow and as a record of earlier branch-specific analysis choices.
+
+### Annotate cell states globally and, when needed, sample by sample
+
+The source material supports two annotation styles. The main tutorial runs global marker discovery with `FindAllMarkers()`, while the `rmarkdown/4_cell_type_annotation.rmd` notebook revisits each sample separately and applies sample-specific cluster resolutions and marker checks before harmonizing labels across the time course.
+
+```r
+markers <- FindAllMarkers(combined_filtered, only.pos = TRUE)
+combined_filtered <- FindClusters(combined_filtered, resolution = 0.8)
+DimPlot(combined_filtered, reduction = "umap", group.by = "cell_type", label = TRUE)
+```
+
+That per-sample annotation notebook is one of the richer committed sources in this folder: it repeatedly subsets individual samples, reruns local PCA/UMAP/clustering, inspects lineage markers, and then writes consistent labels back into the shared object.
+
+### Run downstream branches for DEG, cell proportion, GSEA, and pathway summaries
+
+Once `cell_type` is available, the auxiliary notebooks split into several committed downstream branches. DEG testing is organized by day and cell type, cell proportions are summarized as barplots and pies, and GSEA focuses on curated NOTCH, WNT, and HIPPO-related signatures.
+
+```r
+day_combined <- subset(combined, ident = c(paste0("Con", day), paste0("N1KO", day)))
+this_combined <- subset(day_combined, ident = this_ct)
+markers <- FindMarkers(this_combined, ident.1 = paste0("Con", day), ident.2 = paste0("N1KO", day))
+```
+
+```r
+all_gene_sets = msigdbr(species = "human")
+fgseaRes <- fgsea(pathways = m_list, stats = res, nperm = 1000)
+```
+
+The cell-proportion notebook also builds a heatmap-style summary and top-marker panels, so this branch covers both abundance changes and expression changes across the differentiation series.
+
+### Add Monocle3 trajectory and velocyto/scVelo branches when those inputs exist
+
+The committed materials include a Monocle3 pseudotime branch and a velocity branch that starts from loom files, aligns spliced and unspliced matrices back to the Seurat cell names, and exports `.h5ad` files for scVelo-style downstream analysis.
+
+```r
+combined.cds <- as.cell_data_set(con_combined)
+combined.cds <- learn_graph(combined.cds, use_partition = TRUE)
+combined.cds <- order_cells(combined.cds, reduction_method = "UMAP", root_cells = root_group)
+```
+
+```r
+loom_obj <- read.loom.matrices(file = loom_filename)
+bm <- as.Seurat(x = loom_obj)
+SaveH5Seurat(bm, filename = paste0(RESULT_DIR, this_sample, ".h5Seurat"))
+Convert(paste0(RESULT_DIR, this_sample, ".h5Seurat"), dest = "h5ad")
+```
+
+This makes the folder closer to a project archive than a single notebook: the top-level tutorial gives the overall path, and the `rmarkdown/` notebooks preserve the deeper branch analyses that support specific figures or questions.
+
+## Gotchas / notes
+
+- This is one of the heaviest `scrna` workflows in the repo; the README recommends 32-64 GB RAM plus additional Python dependencies for velocity.
+- Velocity analysis requires loom files and is optional in the main tutorial.
+- The workflow is distributed across one top-level tutorial and many auxiliary notebooks, so navigation through the source folder matters more than in simpler workflows.
+- There are many committed HTML outputs but no single curated `figures/` folder for direct site embedding.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_iPSC_branch)

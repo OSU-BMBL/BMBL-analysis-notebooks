@@ -1,0 +1,51 @@
+---
+title: "Spatial Cellular Neighborhood"
+subtitle: "Summarize cell-type neighborhoods from annotated spatial immune microenvironment data"
+workflow:
+  id: "spatial-neighborhood"
+  repo_path: "Spatial_Cellular_neighborhood"
+---
+
+## What it does
+
+This workflow focuses on cellular-neighborhood analysis in the immune tumor microenvironment rather than on primary spatial preprocessing. The committed README describes a Python notebook-based method for identifying major components of association between cell types and cellular neighborhoods from an annotated table.
+
+## When to use it
+
+Use this workflow when the upstream spatial or imaging data have already been annotated with cell types and neighborhood labels, and the next question is how neighborhoods relate to cell-type composition across samples or patient groups. It is a focused downstream analysis branch rather than a full spatial transcriptomics pipeline.
+
+## Prerequisites
+
+- Source folder: [`Spatial_Cellular_neighborhood`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Spatial_Cellular_neighborhood)
+- Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Spatial_Cellular_neighborhood/readme.md)
+- Expected input table columns:
+  - `patients`
+  - optional `groups`
+  - `neighborhood10`
+  - `ClusterName`
+- Sample data linked from the README:
+  - `CRC_clusters_neighborhoods_markers.csv`
+
+## Steps
+
+### Prepare the annotated input table
+
+The README makes the input contract explicit: the CSV must already contain sample identifiers, neighborhood labels, and cell-type annotations.
+
+### Open the Python notebook and update the data path
+
+The committed instructions say to download the Python code, open it in Jupyter, and change `path_to_data` to point to the CSV file.
+
+### Run the notebook sequentially to summarize neighborhoods
+
+The intended outcome is to identify the main associations between cell types and cellular neighborhoods in the tumor microenvironment.
+
+## Gotchas / notes
+
+- This folder is thin: the README is committed, but the Python notebook itself is not included in the repository.
+- The method assumes neighborhood annotations already exist upstream; it does not perform segmentation or primary spatial preprocessing.
+- The sample dataset is external rather than bundled in the repo.
+- The README points to the original publication for methodological detail, which means this site page necessarily stays concise and operational.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Spatial_Cellular_neighborhood)

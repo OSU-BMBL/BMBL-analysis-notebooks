@@ -1,0 +1,133 @@
+---
+title: "Single-cell TCR-seq Analysis"
+subtitle: "Joint gene expression and TCR clonotype analysis for metastatic samples"
+workflow:
+  id: "tcr-analysis"
+  repo_path: "scTCRseq_analysis"
+---
+
+## What it does
+
+This workflow links single-cell gene expression data with T-cell receptor sequencing annotations to study clonal expansion and repertoire structure across primary tumor and lymph node metastasis samples. The committed materials combine a short README with a Python notebook built around `scanpy`, `muon`, and `scirpy`.
+
+## When to use it
+
+Use this workflow when gene expression and 10x VDJ outputs need to be analyzed together at the cell level, especially for questions about clonotype structure, receptor pairing, and clonal expansion across conditions. It is a downstream immune-repertoire branch rather than a full preprocessing pipeline.
+
+## Prerequisites
+
+- Source folder: [`scTCRseq_analysis`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scTCRseq_analysis)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scTCRseq_analysis/README.md)
+  - [`Metastasis_TCR.ipynb`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scTCRseq_analysis/Metastasis_TCR.ipynb)
+- Required tools listed in the README:
+  - `scanpy`
+  - `anndata`
+  - `muon`
+  - `scirpy`
+  - `scipy`
+  - `pandas`
+  - `matplotlib`
+- Expected inputs:
+  - 10x VDJ `filtered_contig_annotations.csv` files
+  - processed gene-expression matrix files for the matched scRNA-seq data
+
+## Steps
+
+### Load the paired TCR and gene-expression inputs
+
+The notebook begins with a Python analysis stack for single-cell and immune-repertoire analysis, then defines file paths for multiple patients and matched tumor versus lymph node metastasis samples.
+
+```python
+import scanpy as sc
+import muon as mu
+import scirpy as ir
+import pandas as pd
+from scipy.io import mmread
+```
+
+```python
+tcr_paths = [
+    "/fs/ess/PAS1475/Maoteng/Metastasis_new/GSE167036/TCR/PT_1_tumor_VDJ/SRR13737401_vdj/outs/filtered_contig_annotations.csv",
+    "/fs/ess/PAS1475/Maoteng/Metastasis_new/GSE167036/TCR/PT_1_LNM_VDJ/SRR13737409_vdj/outs/filtered_contig_annotations.csv",
+    ...
+]
+```
+
+The README frames the output as a `MuData` object with a gene-expression component (`gex`) and an immune-repertoire component (`airr`).
+
+### Summarize sample composition and prepare clonotype metadata
+
+One committed notebook section tallies tumor and LNM cell counts per patient and calculates proportions for each sample pair. This makes the cohort balance explicit before repertoire-level interpretation begins.
+
+```python
+counts = Counter(mdata.obs["label"])
+patients = ['PT_1', 'PT_3', 'PT_5', 'PT_6', 'PT_7', 'PT_8']
+counts_df = pd.DataFrame(data, columns=['Patient', 'Tumor_Count', 'LNM_Count'])
+counts_df['Tumor_Proportion'] = (counts_df['Tumor_Count'] / (counts_df['Tumor_Count'] + counts_df['LNM_Count'])).round(3)
+```
+
+### Run immune-receptor QC, distance calculation, and clonotype definition
+
+The main repertoire-analysis block derives patient and location metadata, computes a gene-expression UMAP, indexes receptor chains, and then uses scirpy to calculate receptor distances and define clonotype clusters.
+
+```python
+mdata.obs["patient_id"] = mdata.obs["label"].str.replace('_', '', n=1).str.split('_').str[0]
+mdata.obs["location"] = mdata.obs["label"].str.replace('_', '', n=1).str.split('_').str[1].str.replace('t', 'T', n=1)
+
+sc.pp.log1p(mdata["gex"])
+sc.pp.pca(mdata["gex"], svd_solver="arpack")
+sc.pp.neighbors(mdata["gex"])
+sc.tl.umap(mdata["gex"])
+
+ir.pp.index_chains(mdata)
+ir.tl.chain_qc(mdata)
+ir.pp.ir_dist(mdata, metric="alignment", sequence="aa", cutoff=5)
+ir.tl.define_clonotype_clusters(
+    mdata,
+    metric="alignment",
+    sequence="aa",
+    receptor_arms="any",
+    dual_ir="primary_only",
+)
+```
+
+This is the clearest analytic center of the committed notebook: the workflow is built around repertoire-aware clustering and distance calculations, not only around generic scRNA-seq embedding.
+
+### Visualize clonotype networks, marker expression, and clonal expansion
+
+The downstream sections use scirpy and muon plotting helpers to inspect clonotype networks, immune-marker expression on the UMAP, receptor chain-pair abundance, and clone expansion across labels.
+
+```python
+ir.tl.clonotype_network(mdata, size_aware=False, metric="alignment", sequence="aa")
+ax = ir.pl.clonotype_network(
+    mdata,
+    color="location",
+    base_size=10,
+    label_fontsize=5,
+    panel_size=(15, 15),
+    palette={"LNM": "#EBCAD8", "Tumor": "#6DCADE"}
+)
+```
+
+```python
+mu.pl.embedding(
+    mdata,
+    basis="gex:umap",
+    color=["CD8A", "CD4", "FOXP3"],
+    ncols=3,
+    wspace=0.7,
+)
+
+ir.pl.clonal_expansion(mdata, target_col="clone_id", groupby="label")
+```
+
+## Gotchas / notes
+
+- The notebook uses OSC-style absolute paths for both TCR annotations and expression matrices; those inputs are not committed in the repo.
+- No committed figure assets or rendered notebook outputs are included in this folder, so this page is necessarily lighter than the richer RNA/ATAC workflows.
+- The committed markdown headings in the notebook are brief and partly in Chinese, but the code clearly shows the intended analysis sequence.
+- This workflow is Python-based and depends on the `muon`/`scirpy` ecosystem rather than the Seurat-based R stack used in most other site pages.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scTCRseq_analysis)

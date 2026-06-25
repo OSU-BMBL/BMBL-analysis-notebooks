@@ -1,0 +1,61 @@
+---
+title: "Seurat to Scanpy Conversion"
+subtitle: "Export a Seurat object to `.h5ad` with SeuratDisk"
+workflow:
+  id: "scrna-seurat-scanpy"
+  repo_path: "scRNAseq_Seurat_to_Scanpy"
+---
+
+## What it does
+
+This workflow converts an R Seurat object into a Scanpy-compatible `.h5ad` file. It uses `SeuratDisk` to save an intermediate `.h5Seurat` file and then convert that object into AnnData format.
+
+## When to use it
+
+Use this workflow when the upstream analysis was performed in Seurat but the next step needs to happen in Python or Scanpy. It is a compact format-conversion utility rather than a full analysis notebook.
+
+## Prerequisites
+
+- Source folder: [`scRNAseq_Seurat_to_Scanpy`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Seurat_to_Scanpy)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Seurat_to_Scanpy/README.md)
+  - [`seurat_to_scanpy.R`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Seurat_to_Scanpy/seurat_to_scanpy.R)
+- Required packages include `qs`, `Seurat`, and `SeuratDisk`
+- Input: a Seurat object, commonly stored as `combined.qsave`
+
+## Steps
+
+### Load and update the Seurat object
+
+The script reads a `.qsave` object, updates it if needed, and sets the assay that should become the main expression layer in the exported `.h5ad`.
+
+```r
+sample_name <- "combined.qsave"
+combined <- qs::qread(sample_name)
+combined <- UpdateSeuratObject(combined)
+
+DefaultAssay(combined) <- "RNA"
+# or DefaultAssay(combined) <- "SCT"
+```
+
+### Export to `.h5Seurat` and convert to `.h5ad`
+
+The conversion itself is a two-step handoff through SeuratDisk.
+
+```r
+SaveH5Seurat(combined, filename = "combined.h5Seurat", overwrite = TRUE)
+Convert("combined.h5Seurat", dest = "h5ad", overwrite = TRUE)
+```
+
+### Choose the assay intentionally
+
+The README notes that exporting `RNA` places normalized data in `X` and counts in `raw`, while exporting `SCT` changes which layer becomes the primary matrix.
+
+## Gotchas / notes
+
+- The README explicitly warns that the tested path uses Seurat below v5 because `SeuratDisk` support was limited at the time of testing.
+- The committed script includes comments about clearing metadata columns with all-`NA` values if Scanpy import errors occur.
+- This workflow is intentionally thin: it contains a script and README, but no committed local figures or rendered screenshots.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_Seurat_to_Scanpy)

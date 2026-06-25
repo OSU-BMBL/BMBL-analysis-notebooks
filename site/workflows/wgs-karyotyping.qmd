@@ -1,0 +1,194 @@
+---
+title: "Low-pass WGS Karyotyping Workflow"
+subtitle: "LP-WGS preprocessing, 50 kb bin counting, and digital karyotype reporting"
+workflow:
+  id: "wgs-karyotyping"
+  repo_path: "WGS_Lowpass_karyotyping"
+---
+
+## What it does
+
+This workflow provides a full reference path for low-pass whole-genome sequencing karyotyping. The committed materials cover cluster-side preprocessing from FASTQs to 50 kb bin counts and an R Markdown report that performs panel-of-normals normalization, sex inference, segmentation, CNV calling, and HTML reporting for digital karyotype review.
+
+## When to use it
+
+Use this workflow when you need a lab-specific LP-WGS pipeline for iPSC karyotyping or other large-scale copy-number screening at megabase resolution. It is most useful when you want both the preprocessing scripts and the downstream reporting notebook in one place, including examples for OSC or another SLURM-style environment.
+
+## Prerequisites
+
+- Source folder: [`WGS_Lowpass_karyotyping`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/WGS_Lowpass_karyotyping)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/README.md)
+  - [`0_install_packages.R`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/0_install_packages.R)
+  - [`1_digital_karyotype_analysis.rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/1_digital_karyotype_analysis.rmd)
+  - [`Preprocessing_code/config.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/Preprocessing_code/config.sh)
+  - [`Preprocessing_code/00_setup.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/Preprocessing_code/00_setup.sh)
+  - [`Preprocessing_code/01_concat_fastq.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/Preprocessing_code/01_concat_fastq.sh)
+  - [`Preprocessing_code/02_process_sample.sh`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/Preprocessing_code/02_process_sample.sh)
+- Required tools and packages called out in the sources:
+  - `fastp`
+  - `bwa`
+  - `samtools`
+  - `bedtools`
+  - R packages including `DNAcopy`, `ggplot2`, `dplyr`, `knitr`, and `kableExtra`
+- Example inputs:
+  - paired-end FASTQ directories per sample
+  - `.counts.bed` files for analysis-only use
+  - [`data/example_metadata.csv`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/data/example_metadata.csv)
+  - [`data/example_sample.counts.bed`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/WGS_Lowpass_karyotyping/data/example_sample.counts.bed)
+
+## Steps
+
+### Configure the cluster environment and install the R analysis stack
+
+The preprocessing scripts share a single `config.sh` that defines the SLURM account, working directory, raw FASTQ directory, reference genome, BWA index, fastp path, bin size, thread count, and sample count.
+
+```sh
+SLURM_ACCOUNT="YOUR_ACCOUNT"
+WD="/path/to/working/directory"
+DATA_DIR="/path/to/raw/fastq/data"
+REF_GENOME="/path/to/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+BWA_INDEX="/path/to/bwa_index"
+FASTP="/path/to/fastp"
+BIN_SIZE=50000
+THREADS=16
+NUM_SAMPLES=14
+```
+
+For the reporting side, `0_install_packages.R` installs the CRAN and Bioconductor packages used by the digital karyotype notebook.
+
+```r
+cran_packages <- c("ggplot2", "dplyr", "knitr", "kableExtra", "rmarkdown")
+bioc_packages <- c("DNAcopy")
+```
+
+### Create directories, build the sample list, and generate 50 kb genome bins
+
+The setup script validates the configuration, creates the working subdirectories, derives a `sample_list.txt` from the raw-data folders, and builds standard-chromosome genomic bins from the reference FASTA index.
+
+```sh
+mkdir -p ${WD}/{merged_fastq,fastp_out,alignment,counts,logs,reference,scripts}
+ls -d ${DATA_DIR}/*/ 2>/dev/null | xargs -n1 basename > ${SAMPLE_LIST}
+```
+
+```sh
+grep -E '^[0-9]+\\s|^X\\s|^Y\\s' ${REF_GENOME}.fai | \
+  awk -v OFS='\\t' '{print $1, $2}' > ${WD}/reference/genome_sizes.txt
+
+bedtools makewindows \
+  -g ${WD}/reference/genome_sizes.txt \
+  -w ${BIN_SIZE} > ${BINS_FILE}
+```
+
+This is the preprocessing point that fixes the workflow around 50 kb bins and standard chromosomes `1-22`, `X`, and `Y`.
+
+### Concatenate multi-lane FASTQs or symlink single-lane inputs
+
+`01_concat_fastq.sh` is an array job that finds each sample's `*_1.fq.gz` and `*_2.fq.gz` files, then either concatenates them across lanes or creates symlinks when there is only one lane.
+
+```sh
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" ${SAMPLE_LIST})
+R1_FILES=(${SAMPLE_DIR}/*_1.fq.gz)
+R2_FILES=(${SAMPLE_DIR}/*_2.fq.gz)
+```
+
+```sh
+if [ ${#R1_FILES[@]} -gt 1 ]; then
+  cat "${R1_FILES[@]}" > "${OUT_R1}"
+  cat "${R2_FILES[@]}" > "${OUT_R2}"
+else
+  ln -sf "${R1_FILES[0]}" "${OUT_R1}"
+  ln -sf "${R2_FILES[0]}" "${OUT_R2}"
+fi
+```
+
+That lane-handling logic is one of the workflow's practical strengths because it standardizes the later processing stage to one R1 and one R2 file per sample.
+
+### Run `fastp`, align with BWA-MEM, and count reads per genomic bin
+
+The main processing array job performs QC and trimming with `fastp`, aligns reads with `bwa mem`, sorts and indexes the BAM, calculates basic mapping statistics, and then counts reads in the 50 kb bins with `bedtools coverage`.
+
+```sh
+${FASTP} \
+  -w ${THREADS} \
+  -i ${INPUT_R1} \
+  -I ${INPUT_R2} \
+  -o ${TRIM_R1} \
+  -O ${TRIM_R2} \
+  -h ${FASTP_HTML} \
+  -j ${FASTP_JSON} \
+  --detect_adapter_for_pe \
+  --qualified_quality_phred 20 \
+  --length_required 36
+```
+
+```sh
+bwa mem -t ${THREADS} \
+  -R "@RG\\tID:${SAMPLE}\\tSM:${SAMPLE}\\tPL:ILLUMINA\\tLB:${SAMPLE}" \
+  ${BWA_INDEX} \
+  ${TRIM_R1} \
+  ${TRIM_R2} \
+  2> ${WD}/logs/${SAMPLE}.bwa.log \
+  | samtools view -@ 4 -bS - \
+  | samtools sort -@ 4 -m 4G -o ${SORTED_BAM} -
+
+samtools index -@ ${THREADS} ${SORTED_BAM}
+```
+
+```sh
+bedtools coverage \
+  -a ${BINS_FILE} \
+  -b ${SORTED_BAM} \
+  -counts \
+  > ${COUNTS_FILE}
+```
+
+The same script also estimates rough genome coverage from mapped reads, which helps confirm the expected low-pass range.
+
+### Load counts, infer sample sex, and create the panel of normals
+
+The R Markdown report begins by loading metadata, defining thresholds, finding all `.counts.bed` files, and then inferring sample sex from Y-to-chromosome-20 coverage before constructing an autosomal pooled reference.
+
+```r
+count_files <- list.files(counts_dir, pattern = "\\.counts\\.bed$", full.names = TRUE)
+QC_SD_THRESHOLD <- 0.6
+MIN_LOSS_SIZE_MB <- 1
+MIN_GAIN_SIZE_MB <- 2
+CN_LOSS_THRESHOLD_AUTO <- 1.7
+CN_GAIN_THRESHOLD_AUTO <- 2.3
+```
+
+```r
+y_counts <- sum(df$count[df$chr == "Y"], na.rm = TRUE)
+chr20_counts <- sum(df$count[df$chr == "20"], na.rm = TRUE)
+inferred_sex <- ifelse(y_ratio > 0.15, "Male", "Female")
+```
+
+The README and notebook both emphasize that aneuploid samples should be excluded from the panel of normals so real CNV signals are not suppressed.
+
+### Segment copy number profiles and classify karyotype calls
+
+The reporting notebook converts normalized bin counts into log2 ratios and copy-number estimates, then applies `DNAcopy` segmentation and classifies gains and losses using thresholds calibrated to KaryoStat-like detection limits.
+
+```r
+log2ratio <- log2((sample_count + 1) / (reference_count + 1))
+CN <- 2 * 2^log2ratio
+```
+
+```r
+MIN_NUM_MARK_LOSS <- 20
+MIN_NUM_MARK_GAIN <- 40
+LARGE_CNV_THRESHOLD_MB <- 10
+```
+
+The source materials describe the final status system as `PASS (Normal)`, `PASS (Minor CNVs)`, `Abnormal`, `FAIL (Complex)`, or `FAIL (Noisy Data)` based on CNV size and quality metrics.
+
+## Gotchas / notes
+
+- This workflow has strong committed source material but no committed output figures in the folder, so the site page can only reuse code and prose rather than rendered karyotype plots.
+- The preprocessing scripts are written for a SLURM-style cluster and use placeholder paths that must be updated before use.
+- Sex inference, panel-of-normals construction, and CNV thresholds are all cohort-dependent decisions; the notebook exposes them as explicit parameters rather than hiding them.
+- The README names a `figures/` directory in the example structure, but no committed `figures/` folder is present here.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/WGS_Lowpass_karyotyping)

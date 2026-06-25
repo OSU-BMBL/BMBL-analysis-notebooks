@@ -37,168 +37,195 @@ workflows:
   - id: scrna-general
     label: "General workflow"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_general_workflow"
+    page: "site/workflows/scrna-general.qmd"
     order: 10
   - id: scrna-10x-flex
     label: "10x Flex preprocessing"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_10x_Flex_preprocessing"
+    page: "site/workflows/scrna-10x-flex.qmd"
     order: 20
   - id: scrna-trajectory
     label: "Trajectory analysis"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_trajectory_Slingshot"
+    page: "site/workflows/scrna-trajectory.qmd"
     order: 30
   - id: scrna-cellchat
     label: "Cell-cell communication"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_CellCellCommunication_branch"
+    page: "site/workflows/scrna-cellchat.qmd"
     order: 40
   - id: scrna-hpv
     label: "HPV branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_HPV_branch"
+    page: "site/workflows/scrna-hpv.qmd"
     order: 50
   - id: scrna-seurat-scanpy
     label: "Seurat to Scanpy"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_Seurat_to_Scanpy"
+    page: "site/workflows/scrna-seurat-scanpy.qmd"
     order: 60
   - id: scrna-stomach
     label: "Stomach branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_stomach_branch"
+    page: "site/workflows/scrna-stomach.qmd"
     order: 70
   - id: scrna-shinycell
     label: "ShinyCell portal"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_ShinyCell_portal"
+    page: "site/workflows/scrna-shinycell.qmd"
     order: 80
   - id: scrna-large
     label: "Large dataset analysis"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_Sketch_LargeData"
+    page: "site/workflows/scrna-large.qmd"
     order: 90
   - id: scrna-module
     label: "Module enrichment"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_module_enrichment"
+    page: "site/workflows/scrna-module.qmd"
     order: 100
   - id: scrna-ipsc
     label: "iPSC branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_iPSC_branch"
+    page: "site/workflows/scrna-ipsc.qmd"
     order: 110
   - id: scrna-immune
     label: "Immune branch"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_immune_branch"
+    page: "site/workflows/scrna-immune.qmd"
     order: 120
   - id: scrna-infercnv
     label: "inferCNV"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_inferCNV"
+    page: "site/workflows/scrna-infercnv.qmd"
     order: 130
   - id: scrna-label-transfer
     label: "Label transfer"
     category: scrna
-    kind: github
+    kind: page
     repo_path: "scRNAseq_label_transfer_branch"
+    page: "site/workflows/scrna-label-transfer.qmd"
     order: 140
 
   - id: scatac-general
     label: "General workflow"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_general_workflow"
+    page: "site/workflows/scatac-general.qmd"
     order: 10
   - id: scatac-archr
     label: "ArchR branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_ArchR_branch"
+    page: "site/workflows/scatac-archr.qmd"
     order: 20
   - id: scatac-cicero
     label: "Cicero branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_cicero_branch"
+    page: "site/workflows/scatac-cicero.qmd"
     order: 30
   - id: scatac-cistopic
     label: "cisTopic branch"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_cisTopic_branch"
+    page: "site/workflows/scatac-cistopic.qmd"
     order: 40
   - id: scatac-chromvar
     label: "ChromVAR motif activity"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_ChromVAR_motif"
+    page: "site/workflows/scatac-chromvar.qmd"
     order: 50
   - id: scatac-gene-activity
     label: "Gene activity score"
     category: scatac
-    kind: github
+    kind: page
     repo_path: "scATACseq_Gene_activity"
+    page: "site/workflows/scatac-gene-activity.qmd"
     order: 60
 
   - id: multiome-ad
     label: "AD branch"
     category: multiome
-    kind: github
+    kind: page
     repo_path: "scMultiome_AD_branch"
+    page: "site/workflows/multiome-ad.qmd"
     order: 10
 
   - id: tcr-analysis
     label: "TCR-seq analysis"
     category: tcr
-    kind: github
+    kind: page
     repo_path: "scTCRseq_analysis"
+    page: "site/workflows/tcr-analysis.qmd"
     order: 10
 
   - id: spatial-general
     label: "General workflow"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_general_workflow"
+    page: "site/workflows/spatial-general.qmd"
     order: 10
   - id: spatial-bayesspace
     label: "BayesSpace branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_BayesSpace_branch"
+    page: "site/workflows/spatial-bayesspace.qmd"
     order: 20
   - id: spatial-giotto
     label: "Giotto branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_giotto_branch"
+    page: "site/workflows/spatial-giotto.qmd"
     order: 30
   - id: spatial-spotlight
     label: "Spotlight branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_spotlight_branch"
+    page: "site/workflows/spatial-spotlight.qmd"
     order: 40
   - id: spatial-neighborhood
     label: "Cellular neighborhood"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "Spatial_Cellular_neighborhood"
+    page: "site/workflows/spatial-neighborhood.qmd"
     order: 50
 
   - id: rnaseq-pilot
@@ -213,89 +240,103 @@ workflows:
   - id: bulk-rnaseq-nfcore
     label: "RNA-seq nf-core workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "RNAseq_nfcore_workflow"
+    page: "site/workflows/bulk-rnaseq-nfcore.qmd"
     order: 20
   - id: bulk-atac-nfcore
     label: "ATAC-seq nf-core workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ATACseq_preprocessing"
+    page: "site/workflows/bulk-atac-nfcore.qmd"
     order: 30
   - id: bulk-atac-general
     label: "Bulk ATAC workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "Bulk_ATAC_general_workflow"
+    page: "site/workflows/bulk-atac-general.qmd"
     order: 40
   - id: bulk-chipseq
     label: "ChIP-seq workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_general_workflow"
+    page: "site/workflows/bulk-chipseq.qmd"
     order: 50
   - id: bulk-chipseq-v2
     label: "ChIP-seq workflow v2"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_general_workflow_v2"
+    page: "site/workflows/bulk-chipseq-v2.qmd"
     order: 60
   - id: bulk-homer
     label: "HOMER motif analysis"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_HOMER_motif"
+    page: "site/workflows/bulk-homer.qmd"
     order: 70
 
   - id: bsseq-bismark
     label: "Bismark aligner"
     category: bsseq
-    kind: github
+    kind: page
     repo_path: "BSseq_Bismark_Aligner"
+    page: "site/workflows/bsseq-bismark.qmd"
     order: 10
 
   - id: wgs-karyotyping
     label: "Low-pass karyotyping"
     category: wgs
-    kind: github
+    kind: page
     repo_path: "WGS_Lowpass_karyotyping"
+    page: "site/workflows/wgs-karyotyping.qmd"
     order: 10
 
   - id: grn-celloracle
     label: "CellOracle workflow"
     category: grn
-    kind: github
+    kind: page
     repo_path: "GRN_CellOracle"
+    page: "site/workflows/grn-celloracle.qmd"
     order: 10
 
   - id: enrichment-pathway
     label: "Pathway enrichment"
     category: enrichment
-    kind: github
+    kind: page
     repo_path: "Analysis_Pathway_enrichment"
+    page: "site/workflows/enrichment-pathway.qmd"
     order: 10
 
   - id: data-geo-download
     label: "GEO download"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_GEO_download"
+    page: "site/workflows/data-geo-download.qmd"
     order: 10
   - id: data-geo-submission
     label: "GEO submission"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_GEO_submission"
+    page: "site/workflows/data-geo-submission.qmd"
     order: 20
   - id: data-h5ad
     label: "H5AD conversion"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_H5AD_conversion"
+    page: "site/workflows/data-h5ad.qmd"
     order: 30
   - id: data-sra
     label: "SRA download"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_SRA_download"
+    page: "site/workflows/data-sra.qmd"
     order: 40

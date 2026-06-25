@@ -1,0 +1,47 @@
+---
+title: "ChromVAR Motif Activity"
+subtitle: "Compute TF motif deviations from a preprocessed snATAC-seq object"
+workflow:
+  id: "scatac-chromvar"
+  repo_path: "scATACseq_ChromVAR_motif"
+---
+
+## What it does
+
+This workflow computes transcription factor motif activity scores from a preprocessed snATAC-seq Seurat object using ChromVAR inside the Signac ecosystem. It adds motif annotations from JASPAR and stores per-cell motif deviation scores in a dedicated `chromvar` assay.
+
+## When to use it
+
+Use this workflow when peak-level accessibility has already been processed and the next question is which TF motifs show differential accessibility patterns across cells. It is a focused downstream branch for motif activity rather than a full scATAC-seq pipeline.
+
+## Prerequisites
+
+- Source folder: [`scATACseq_ChromVAR_motif`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif)
+- Main documentation: [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_ChromVAR_motif/README.md)
+- Required inputs:
+  - `MultiOmic.qs` with ATAC counts in the `Macs_peaks` assay
+  - `JASPAR2020`
+  - `BSgenome.Hsapiens.UCSC.hg38`
+
+## Steps
+
+### Load the Seurat object and motif resources
+
+The README expects a preprocessed Seurat object, the hg38 genome build, and motif definitions from the JASPAR CORE collection.
+
+### Add motifs and run ChromVAR
+
+The documented branch is compact: retrieve motifs with `getMatrixSet()`, add them to the ATAC assay with `AddMotifs()`, and compute deviation scores with `RunChromVAR()`.
+
+### Save the updated object
+
+The output is a new `multi_chromvar.qs` object containing motif annotations and a `"chromvar"` assay for downstream visualization or integrative analysis.
+
+## Gotchas / notes
+
+- This workflow is intentionally thin in the committed source materials and does not include a notebook or committed figures.
+- The README notes that `SerialParam()` is used by default for reproducibility, with `MulticoreParam()` as an optional Unix parallelization path.
+- Genome build and motif collection need to match the assay and species.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif)
