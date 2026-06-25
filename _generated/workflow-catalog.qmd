@@ -68,7 +68,7 @@
 
 ### Data utilities
 
-- [GEO download](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_download)
-- [GEO submission](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_submission)
-- [H5AD conversion](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_H5AD_conversion)
-- [SRA download](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_SRA_download)
+- [GEO download](site/workflows/data-geo-download.qmd)
+- [GEO submission](site/workflows/data-geo-submission.qmd)
+- [H5AD conversion](site/workflows/data-h5ad.qmd)
+- [SRA download](site/workflows/data-sra.qmd)

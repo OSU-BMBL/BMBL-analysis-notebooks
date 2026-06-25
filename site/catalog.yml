@@ -315,24 +315,28 @@ workflows:
   - id: data-geo-download
     label: "GEO download"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_GEO_download"
+    page: "site/workflows/data-geo-download.qmd"
     order: 10
   - id: data-geo-submission
     label: "GEO submission"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_GEO_submission"
+    page: "site/workflows/data-geo-submission.qmd"
     order: 20
   - id: data-h5ad
     label: "H5AD conversion"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_H5AD_conversion"
+    page: "site/workflows/data-h5ad.qmd"
     order: 30
   - id: data-sra
     label: "SRA download"
     category: data
-    kind: github
+    kind: page
     repo_path: "Data_SRA_download"
+    page: "site/workflows/data-sra.qmd"
     order: 40

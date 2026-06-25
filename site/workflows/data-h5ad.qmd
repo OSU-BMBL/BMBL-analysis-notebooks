@@ -1,0 +1,132 @@
+---
+title: "H5AD Conversion Workflow"
+subtitle: "Convert raw scRNA-seq count matrices into AnnData H5AD files"
+workflow:
+  id: "data-h5ad"
+  repo_path: "Data_H5AD_conversion"
+---
+
+## What it does
+
+This workflow converts raw single-cell count matrices into AnnData H5AD files for Python-based downstream analysis. The committed materials cover dependency installation, input-format detection, Ensembl-to-symbol conversion through `mygene.info`, sparse matrix construction, batch processing, and preview CSV export.
+
+## When to use it
+
+Use this workflow when you have downloaded scRNA-seq count matrices from GEO or another source in TSV/CSV form and want to standardize them into H5AD for Scanpy or scvi-tools. It is most useful when your inputs use Ensembl IDs, mixed delimiters, or inconsistent matrix orientations.
+
+## Prerequisites
+
+- Source folder: [`Data_H5AD_conversion`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_H5AD_conversion)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_H5AD_conversion/README.md)
+  - [`0_install_packages.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_H5AD_conversion/0_install_packages.py)
+  - [`1_convert_to_h5ad.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_H5AD_conversion/1_convert_to_h5ad.py)
+- Required packages:
+  - `anndata`
+  - `scipy`
+  - `pandas`
+  - `numpy`
+  - `mygene`
+- Supported inputs:
+  - `.tsv`, `.tsv.gz`
+  - `.csv`, `.csv.gz`
+  - `.txt`, `.txt.gz`
+
+## Steps
+
+### Install the conversion dependencies and prepare the input files
+
+The workflow begins with a Python install script that pulls in the AnnData and sparse-matrix stack plus `mygene` for gene-symbol lookup.
+
+```bash
+python 0_install_packages.py
+```
+
+The main script accepts either a single input file or a whole directory, and the README calls out compressed and uncompressed TSV, CSV, and TXT matrices as supported sources.
+
+### Load the matrix and detect delimiter plus orientation
+
+The converter infers compression from the filename suffix, chooses tab or comma separation from the extension, and then guesses whether the matrix is stored as genes x cells or cells x genes by comparing row and column counts.
+
+```python
+def load_count_matrix(filepath: Path) -> pd.DataFrame:
+    suffix = "".join(filepath.suffixes)
+    compression = "gzip" if ".gz" in suffix else None
+    sep = "\t" if ".tsv" in suffix or ".txt" in suffix else ","
+    return pd.read_csv(filepath, sep=sep, compression=compression, index_col=0)
+```
+
+```python
+if df.shape[0] > df.shape[1]:
+    ensembl_ids = list(df.index)
+    cell_ids = list(df.columns)
+    counts = df.values.T
+else:
+    cell_ids = list(df.index)
+    ensembl_ids = list(df.columns)
+    counts = df.values
+```
+
+That orientation heuristic is a key part of the workflow because many GEO matrices are not packaged consistently.
+
+### Convert Ensembl IDs to unique gene symbols
+
+The script next queries `mygene.info` to map Ensembl IDs to symbols and keeps the original Ensembl IDs as metadata. If multiple IDs collapse to the same symbol, the workflow appends numeric suffixes to keep `var_names` unique.
+
+```python
+results = mg.querymany(
+    ensembl_ids,
+    scopes="ensembl.gene",
+    fields="symbol",
+    species=species,
+    verbose=False,
+)
+```
+
+```python
+def make_unique_symbols(symbols: list[str]) -> list[str]:
+    seen = {}
+    unique = []
+    for sym in symbols:
+        if sym in seen:
+            seen[sym] += 1
+            unique.append(f"{sym}_{seen[sym]}")
+        else:
+            seen[sym] = 0
+            unique.append(sym)
+    return unique
+```
+
+The README also highlights the `--species` choice as an important safeguard against wrong human-versus-mouse annotation.
+
+### Build the AnnData object, save compressed H5AD, and optionally write previews
+
+Once the matrix and gene metadata are ready, the script constructs a sparse `AnnData` object, stores the original Ensembl IDs in `adata.var['ensembl_id']`, adds a sample name into `obs`, and writes a gzip-compressed `.h5ad` plus a preview CSV unless `--no-preview` is used.
+
+```python
+obs = pd.DataFrame(index=cell_ids)
+obs["sample"] = sample_name
+
+var = pd.DataFrame(index=gene_symbols)
+var["ensembl_id"] = ensembl_ids
+
+adata = ad.AnnData(X=counts, obs=obs, var=var)
+adata.write_h5ad(output_path, compression="gzip")
+```
+
+```python
+preview_path = output_path.with_suffix(".preview.csv")
+save_preview(adata, preview_path)
+```
+
+For batch processing, the script scans the input directory for supported patterns and converts each file to its own H5AD output.
+
+## Gotchas / notes
+
+- The orientation detection is heuristic and assumes genes outnumber cells in a gene-by-cell matrix; unusual matrix shapes may need manual checking.
+- `mygene.info` lookups depend on an external service and can be slow or rate-limited.
+- Some Ensembl IDs will not map cleanly to symbols, so the workflow falls back to the original ID.
+- There are no committed example outputs in this folder, so the site page stays at the code-and-usage level.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_H5AD_conversion)

@@ -1,0 +1,89 @@
+---
+title: "GEO Download Workflow"
+subtitle: "HTTPS download of sample-level GEO supplementary files"
+workflow:
+  id: "data-geo-download"
+  repo_path: "Data_GEO_download"
+---
+
+## What it does
+
+This workflow downloads sample-level supplementary files from NCBI GEO over HTTPS instead of FTP. The committed materials cover dependency setup, GSM-to-filename mapping, resumable downloads, and a simple Python script that streams each file into a local output directory.
+
+## When to use it
+
+Use this workflow when a GEO series exposes per-sample files such as count matrices, barcodes, or gzipped tabular outputs and you want only selected GSMs rather than a full `RAW.tar` archive. It is most useful when GEO FTP is unreliable or when you need sample-by-sample retrieval for downstream processing.
+
+## Prerequisites
+
+- Source folder: [`Data_GEO_download`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_download)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_GEO_download/README.md)
+  - [`0_install_packages.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_GEO_download/0_install_packages.py)
+  - [`1_download_samples.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Data_GEO_download/1_download_samples.py)
+- Required package:
+  - `requests`
+- Expected inputs:
+  - a JSON file mapping GEO sample IDs to exact filenames
+  - an output directory for downloaded files
+
+## Steps
+
+### Install the Python dependency and identify the exact GEO sample files
+
+The workflow begins with a small install script that pulls in `requests`, then asks you to identify the GSM IDs and exact supplementary filenames from the GEO series page or other GEO metadata files.
+
+```bash
+python 0_install_packages.py
+```
+
+The README is explicit that this workflow is for sample-level supplementary files, not SRA/FASTQ retrieval and not combined `RAW.tar` archives.
+
+### Build a `samples.json` mapping from GSM IDs to filenames
+
+The main script expects a JSON object whose keys are GSM accessions and whose values are the exact filenames to request from GEO.
+
+```json
+{
+  "GSM4716780": "GSM4716780_sample1_counts.tsv.gz",
+  "GSM4716781": "GSM4716781_sample2_counts.tsv.gz",
+  "GSM4716782": "GSM4716782_sample3_counts.tsv.gz"
+}
+```
+
+This mapping matters because the script does not discover filenames automatically from a GSE; it builds download URLs from the explicit GSM and filename pairs you provide.
+
+### Download the sample files with resumable HTTPS requests
+
+The downloader creates an HTTPS GEO URL for each file, skips any output that already exists, streams downloads in chunks, and optionally waits between requests to reduce rate limiting.
+
+```bash
+python 1_download_samples.py --samples samples.json --output ./raw_data/
+```
+
+```python
+def get_download_url(gsm: str, filename: str) -> str:
+    encoded = urllib.parse.quote(filename)
+    return f"https://www.ncbi.nlm.nih.gov/geo/download/?acc={gsm}&format=file&file={encoded}"
+```
+
+```python
+for i, (gsm, filename) in enumerate(samples.items(), 1):
+    filepath = output_dir / filename
+    if filepath.exists():
+        print(f"[{i}/{len(samples)}] Skipping {gsm} (exists)")
+        skipped += 1
+        continue
+```
+
+The committed README also recommends increasing `--delay` for larger batches or repeated timeout errors.
+
+## Gotchas / notes
+
+- The script does not currently implement full GSE-level discovery; the `--gse` option only prints a note telling users to prepare a manual `samples.json`.
+- Filenames must match GEO exactly, including any version suffixes.
+- This utility is for GEO supplementary files, not SRA run downloads.
+- There are no committed example datasets or rendered outputs in this folder, so the page is code-and-prose only.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_download)
