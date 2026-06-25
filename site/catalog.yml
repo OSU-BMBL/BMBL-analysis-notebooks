@@ -283,29 +283,33 @@ workflows:
   - id: bsseq-bismark
     label: "Bismark aligner"
     category: bsseq
-    kind: github
+    kind: page
     repo_path: "BSseq_Bismark_Aligner"
+    page: "site/workflows/bsseq-bismark.qmd"
     order: 10
 
   - id: wgs-karyotyping
     label: "Low-pass karyotyping"
     category: wgs
-    kind: github
+    kind: page
     repo_path: "WGS_Lowpass_karyotyping"
+    page: "site/workflows/wgs-karyotyping.qmd"
     order: 10
 
   - id: grn-celloracle
     label: "CellOracle workflow"
     category: grn
-    kind: github
+    kind: page
     repo_path: "GRN_CellOracle"
+    page: "site/workflows/grn-celloracle.qmd"
     order: 10
 
   - id: enrichment-pathway
     label: "Pathway enrichment"
     category: enrichment
-    kind: github
+    kind: page
     repo_path: "Analysis_Pathway_enrichment"
+    page: "site/workflows/enrichment-pathway.qmd"
     order: 10
 
   - id: data-geo-download

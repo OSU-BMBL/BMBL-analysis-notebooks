@@ -9,9 +9,13 @@ project:
     - "index.qmd"
     - "CONTRIBUTING_to_site.md"
     - "site/workflows/multiome-ad.qmd"
+    - "site/workflows/bsseq-bismark.qmd"
+    - "site/workflows/grn-celloracle.qmd"
     - "site/workflows/scrna-general.qmd"
     - "site/workflows/scatac-general.qmd"
     - "site/workflows/spatial-general.qmd"
+    - "site/workflows/wgs-karyotyping.qmd"
+    - "site/workflows/enrichment-pathway.qmd"
     - "rnaseq-workflow.qmd"
     - "site/workflows/tcr-analysis.qmd"
     - "site/workflows/scrna-10x-flex.qmd"
@@ -147,19 +151,19 @@ website:
             text: "HOMER motif analysis"
       - section: "Bisulfite sequencing"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BSseq_Bismark_Aligner"
+          - href: "site/workflows/bsseq-bismark.qmd"
             text: "Bismark aligner"
       - section: "Whole Genome Sequencing"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/WGS_Lowpass_karyotyping"
+          - href: "site/workflows/wgs-karyotyping.qmd"
             text: "Low-pass karyotyping"
       - section: "Gene Regulatory Networks"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/GRN_CellOracle"
+          - href: "site/workflows/grn-celloracle.qmd"
             text: "CellOracle workflow"
       - section: "Enrichment / downstream analysis"
         contents:
-          - href: "https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Analysis_Pathway_enrichment"
+          - href: "site/workflows/enrichment-pathway.qmd"
             text: "Pathway enrichment"
       - section: "Data utilities"
         contents:

@@ -1,0 +1,129 @@
+---
+title: "CellOracle GRN Workflow"
+subtitle: "Cluster-specific gene regulatory network construction and in silico perturbation"
+workflow:
+  id: "grn-celloracle"
+  repo_path: "GRN_CellOracle"
+---
+
+## What it does
+
+This workflow is a compact CellOracle example for building cluster-specific gene regulatory networks from single-cell RNA-seq data and preparing the object for in silico perturbation analysis. The committed materials consist of a short README plus a Python script that loads an AnnData object, selects highly variable genes, imports a base GRN, computes cluster-level links, and saves the resulting CellOracle network object.
+
+## When to use it
+
+Use this workflow when you already have a single-cell AnnData object and want a lab example for setting up CellOracle-based GRN inference and perturbation analysis. It is best treated as a thin reference script rather than a full end-to-end tutorial, especially because the README and Python example do not expose all input files or downstream plotting outputs.
+
+## Prerequisites
+
+- Source folder: [`GRN_CellOracle`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/GRN_CellOracle)
+- Main files:
+  - [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/GRN_CellOracle/README.md)
+  - [`Cell_oracle_GRN.py`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/GRN_CellOracle/Cell_oracle_GRN.py)
+- Required Python packages visible in the script:
+  - `scanpy`
+  - `celloracle`
+  - `numpy`
+  - `pandas`
+  - `matplotlib`
+- Expected inputs:
+  - an AnnData file such as `Pancrease_acinar.h5ad`
+  - metadata columns including a cluster or cell-type label like `Sample_2`
+  - a usable embedding such as `X_umap`
+
+## Steps
+
+### Load the AnnData object and keep raw counts before transformation
+
+The Python script starts from an `.h5ad` file, normalizes the expression matrix, selects 3000 highly variable genes, and stores raw counts in a dedicated layer before the log-scaled analysis steps.
+
+```python
+adata = sc.read_h5ad('Pancrease_acinar.h5ad')
+
+adata.raw = adata.copy()
+sc.pp.normalize_total(adata, target_sum=1e4)
+sc.pp.log1p(adata)
+sc.pp.highly_variable_genes(
+    adata,
+    flavor="seurat_v3",
+    n_top_genes=3000
+)
+
+adata = adata[:, adata.var.highly_variable]
+adata.layers["raw_count"] = adata.raw.X.copy()
+```
+
+This is the workflow's main preprocessing stage before any GRN construction.
+
+### Compute neighborhood structure and initialize the CellOracle object
+
+After filtering, the script scales the data, runs PCA, computes neighbors, optionally calculates diffusion map coordinates, and saves the processed AnnData object. It then loads a built-in mouse scATAC atlas base GRN and imports both the raw counts and TF information into a new `Oracle` object.
+
+```python
+sc.tl.pca(adata, svd_solver='arpack')
+sc.pp.neighbors(adata, n_neighbors=4, n_pcs=20)
+sc.tl.diffmap(adata)
+sc.pp.neighbors(adata, n_neighbors=10, use_rep='X_diffmap')
+```
+
+```python
+base_GRN = co.data.load_mouse_scATAC_atlas_base_GRN()
+oracle = co.Oracle()
+
+adata.X = adata.layers["raw_count"].copy()
+oracle.import_anndata_as_raw_count(
+    adata=adata,
+    cluster_column_name="Sample_2",
+    embedding_name="X_umap"
+)
+oracle.import_TF_data(TF_info_matrix=base_GRN)
+```
+
+### Perform imputation and derive cluster-specific links
+
+The script then performs Oracle PCA, chooses a PCA dimension count heuristically from the explained-variance profile, sets `k` from the cell count, and runs KNN imputation before building cluster-specific GRNs.
+
+```python
+oracle.perform_PCA()
+
+n_comps = np.where(np.diff(np.diff(np.cumsum(oracle.pca.explained_variance_ratio_)) > 0.002))[0][0]
+n_comps = min(n_comps, 50)
+n_cell = oracle.adata.shape[0]
+k = int(0.025 * n_cell)
+
+oracle.knn_imputation(
+    n_pca_dims=n_comps,
+    k=k,
+    balanced=True,
+    b_sight=k*8,
+    b_maxl=k*4,
+    n_jobs=20
+)
+```
+
+```python
+links = oracle.get_links(cluster_name_for_GRN_unit="Sample_2", alpha=10, verbose_level=10)
+links.to_hdf5(file_path="acinar_Sample_2_GRN.celloracle.links")
+```
+
+### Reload, filter, and prepare the GRN object for downstream perturbation work
+
+The last committed code block reloads the saved CellOracle links file and filters edges by p-value. The README's manuscript section then describes using the resulting GRNs for cluster-specific perturbation simulations.
+
+```python
+links = co.load_hdf5(file_path="acinar_Sample_2_GRN.celloracle.links")
+links.filter_links(p=0.05, weight="coef_abs")
+links.links_dict.keys()
+```
+
+According to the README, the intended downstream use is simulated overexpression or knockout with `oc.simulate_shift`, although that perturbation code is not included in the committed Python script itself.
+
+## Gotchas / notes
+
+- This is a thin workflow: there are no committed figures, no committed notebook outputs, and only one Python script.
+- The README's manuscript description mentions building the GRN from scATAC/Cicero-derived links, but the committed script instead loads CellOracle's built-in mouse scATAC atlas base GRN; that difference should be treated as a real source-material limitation.
+- The example filenames and metadata columns are highly workflow-specific, including `Pancrease_acinar.h5ad` and `Sample_2`.
+- The script assumes an embedding named `X_umap` even though it also computes diffusion map coordinates.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/GRN_CellOracle)

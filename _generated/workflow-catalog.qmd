@@ -52,19 +52,19 @@
 
 ### Bisulfite sequencing
 
-- [Bismark aligner](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/BSseq_Bismark_Aligner)
+- [Bismark aligner](site/workflows/bsseq-bismark.qmd)
 
 ### Whole Genome Sequencing
 
-- [Low-pass karyotyping](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/WGS_Lowpass_karyotyping)
+- [Low-pass karyotyping](site/workflows/wgs-karyotyping.qmd)
 
 ### Gene Regulatory Networks
 
-- [CellOracle workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/GRN_CellOracle)
+- [CellOracle workflow](site/workflows/grn-celloracle.qmd)
 
 ### Enrichment / downstream analysis
 
-- [Pathway enrichment](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Analysis_Pathway_enrichment)
+- [Pathway enrichment](site/workflows/enrichment-pathway.qmd)
 
 ### Data utilities
 
