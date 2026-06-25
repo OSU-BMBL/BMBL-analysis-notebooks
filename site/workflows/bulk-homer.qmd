@@ -1,0 +1,96 @@
+---
+title: "HOMER Motif Analysis"
+subtitle: "Set up HOMER2, annotate peaks, and run motif enrichment and positioning analyses"
+workflow:
+  id: "bulk-homer"
+  repo_path: "ChipSeq_HOMER_motif"
+---
+
+## What it does
+
+This workflow documents a HOMER2-based path for peak annotation, motif enrichment, and motif-position analysis. The committed README focuses on installing HOMER in OSC scratch space, annotating BED-like regions, running `findMotifsGenome.pl`, and using `createHomer2EnrichmentTable.pl` to summarize motif positioning around target features such as TSSs.
+
+## When to use it
+
+Use this workflow after you already have peak or region files from ChIP-seq, ATAC-seq, or a related bulk NGS analysis and want to interpret them in terms of nearby genes and enriched TF motifs. It is a downstream motif-analysis utility rather than a primary alignment or peak-calling pipeline.
+
+## Prerequisites
+
+- Source folder: [`ChipSeq_HOMER_motif`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_HOMER_motif)
+- Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/ChipSeq_HOMER_motif/readme.md)
+- Required inputs:
+  - BED-like peak/region files
+  - an installed HOMER genome
+  - optional motif files, background files, and genome FASTA/TSS resources depending on the subcommand
+- Required software:
+  - HOMER2 v5.1
+
+## Steps
+
+### Install HOMER in OSC scratch space and configure the genome
+
+The README is explicit that HOMER should be installed in `/scratch/` rather than `/ess/`, then added to `PATH` for later use.
+
+```sh
+mkdir HOMER; cd HOMER
+wget http://homer.ucsd.edu/homer/configureHomer.pl
+perl configureHomer.pl -install
+perl configureHomer.pl -list
+perl configureHomer.pl -install [genome of choice]
+PATH=$PATH:[path/to/HOMER]/bin/
+```
+
+This setup detail is the most workflow-specific operational note in the committed guide.
+
+### Annotate peaks relative to nearby genes and features
+
+The first analytical step uses `annotatePeaks.pl` on BED-like regions, typically in BED-6 format, to assign nearby genes, distances to TSSs, and basic locus annotations.
+
+```sh
+annotatePeaks.pl [BED-like file] [name of genome you previously installed] [output filename]
+```
+
+The README also notes that `-gtf`, `-m`, and `-p` can be used for alternate annotations, motif overlays, or nearest-peak references.
+
+### Run motif enrichment with HOMER
+
+For motif discovery, the guide uses `findMotifsGenome.pl`, which generates both de novo and known-motif enrichments and can optionally compare against a user-supplied background.
+
+```sh
+findMotifsGenome.pl [BED-like file] [name of genome you previously installed] [premade output directory] -p [number of available cores for multithreading]
+```
+
+The committed README highlights the main result files:
+- `knownResults.html`
+- `homerResults.html`
+- `knownResults.txt`
+- motif result directories and motif summary files
+
+### Summarize motif positioning around target intervals
+
+The final branch uses `createHomer2EnrichmentTable.pl` to map motif enrichment or depletion across windows around a reference position such as the TSS.
+
+```sh
+createHomer2EnrichmentTable.pl \
+  -o outputDirectory/ \
+  -strand separate \
+  -m [HOMER formatted motif file] \
+  -p [tss position txt file] \
+  -g [FASTA of the genome analyzed] \
+  -size 400 -windows 3 -pkmer 2 \
+  -allowTargetOverlap -allowBgOverlap
+```
+
+The README calls out two especially useful outputs:
+- `summary.windowN.logq.txt` for positional enrichment/depletion profiles
+- `summary.bestIntervals.txt` for the strongest enriched or depleted motif intervals
+
+## Gotchas / notes
+
+- This folder is README-only and intentionally operational; there are no committed figures or example output files in the repo.
+- HOMER setup is location-sensitive on OSC, and the README strongly prefers `/scratch/` over `/ess/`.
+- The commands use placeholders for files, genomes, and directories, so users must adapt them carefully.
+- The workflow assumes the user already has peak/region files from an upstream analysis; it does not generate peaks itself.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_HOMER_motif)

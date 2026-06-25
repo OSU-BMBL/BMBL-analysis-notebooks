@@ -1,0 +1,77 @@
+---
+title: "Bulk ChIP-seq Workflow"
+subtitle: "nf-core/chipseq plus motif discovery and comparison"
+workflow:
+  id: "bulk-chipseq"
+  repo_path: "ChipSeq_general_workflow"
+---
+
+## What it does
+
+This workflow uses `nf-core/chipseq` for bulk ChIP-seq processing and then points to motif discovery and motif comparison steps outside the main Nextflow run. The committed README describes the samplesheet format, major pipeline stages, OSC execution, and how the resulting peak files can be taken into STREME and Tomtom.
+
+## When to use it
+
+Use this workflow when you want a standard ChIP-seq preprocessing path that covers QC through peak calling and consensus peak analysis, followed by motif-centric interpretation of the resulting regions. It is most useful for bulk ChIP-seq projects with IP and matched input controls.
+
+## Prerequisites
+
+- Source folder: [`ChipSeq_general_workflow`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
+- Main documentation: [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/ChipSeq_general_workflow/README.md)
+- Required inputs:
+  - ChIP-seq FASTQ files
+  - a samplesheet with group, replicate, antibody, and control metadata
+- Required software:
+  - `Nextflow`
+  - a container/runtime profile such as `singularity`
+  - downstream external tools/services such as `STREME` and `Tomtom` for motif steps
+
+## Steps
+
+### Build the ChIP-seq samplesheet
+
+The README expects a samplesheet that pairs each IP library with its corresponding input/control sample.
+
+```csv
+group,fastq_1,fastq_2,replicate,antibody,control,control_replicate
+WT_BCATENIN_IP,BLA203A1_S27_L006_R1_001.fastq.gz,,1,BCATENIN,WT_INPUT,1
+WT_BCATENIN_IP,BLA203A25_S16_L002_R1_001.fastq.gz,,2,BCATENIN,WT_INPUT,2
+WT_INPUT,BLA203A6_S32_L006_R1_001.fastq.gz,,1,,,
+```
+
+### Run nf-core/chipseq through QC, alignment, and peak calling
+
+The main pipeline stage uses `nf-core/chipseq` with one of several aligners, then performs duplicate marking, filtering, bigWig creation, peak calling, annotation, consensus peak generation, and MultiQC summarization.
+
+```bash
+./nextflow run nf-core/chipseq \
+  --input sheet.csv \
+  --outdir narrow_nofdr/outputs0 \
+  --genome GRCh38 \
+  -profile singularity \
+  --macs_gsize 2913022398 \
+  --skip_qc \
+  --narrow_peak
+```
+
+The committed README’s most important practical detail is that this is not just alignment plus MACS3: it’s a full pipeline that also builds bigWigs, consensus peaks, PCA/clustering summaries, and IGV session files.
+
+### Use peak outputs for motif discovery and motif comparison
+
+After the Nextflow run, the guide points users to motif discovery with STREME and motif comparison with Tomtom, using the called peak BED files as the main handoff.
+
+The documented downstream sequence is:
+- take the peak calling BED output
+- submit motif discovery to STREME
+- inspect `matching_sites.tsv` for enriched motif locations
+- compare motifs of interest with Tomtom to identify likely TF matches
+
+## Gotchas / notes
+
+- This folder is README-driven and does not include a committed notebook or figures.
+- The motif steps are described as external follow-up steps, not as fully scripted local commands in the repo.
+- The example command uses `--skip_qc`, even though the pipeline overview includes QC reporting; users should decide whether skipping QC is appropriate for their run.
+- The README mixes pipeline structure and downstream motif interpretation, so this page intentionally stays at the usage-and-rationale level instead of expanding beyond the committed source.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)

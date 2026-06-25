@@ -1,0 +1,100 @@
+---
+title: "Bulk ATAC-seq nf-core Workflow"
+subtitle: "Run nf-core/atacseq from samplesheet setup through QC, peaks, and differential analysis"
+workflow:
+  id: "bulk-atac-nfcore"
+  repo_path: "ATACseq_preprocessing"
+---
+
+## What it does
+
+This workflow uses `nf-core/atacseq` as an end-to-end bulk ATAC-seq preprocessing and analysis pipeline. The committed README covers samplesheet setup, cluster execution with Nextflow, major output categories, and the key parameters that control alignment, peak calling, annotation, and consensus peak generation.
+
+## When to use it
+
+Use this workflow when you want a reproducible, containerized ATAC-seq pipeline rather than a hand-built series of shell steps. It is most useful when the project needs standardized QC, alignment, peak calling, and differential accessibility outputs from raw FASTQ files.
+
+## Prerequisites
+
+- Source folder: [`ATACseq_preprocessing`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATACseq_preprocessing)
+- Main documentation: [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/ATACseq_preprocessing/README.md)
+- Required software:
+  - `Nextflow`
+  - `Singularity` or `Docker`
+  - optional `SLURM` for cluster execution
+- Required inputs:
+  - paired-end ATAC-seq FASTQ files
+  - a CSV samplesheet with sample names, FASTQs, and replicate labels
+
+## Steps
+
+### Build the samplesheet and run wrapper script
+
+The README expects a project directory with a samplesheet plus a small `run_atac.sh` wrapper that sets `NXF_HOME`, loads Java, and launches `nf-core/atacseq`.
+
+```csv
+sample,fastq_1,fastq_2,replicate
+CONTROL,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz,1
+CONTROL,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz,2
+CONTROL,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz,3
+```
+
+```bash
+#!/usr/bin/bash
+#SBATCH --job-name=atac
+#SBATCH --time=20:00:00
+#SBATCH --mem=128G
+#SBATCH --cpus-per-task=40
+
+mkdir results .nextflow_home
+export NXF_HOME=$(pwd)/.nextflow_home
+module load java/21.0.2
+
+nextflow run nf-core/atacseq \
+    --input ./samplesheet.csv \
+    --outdir ./results \
+    --genome mm10 \
+    --read_length 150 \
+    -profile singularity \
+    -resume
+```
+
+### Use the built-in nf-core output structure for QC and peak review
+
+The README organizes the outputs conceptually into alignment results, peak calling, QC reports, differential analysis, and visualization assets rather than giving a custom downstream notebook.
+
+The main checkpoints are:
+- alignment BAMs and BigWigs
+- peak sets and annotations
+- MultiQC and alignment metrics
+- consensus peaks and differential accessibility results
+
+### Tune optional parameters only where the experiment requires it
+
+The committed guide lists the most important flags for customizing the pipeline, including aligner choice, peak mode, and skip flags.
+
+```text
+--input
+--outdir
+--genome
+--read_length
+--aligner
+--narrow_peak
+--broad_peak
+--skip_trimming
+--skip_peak_calling
+--skip_peak_annotation
+--skip_consensus_peaks
+```
+
+This page stays concise because the repo source is concise, but the main practical message is that read length, genome, and aligner choice are part of the run contract and should be set deliberately.
+
+## Gotchas / notes
+
+- This folder is README-driven and does not include a committed notebook or figures.
+- The README title has a small typo (`atacseqx`), but the actual commands and linked docs clearly target `nf-core/atacseq`.
+- The guide recommends testing first with `-profile test`, which is worth preserving for users validating their environment.
+- Resource settings in the example script are substantial; readers should adapt them to their dataset size and scheduler limits.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATACseq_preprocessing)

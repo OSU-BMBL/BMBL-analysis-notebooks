@@ -240,38 +240,44 @@ workflows:
   - id: bulk-rnaseq-nfcore
     label: "RNA-seq nf-core workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "RNAseq_nfcore_workflow"
+    page: "site/workflows/bulk-rnaseq-nfcore.qmd"
     order: 20
   - id: bulk-atac-nfcore
     label: "ATAC-seq nf-core workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ATACseq_preprocessing"
+    page: "site/workflows/bulk-atac-nfcore.qmd"
     order: 30
   - id: bulk-atac-general
     label: "Bulk ATAC workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "Bulk_ATAC_general_workflow"
+    page: "site/workflows/bulk-atac-general.qmd"
     order: 40
   - id: bulk-chipseq
     label: "ChIP-seq workflow"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_general_workflow"
+    page: "site/workflows/bulk-chipseq.qmd"
     order: 50
   - id: bulk-chipseq-v2
     label: "ChIP-seq workflow v2"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_general_workflow_v2"
+    page: "site/workflows/bulk-chipseq-v2.qmd"
     order: 60
   - id: bulk-homer
     label: "HOMER motif analysis"
     category: bulk
-    kind: github
+    kind: page
     repo_path: "ChipSeq_HOMER_motif"
+    page: "site/workflows/bulk-homer.qmd"
     order: 70
 
   - id: bsseq-bismark

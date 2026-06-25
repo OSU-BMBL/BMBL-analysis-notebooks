@@ -1,0 +1,106 @@
+---
+title: "Bulk ChIP-seq Workflow v2"
+subtitle: "Stepwise paired-end ChIP-seq alignment, deduplication, and coverage preparation"
+workflow:
+  id: "bulk-chipseq-v2"
+  repo_path: "ChipSeq_general_workflow_v2"
+---
+
+## What it does
+
+This workflow is a stepwise ChIP-seq alignment and processing guide adapted from Harvard Bioinformatics Core training materials. The committed README focuses on raw-read QC, trimming, Bowtie2 alignment, paired-read filtering, duplicate removal, alignment summaries, and BigWig generation for visualization.
+
+## When to use it
+
+Use this workflow when you want a transparent, shell-oriented ChIP-seq preprocessing path instead of a Nextflow wrapper. It is most useful for paired-end ChIP-seq projects where you want to inspect each filtering step and produce clean BAM and BigWig files for downstream peak calling or visualization.
+
+## Prerequisites
+
+- Source folder: [`ChipSeq_general_workflow_v2`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow_v2)
+- Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/ChipSeq_general_workflow_v2/readme.md)
+- Required tools:
+  - `FastQC`
+  - `TrimGalore`
+  - `bowtie2`
+  - `samtools`
+  - `picard`
+  - `deeptools`
+- Expected inputs:
+  - paired-end FASTQ files arranged by sample
+  - a Bowtie2 reference index
+
+## Steps
+
+### Inspect reads and trim adapters
+
+The workflow starts with `FastQC` on paired reads, then reruns QC after trimming adapters with `TrimGalore`.
+
+```sh
+read1=( *R1*.gz )
+read2=( *R2*.gz )
+core=[amount of cores to allocate for all steps]
+fastqc -f fastq -o ${basename}_QC --threads $core $read1 $read2
+```
+
+```sh
+mkdir trimGalored
+mkdir ${basename}.trim.fastQC
+[directory containing TrimGalore]/TrimGalore-0.6.6/trim_galore \
+  --cores $core --paired --gzip -o trimGalored/ $read1 $read2 \
+  --fastqc_args "-f fastq -o ${basename}.trim.fastQC -t $core"
+```
+
+### Align with Bowtie2 and keep properly paired reads
+
+After trimming, the guide aligns with Bowtie2 in `--very-sensitive` mode, sorts/indexes the BAM, and then restricts downstream processing to properly paired reads.
+
+```sh
+tRead1=trimGalored/*R1*.gz
+tRead2=trimGalored/*R2*.gz
+bowtie2 --very-sensitive -p $core -x $bt2ref_mm10 -1 $tRead1 -2 $tRead2 2> ${basename}_bt2Metrics.txt | samtools view -@ $core -bS - > ${basename}.bam
+samtools sort -@ $core -o ${basename}.s.bam ${basename}.bam
+samtools index -@ $core ${basename}.s.bam
+```
+
+```sh
+samtools view -@ $core -bh -f 3 ${basename}.s.bam > ${basename}.filt.bam
+samtools sort -@ $core -o ${basename}.s.filt.bam ${basename}.filt.bam
+samtools index -@ $core ${basename}.s.filt.bam
+```
+
+### Remove duplicates and summarize final alignment state
+
+The next stage uses Picard to remove duplicates, then captures alignment summaries with `samtools flagstat` before producing coverage tracks.
+
+```sh
+java -jar $PICARD MarkDuplicates \
+  INPUT=${basename}.s.filt.bam \
+  OUTPUT=${basename}.rms.filt.bam \
+  METRICS_FILE=${basename}.PicardMetrics.txt \
+  REMOVE_DUPLICATES=true
+```
+
+```sh
+samtools flagstat -@ $core ${basename}.s.bam > ${basename}_INI_mapped_count.txt
+samtools flagstat -@ $core ${basename}.s.rms.filt.bam > ${basename}_FIN_mapped_count.txt
+```
+
+### Generate BigWig files for downstream visualization
+
+The README ends with `bamCoverage` from deepTools to create normalized BigWig tracks for IGV or browser-style inspection.
+
+```sh
+bamCoverage -b ${basename}.s.rms.filt.bam -o ${basename}.bw --normalizeUsing RPKM -p max
+```
+
+This branch is lighter than the nf-core ChIP-seq page because it focuses on preprocessing and visualization-ready files, not on consensus peaks or motif analysis.
+
+## Gotchas / notes
+
+- The committed guide is optimized for paired-end data; single-end use would need small changes.
+- Peak calling itself is not the focus of this v2 page; the workflow is mainly about clean alignment, filtering, and coverage generation.
+- The README assumes local variables like `$bt2ref_mm10` and `$basename` are already defined by the user.
+- Like several bulk branches, this folder is README-only and does not include committed figures or rendered notebook outputs.
+
+---
+[📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow_v2)

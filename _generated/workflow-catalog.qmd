@@ -43,12 +43,12 @@
 ### Bulk RNA-seq / ATAC-seq / ChIP-seq
 
 - [RNA-seq workflow pilot](rnaseq-workflow.qmd)
-- [RNA-seq nf-core workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_nfcore_workflow)
-- [ATAC-seq nf-core workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATACseq_preprocessing)
-- [Bulk ATAC workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Bulk_ATAC_general_workflow)
-- [ChIP-seq workflow](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)
-- [ChIP-seq workflow v2](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow_v2)
-- [HOMER motif analysis](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_HOMER_motif)
+- [RNA-seq nf-core workflow](site/workflows/bulk-rnaseq-nfcore.qmd)
+- [ATAC-seq nf-core workflow](site/workflows/bulk-atac-nfcore.qmd)
+- [Bulk ATAC workflow](site/workflows/bulk-atac-general.qmd)
+- [ChIP-seq workflow](site/workflows/bulk-chipseq.qmd)
+- [ChIP-seq workflow v2](site/workflows/bulk-chipseq-v2.qmd)
+- [HOMER motif analysis](site/workflows/bulk-homer.qmd)
 
 ### Bisulfite sequencing
 
