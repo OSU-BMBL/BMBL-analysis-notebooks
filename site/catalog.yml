@@ -195,32 +195,37 @@ workflows:
   - id: spatial-general
     label: "General workflow"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_general_workflow"
+    page: "site/workflows/spatial-general.qmd"
     order: 10
   - id: spatial-bayesspace
     label: "BayesSpace branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_BayesSpace_branch"
+    page: "site/workflows/spatial-bayesspace.qmd"
     order: 20
   - id: spatial-giotto
     label: "Giotto branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_giotto_branch"
+    page: "site/workflows/spatial-giotto.qmd"
     order: 30
   - id: spatial-spotlight
     label: "Spotlight branch"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "ST_spotlight_branch"
+    page: "site/workflows/spatial-spotlight.qmd"
     order: 40
   - id: spatial-neighborhood
     label: "Cellular neighborhood"
     category: spatial
-    kind: github
+    kind: page
     repo_path: "Spatial_Cellular_neighborhood"
+    page: "site/workflows/spatial-neighborhood.qmd"
     order: 50
 
   - id: rnaseq-pilot
