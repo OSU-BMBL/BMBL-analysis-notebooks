@@ -8,11 +8,11 @@ workflow:
 
 ## What it does
 
-This workflow prepares a clustered scRNA-seq object for inferCNV and runs CNV inference with denoising and HMM enabled. Its goal is to distinguish likely malignant or aneuploid cells from diploid reference populations using expression-derived copy-number patterns.
+This workflow prepares a clustered scRNA-seq object for inferCNV and runs CNV inference with denoising and HMM enabled. Its goal is to distinguish likely malignant or aneuploid cells from diploid reference populations using expression-derived copy-number patterns and save the resulting heatmaps and CNV calls into a dedicated output folder.
 
 ## When to use it
 
-Use this workflow when you already have a preprocessed Seurat object and a suitable gene-order file and want a branch for tumor-versus-reference CNV screening. It is most relevant after clustering, when a plausible normal reference cluster can be identified.
+Use this workflow when you already have a preprocessed Seurat object and a suitable gene-order file and want a branch for tumor-versus-reference CNV screening. It is most relevant after clustering, when a plausible normal reference cluster can be identified and treated as the diploid baseline for the inferCNV run.
 
 ## Prerequisites
 
@@ -40,7 +40,9 @@ this_meta <- data.frame(cell = rownames(combined@meta.data), cluster = as.charac
 this_expr <- GetAssayData(combined, assay = "RNA", slot = "counts")
 ```
 
-### Create the inferCNV object
+This preparation step is what turns a general Seurat object into the two inputs inferCNV actually expects: a raw count matrix and a per-cell annotation table.
+
+### Choose the reference cluster and create the inferCNV object
 
 The committed example uses cluster `"11"` as the normal reference group and points inferCNV to a gene-order file based on hg38.
 
@@ -53,6 +55,8 @@ infercnv_obj <- CreateInfercnvObject(
   ref_group_names = c("11")
 )
 ```
+
+The reference-cluster choice is the main biological decision in this branch. The example cluster `"11"` is useful as a template, but the underlying requirement is simply that the chosen cluster should represent the diploid population you want to compare against.
 
 ### Run inferCNV with denoising and HMM enabled
 
@@ -70,10 +74,15 @@ infercnv_obj <- infercnv::run(
 )
 ```
 
+### Review the saved CNV outputs in the run directory
+
+The README describes the output directory as containing CNV heatmaps, cluster assignments, inferred CNV profiles, and other inferCNV diagnostic files. This page stays concise because the repo does not include committed local figures from a completed run, but the intended handoff is clear: inspect the generated inferCNV directory rather than expecting results to remain only in memory.
+
 ## Gotchas / notes
 
 - The README explicitly notes that this tutorial cannot be run on OSC because `infercnv` was not installable there in the tested environment.
 - The reference cluster choice is experiment-specific; the committed example's cluster `"11"` should not be treated as a universal default.
+- The output directory name `./infercnv_1` is an example run target, not a mandatory convention.
 - This workflow has no committed local figure assets, so the site page relies on the README and script content only.
 
 ---

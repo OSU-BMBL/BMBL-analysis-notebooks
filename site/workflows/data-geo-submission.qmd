@@ -29,13 +29,13 @@ Use this workflow when you are preparing a study for GEO submission and need a l
 
 ## Steps
 
-### Organize the submission package and fill in the metadata spreadsheet
+### Gather raw files, processed matrices, and the metadata spreadsheet
 
 The README starts from three required pieces: raw FASTQs, processed matrices, and the GEO metadata spreadsheet. It points to the committed Excel template as the example submission sheet.
 
 For RNA-seq and scRNA-seq submissions, the folder structure is expected to separate raw data from processed data, with compressed `counts.csv.gz` and `metadata.csv.gz` files recommended for transfer efficiency.
 
-### Export processed Seurat data to count and metadata tables
+### Export processed Seurat data if the deliverables still live in `combined.qsave`
 
 If your processed data still live inside a Seurat object, the helper R Markdown reads `combined.qsave`, sets the RNA assay, and writes the metadata and counts matrices to CSV.
 
@@ -51,7 +51,7 @@ write.csv(counts, "counts.csv", row.names = T, col.names = T, quote = F)
 
 This is a thin but useful branch for converting a Seurat object into the two processed matrices GEO usually expects.
 
-### Upload raw and processed files to GEO's private FTP area
+### Upload the prepared folder structure to GEO's private FTP area
 
 Once the data and spreadsheet are ready, the README directs you to GEO's sequence submission page and shows an `lftp`-based upload pattern for mirroring the prepared working directory into your temporary private GEO upload folder.
 
@@ -63,7 +63,9 @@ cd uploads/cankun.wang@orcid_6LOT6a04
 mirror -R .
 ```
 
-After the FTP transfer, the final step is uploading the metadata spreadsheet through GEO's web interface and waiting for accession assignment or curator feedback.
+### Finish the web submission and wait for accession assignment
+
+After the FTP transfer, the last step is returning to GEO's web interface to upload the metadata spreadsheet. The committed README notes that accession assignment may take about a week and that curator follow-up can require corrections before the submission is finalized.
 
 ## Gotchas / notes
 
@@ -71,6 +73,7 @@ After the FTP transfer, the final step is uploading the metadata spreadsheet thr
 - GEO FTP credentials are temporary and change frequently, so the example login values in the README are only placeholders.
 - `export_data.rmd` assumes a local `combined.qsave` Seurat object and does not include broader validation or formatting steps beyond writing CSVs.
 - The directory structure illustration referenced in the README is external rather than committed in this repo; the only committed template asset here is `seq_template.xlsx`.
+- The page reflects the practical handoff order in the README, but GEO-specific validation details still live outside this repository.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Data_GEO_submission)

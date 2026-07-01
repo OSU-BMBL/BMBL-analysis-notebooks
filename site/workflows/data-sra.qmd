@@ -12,7 +12,7 @@ This workflow downloads SRA run accessions in parallel using SRA Toolkit. The co
 
 ## When to use it
 
-Use this workflow when you need to retrieve raw sequencing runs from SRA rather than supplementary files from GEO. It is most useful for batches of SRR accessions where parallel downloads and an HPC-friendly wrapper save time compared with running `fasterq-dump` one accession at a time.
+Use this workflow when you need to retrieve raw sequencing runs from SRA rather than supplementary files from GEO. It is most useful for batches of SRR accessions where parallel downloads and an HPC-friendly wrapper save time compared with running `fasterq-dump` one accession at a time, especially when the next step is a separate preprocessing workflow.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ Use this workflow when you need to retrieve raw sequencing runs from SRA rather 
 
 ## Steps
 
-### Prepare the SRA accession list and choose output directories
+### Prepare the SRR accession list and choose output locations
 
 The workflow expects a JSON file with the structure below, plus optional output and temporary directories passed on the command line.
 
@@ -47,7 +47,9 @@ The workflow expects a JSON file with the structure below, plus optional output 
 python fetch-with-sratoolkit.py -o /output -t /tmp ./sra_ids.json
 ```
 
-### Launch parallel `fasterq-dump` jobs from Python
+The main setup contract here is the JSON file. The script does not discover runs from a study accession on its own; it expects an explicit `sraIds` list.
+
+### Launch parallel `fasterq-dump` jobs from the Python wrapper
 
 The main script reads the SRR IDs from JSON, builds one `fasterq-dump` command per accession, and uses a multiprocessing pool of eight workers to run them.
 
@@ -60,9 +62,9 @@ with Pool(8) as p:
     result = p.map(execute_cmd, cmds)
 ```
 
-That makes this workflow a direct retrieval utility rather than a downstream preprocessing workflow.
+That makes this workflow a direct retrieval utility rather than a downstream preprocessing workflow: its job is to get the SRA runs onto disk efficiently, not to analyze them.
 
-### Run the same fetcher on OSC through the provided Slurm wrapper
+### Use the OSC batch wrapper for larger download jobs
 
 For the Ohio Supercomputer Center, the committed shell script loads Python and SRA Toolkit modules and launches the same Python fetcher as an eight-task batch job.
 
@@ -81,6 +83,10 @@ python ./fetch-with-sratoolkit.py -o ./ -t ./ ./sra_ids.json
 ```
 
 The README presents this as the main cluster integration pattern for larger downloads.
+
+### Hand off the downloaded runs to downstream preprocessing
+
+The committed materials stop at retrieval. Once the downloads are complete, the next step is to move into whichever workflow actually preprocesses the resulting files, rather than expecting this utility to perform QC or alignment itself.
 
 ## Gotchas / notes
 

@@ -8,16 +8,22 @@ workflow:
 
 ## What it does
 
-This workflow computes transcription factor motif activity scores from a preprocessed snATAC-seq Seurat object using ChromVAR inside the Signac ecosystem. It adds motif annotations from JASPAR and stores per-cell motif deviation scores in a dedicated `chromvar` assay.
+This workflow computes transcription factor motif activity scores from a preprocessed snATAC-seq Seurat object using ChromVAR inside the Signac ecosystem. It adds JASPAR2020 motif annotations to the ATAC assay and stores per-cell motif deviation scores in a dedicated `chromvar` assay for downstream visualization or integrative analysis.
 
 ## When to use it
 
-Use this workflow when peak-level accessibility has already been processed and the next question is which TF motifs show differential accessibility patterns across cells. It is a focused downstream branch for motif activity rather than a full scATAC-seq pipeline.
+Use this workflow when peak-level accessibility has already been processed and the next question is which TF motifs show differential accessibility patterns across cells. It is a focused downstream branch for motif activity rather than a full scATAC-seq pipeline, and the committed example assumes a human hg38 object with ATAC counts in the `Macs_peaks` assay.
 
 ## Prerequisites
 
 - Source folder: [`scATACseq_ChromVAR_motif`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif)
 - Main documentation: [`README.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_ChromVAR_motif/README.md)
+- Required packages called out in the README:
+  - `Signac`
+  - `ChromVAR`
+  - `motifmatchr`
+  - `JASPAR2020`
+  - `BiocParallel`
 - Required inputs:
   - `MultiOmic.qs` with ATAC counts in the `Macs_peaks` assay
   - `JASPAR2020`
@@ -25,23 +31,37 @@ Use this workflow when peak-level accessibility has already been processed and t
 
 ## Steps
 
-### Load the Seurat object and motif resources
+### Load the preprocessed ATAC object and set the peak assay
 
-The README expects a preprocessed Seurat object, the hg38 genome build, and motif definitions from the JASPAR CORE collection.
+The README assumes you are starting from a serialized Seurat object named `MultiOmic.qs` and that its ATAC counts live in the `Macs_peaks` assay. Before any motif work happens, this branch is already past primary preprocessing and clustering.
 
-### Add motifs and run ChromVAR
+The committed run sequence is:
 
-The documented branch is compact: retrieve motifs with `getMatrixSet()`, add them to the ATAC assay with `AddMotifs()`, and compute deviation scores with `RunChromVAR()`.
+```text
+read MultiOmic.qs
+set DefaultAssay(...) to Macs_peaks
+load BSgenome.Hsapiens.UCSC.hg38
+retrieve JASPAR CORE motifs
+```
 
-### Save the updated object
+### Retrieve the JASPAR CORE motif collection for the matching genome
 
-The output is a new `multi_chromvar.qs` object containing motif annotations and a `"chromvar"` assay for downstream visualization or integrative analysis.
+The README describes pulling human transcription factor motifs from the JASPAR CORE collection and pairing them with the hg38 genome reference before running ChromVAR. This genome-plus-motif pairing is the key setup contract for the workflow.
+
+### Add motifs and compute ChromVAR deviations
+
+Once motifs are loaded, the documented branch adds them to the Seurat object with `AddMotifs()` and then runs `RunChromVAR()` to calculate per-cell motif deviation scores. The resulting object keeps the original peak assay and adds a new `chromvar` assay that can be used for downstream feature plots, group comparisons, or integrative modeling with gene expression.
+
+### Save the updated Seurat object for downstream use
+
+The output is a new `multi_chromvar.qs` object containing motif annotations and ChromVAR deviation scores. This page stays concise because the committed source is a README rather than a notebook, but the intended handoff is clear: save the updated object and continue motif-level exploration elsewhere.
 
 ## Gotchas / notes
 
 - This workflow is intentionally thin in the committed source materials and does not include a notebook or committed figures.
 - The README notes that `SerialParam()` is used by default for reproducibility, with `MulticoreParam()` as an optional Unix parallelization path.
-- Genome build and motif collection need to match the assay and species.
+- Genome build and motif collection need to match the assay and species; the committed example is specifically human hg38.
+- Because the page is README-driven, it documents the function sequence and handoff rather than a richer rendered code walkthrough.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_ChromVAR_motif)

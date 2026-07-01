@@ -28,7 +28,7 @@ Use this workflow when you want a reproducible, containerized ATAC-seq pipeline 
 
 ## Steps
 
-### Build the samplesheet and run wrapper script
+### Build the samplesheet and define the run wrapper
 
 The README expects a project directory with a samplesheet plus a small `run_atac.sh` wrapper that sets `NXF_HOME`, loads Java, and launches `nf-core/atacseq`.
 
@@ -59,7 +59,9 @@ nextflow run nf-core/atacseq \
     -resume
 ```
 
-### Use the built-in nf-core output structure for QC and peak review
+The samplesheet plus wrapper-script combination is the main operational pattern in this folder: project-specific inputs live in the sheet, while resource and runtime settings live in the launch script.
+
+### Use the built-in nf-core outputs for QC, peaks, and accessibility review
 
 The README organizes the outputs conceptually into alignment results, peak calling, QC reports, differential analysis, and visualization assets rather than giving a custom downstream notebook.
 
@@ -69,7 +71,9 @@ The main checkpoints are:
 - MultiQC and alignment metrics
 - consensus peaks and differential accessibility results
 
-### Tune optional parameters only where the experiment requires it
+That means the first review step after a run is not a custom result script; it is reading the nf-core output tree and identifying which directories matter for your downstream question.
+
+### Tune optional pipeline flags only where the experiment requires it
 
 The committed guide lists the most important flags for customizing the pipeline, including aligner choice, peak mode, and skip flags.
 
@@ -89,12 +93,17 @@ The committed guide lists the most important flags for customizing the pipeline,
 
 This page stays concise because the repo source is concise, but the main practical message is that read length, genome, and aligner choice are part of the run contract and should be set deliberately.
 
+### Start with test mode when validating a new environment
+
+One practical note worth preserving from the README is the recommendation to begin with `-profile test` when you are validating the environment or the basic pipeline setup. That is especially useful for distinguishing configuration problems from full-scale dataset runtime issues.
+
 ## Gotchas / notes
 
 - This folder is README-driven and does not include a committed notebook or figures.
 - The README title has a small typo (`atacseqx`), but the actual commands and linked docs clearly target `nf-core/atacseq`.
 - The guide recommends testing first with `-profile test`, which is worth preserving for users validating their environment.
 - Resource settings in the example script are substantial; readers should adapt them to their dataset size and scheduler limits.
+- The example wrapper assumes paired-end data and a specific Java/module environment, so readers should adapt both compute settings and runtime modules to their own system.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ATACseq_preprocessing)
