@@ -31,7 +31,7 @@ Use this workflow when you want a transparent, shell-oriented ChIP-seq preproces
 
 ## Steps
 
-### Inspect reads and trim adapters
+### Run initial FastQC, then trim adapters and recheck read quality
 
 The workflow starts with `FastQC` on paired reads, then reruns QC after trimming adapters with `TrimGalore`.
 
@@ -50,7 +50,9 @@ mkdir ${basename}.trim.fastQC
   --fastqc_args "-f fastq -o ${basename}.trim.fastQC -t $core"
 ```
 
-### Align with Bowtie2 and keep properly paired reads
+The key idea in this opening stage is not just “trim reads,” but “compare QC before and after trimming” so adapter removal can be verified before alignment.
+
+### Align with Bowtie2 and restrict the data to properly paired reads
 
 After trimming, the guide aligns with Bowtie2 in `--very-sensitive` mode, sorts/indexes the BAM, and then restricts downstream processing to properly paired reads.
 
@@ -68,7 +70,7 @@ samtools sort -@ $core -o ${basename}.s.filt.bam ${basename}.filt.bam
 samtools index -@ $core ${basename}.s.filt.bam
 ```
 
-### Remove duplicates and summarize final alignment state
+### Remove duplicates and capture alignment summaries before and after filtering
 
 The next stage uses Picard to remove duplicates, then captures alignment summaries with `samtools flagstat` before producing coverage tracks.
 
@@ -85,7 +87,9 @@ samtools flagstat -@ $core ${basename}.s.bam > ${basename}_INI_mapped_count.txt
 samtools flagstat -@ $core ${basename}.s.rms.filt.bam > ${basename}_FIN_mapped_count.txt
 ```
 
-### Generate BigWig files for downstream visualization
+Those paired flagstat outputs are the main checkpoint for understanding how much data survived the filtering and duplicate-removal stages.
+
+### Generate BigWig files for downstream visualization or peak review
 
 The README ends with `bamCoverage` from deepTools to create normalized BigWig tracks for IGV or browser-style inspection.
 
@@ -95,12 +99,17 @@ bamCoverage -b ${basename}.s.rms.filt.bam -o ${basename}.bw --normalizeUsing RPK
 
 This branch is lighter than the nf-core ChIP-seq page because it focuses on preprocessing and visualization-ready files, not on consensus peaks or motif analysis.
 
+### Use MultiQC only after all samples finish the preprocessing chain
+
+The README notes that `multiqc` becomes useful once multiple samples have completed the pipeline, so that alignment and processing statistics can be summarized across the whole batch rather than one sample at a time.
+
 ## Gotchas / notes
 
 - The committed guide is optimized for paired-end data; single-end use would need small changes.
 - Peak calling itself is not the focus of this v2 page; the workflow is mainly about clean alignment, filtering, and coverage generation.
 - The README assumes local variables like `$bt2ref_mm10` and `$basename` are already defined by the user.
 - Like several bulk branches, this folder is README-only and does not include committed figures or rendered notebook outputs.
+- The guide assumes the required modules, conda environment, and reference variables are already prepared before the commands shown here are run.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow_v2)

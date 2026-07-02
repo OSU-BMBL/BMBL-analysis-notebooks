@@ -12,7 +12,7 @@ This workflow documents a HOMER2-based path for peak annotation, motif enrichmen
 
 ## When to use it
 
-Use this workflow after you already have peak or region files from ChIP-seq, ATAC-seq, or a related bulk NGS analysis and want to interpret them in terms of nearby genes and enriched TF motifs. It is a downstream motif-analysis utility rather than a primary alignment or peak-calling pipeline.
+Use this workflow after you already have peak or region files from ChIP-seq, ATAC-seq, or a related bulk NGS analysis and want to interpret them in terms of nearby genes and enriched TF motifs. It is a downstream motif-analysis utility rather than a primary alignment or peak-calling pipeline, and it is most useful when you want a shell-oriented alternative to web-only motif tools.
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Use this workflow after you already have peak or region files from ChIP-seq, ATA
 
 ## Steps
 
-### Install HOMER in OSC scratch space and configure the genome
+### Install HOMER in OSC scratch space and configure a genome
 
 The README is explicit that HOMER should be installed in `/scratch/` rather than `/ess/`, then added to `PATH` for later use.
 
@@ -42,7 +42,7 @@ PATH=$PATH:[path/to/HOMER]/bin/
 
 This setup detail is the most workflow-specific operational note in the committed guide.
 
-### Annotate peaks relative to nearby genes and features
+### Annotate peaks relative to genes, TSSs, and other features
 
 The first analytical step uses `annotatePeaks.pl` on BED-like regions, typically in BED-6 format, to assign nearby genes, distances to TSSs, and basic locus annotations.
 
@@ -52,7 +52,7 @@ annotatePeaks.pl [BED-like file] [name of genome you previously installed] [outp
 
 The README also notes that `-gtf`, `-m`, and `-p` can be used for alternate annotations, motif overlays, or nearest-peak references.
 
-### Run motif enrichment with HOMER
+### Run motif enrichment on the target regions
 
 For motif discovery, the guide uses `findMotifsGenome.pl`, which generates both de novo and known-motif enrichments and can optionally compare against a user-supplied background.
 
@@ -66,7 +66,9 @@ The committed README highlights the main result files:
 - `knownResults.txt`
 - motif result directories and motif summary files
 
-### Summarize motif positioning around target intervals
+In practice, this is the handoff point for most users: inspect `knownResults.html` and related output files before deciding whether a more specific positioning analysis is needed.
+
+### Summarize motif positioning around target intervals or TSSs
 
 The final branch uses `createHomer2EnrichmentTable.pl` to map motif enrichment or depletion across windows around a reference position such as the TSS.
 
@@ -85,12 +87,15 @@ The README calls out two especially useful outputs:
 - `summary.windowN.logq.txt` for positional enrichment/depletion profiles
 - `summary.bestIntervals.txt` for the strongest enriched or depleted motif intervals
 
+This last step is narrower than the motif-enrichment branch above: it is for understanding where motifs tend to occur relative to a reference point, not simply whether they are enriched at all.
+
 ## Gotchas / notes
 
 - This folder is README-only and intentionally operational; there are no committed figures or example output files in the repo.
 - HOMER setup is location-sensitive on OSC, and the README strongly prefers `/scratch/` over `/ess/`.
 - The commands use placeholders for files, genomes, and directories, so users must adapt them carefully.
 - The workflow assumes the user already has peak/region files from an upstream analysis; it does not generate peaks itself.
+- The README mixes installation, annotation, enrichment, and motif-positioning guidance in one document, so this page deliberately keeps the sequence explicit and task-oriented.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_HOMER_motif)

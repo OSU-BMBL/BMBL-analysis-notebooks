@@ -8,11 +8,11 @@ workflow:
 
 ## What it does
 
-This workflow uses `nf-core/chipseq` for bulk ChIP-seq processing and then points to motif discovery and motif comparison steps outside the main Nextflow run. The committed README describes the samplesheet format, major pipeline stages, OSC execution, and how the resulting peak files can be taken into STREME and Tomtom.
+This workflow uses `nf-core/chipseq` for bulk ChIP-seq processing and then points to motif discovery and motif comparison steps outside the main Nextflow run. The committed README describes the samplesheet format, major pipeline stages, OSC execution, and how the resulting peak files can be taken into STREME and Tomtom for motif interpretation.
 
 ## When to use it
 
-Use this workflow when you want a standard ChIP-seq preprocessing path that covers QC through peak calling and consensus peak analysis, followed by motif-centric interpretation of the resulting regions. It is most useful for bulk ChIP-seq projects with IP and matched input controls.
+Use this workflow when you want a standard ChIP-seq preprocessing path that covers QC through peak calling and consensus peak analysis, followed by motif-centric interpretation of the resulting regions. It is most useful for bulk ChIP-seq projects with IP and matched input controls and for readers who want the nf-core handoff summarized without reading the whole pipeline documentation.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Use this workflow when you want a standard ChIP-seq preprocessing path that cove
 
 ## Steps
 
-### Build the ChIP-seq samplesheet
+### Build the ChIP-seq samplesheet with IP and matched controls
 
 The README expects a samplesheet that pairs each IP library with its corresponding input/control sample.
 
@@ -39,7 +39,9 @@ WT_BCATENIN_IP,BLA203A25_S16_L002_R1_001.fastq.gz,,2,BCATENIN,WT_INPUT,2
 WT_INPUT,BLA203A6_S32_L006_R1_001.fastq.gz,,1,,,
 ```
 
-### Run nf-core/chipseq through QC, alignment, and peak calling
+This samplesheet is the main workflow-specific setup contract because the downstream peak calling and comparison logic depends on the control relationships being defined correctly.
+
+### Run `nf-core/chipseq` through QC, alignment, filtering, and peak calling
 
 The main pipeline stage uses `nf-core/chipseq` with one of several aligners, then performs duplicate marking, filtering, bigWig creation, peak calling, annotation, consensus peak generation, and MultiQC summarization.
 
@@ -56,7 +58,16 @@ The main pipeline stage uses `nf-core/chipseq` with one of several aligners, the
 
 The committed README’s most important practical detail is that this is not just alignment plus MACS3: it’s a full pipeline that also builds bigWigs, consensus peaks, PCA/clustering summaries, and IGV session files.
 
-### Use peak outputs for motif discovery and motif comparison
+### Review the main peak and annotation outputs before motif analysis
+
+The README highlights two especially important deliverables from the pipeline run:
+
+- peak calling BED files such as `.narrowPeak`
+- HOMER-style peak annotation output such as `annotatePeaks.txt`
+
+Those files are the handoff into downstream motif work.
+
+### Use the peak outputs for motif discovery and motif comparison
 
 After the Nextflow run, the guide points users to motif discovery with STREME and motif comparison with Tomtom, using the called peak BED files as the main handoff.
 
@@ -72,6 +83,7 @@ The documented downstream sequence is:
 - The motif steps are described as external follow-up steps, not as fully scripted local commands in the repo.
 - The example command uses `--skip_qc`, even though the pipeline overview includes QC reporting; users should decide whether skipping QC is appropriate for their run.
 - The README mixes pipeline structure and downstream motif interpretation, so this page intentionally stays at the usage-and-rationale level instead of expanding beyond the committed source.
+- The README lists several possible aligners, but the committed example command shows one specific nf-core invocation rather than a full decision guide for choosing among them.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/ChipSeq_general_workflow)

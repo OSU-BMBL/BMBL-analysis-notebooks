@@ -8,11 +8,11 @@ workflow:
 
 ## What it does
 
-This workflow converts an R Seurat object into a Scanpy-compatible `.h5ad` file. It uses `SeuratDisk` to save an intermediate `.h5Seurat` file and then convert that object into AnnData format.
+This workflow converts an R Seurat object into a Scanpy-compatible `.h5ad` file. It uses `SeuratDisk` to save an intermediate `.h5Seurat` file and then convert that object into AnnData format, preserving the chosen assay and Seurat metadata in the exported object.
 
 ## When to use it
 
-Use this workflow when the upstream analysis was performed in Seurat but the next step needs to happen in Python or Scanpy. It is a compact format-conversion utility rather than a full analysis notebook.
+Use this workflow when the upstream analysis was performed in Seurat but the next step needs to happen in Python or Scanpy. It is a compact format-conversion utility rather than a full analysis notebook, and it is most helpful when you need a clear reminder of which Seurat assay becomes the primary AnnData matrix.
 
 ## Prerequisites
 
@@ -22,10 +22,11 @@ Use this workflow when the upstream analysis was performed in Seurat but the nex
   - [`seurat_to_scanpy.R`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scRNAseq_Seurat_to_Scanpy/seurat_to_scanpy.R)
 - Required packages include `qs`, `Seurat`, and `SeuratDisk`
 - Input: a Seurat object, commonly stored as `combined.qsave`
+- Version caveat from the committed README: the tested path assumes Seurat versions below v5 because `SeuratDisk` support was limited at the time of testing
 
 ## Steps
 
-### Load and update the Seurat object
+### Load the Seurat object and update it before export
 
 The script reads a `.qsave` object, updates it if needed, and sets the assay that should become the main expression layer in the exported `.h5ad`.
 
@@ -38,6 +39,15 @@ DefaultAssay(combined) <- "RNA"
 # or DefaultAssay(combined) <- "SCT"
 ```
 
+### Choose the assay intentionally before conversion
+
+The README makes the assay choice the main decision point in this workflow:
+
+- if `RNA` is the default assay, the export writes RNA normalized data to `X` and RNA counts to `raw`
+- if `SCT` is the default assay, the export changes which matrix becomes the primary layer
+
+That choice determines what Scanpy will treat as the main expression matrix after import, so it should match the downstream Python analysis you actually plan to run.
+
 ### Export to `.h5Seurat` and convert to `.h5ad`
 
 The conversion itself is a two-step handoff through SeuratDisk.
@@ -47,14 +57,15 @@ SaveH5Seurat(combined, filename = "combined.h5Seurat", overwrite = TRUE)
 Convert("combined.h5Seurat", dest = "h5ad", overwrite = TRUE)
 ```
 
-### Choose the assay intentionally
+### Check metadata and export separate variants if needed
 
-The README notes that exporting `RNA` places normalized data in `X` and counts in `raw`, while exporting `SCT` changes which layer becomes the primary matrix.
+The committed script and README both suggest a small amount of cleanup may be needed before import on the Python side. In particular, the script comments note that metadata columns containing all `NA` values can cause problems and may need to be removed before writing the `.h5Seurat` file. The README also explicitly notes that you can export different assays separately if you want multiple H5AD variants.
 
 ## Gotchas / notes
 
 - The README explicitly warns that the tested path uses Seurat below v5 because `SeuratDisk` support was limited at the time of testing.
 - The committed script includes comments about clearing metadata columns with all-`NA` values if Scanpy import errors occur.
+- The committed script uses `combined` for the loaded object but also shows `DefaultAssay(seu) <- "SCT"` in one line, so readers should treat that as a source inconsistency and apply the assay choice to the object they actually loaded.
 - This workflow is intentionally thin: it contains a script and README, but no committed local figures or rendered screenshots.
 
 ---

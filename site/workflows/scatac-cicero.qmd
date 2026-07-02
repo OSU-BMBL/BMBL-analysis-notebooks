@@ -25,7 +25,7 @@ Use this workflow when the main question is regulatory linkage between accessibl
 
 ## Steps
 
-### Load the tutorial data and create the ATAC CDS
+### Load the accessibility matrix and create a Cicero-compatible CDS
 
 The notebook starts by loading tutorial data and converting peak accessibility counts plus peak coordinates into a Cicero-compatible cell data set.
 
@@ -36,7 +36,7 @@ input_cds <- make_atac_cds(
 )
 ```
 
-### Reduce dimensions and prepare the embedding for aggregation
+### Reduce dimensions and build the embedding used for aggregation
 
 Before Cicero is run, the workflow detects features, estimates size factors, and computes a low-dimensional representation that will define neighborhood structure for cell aggregation.
 
@@ -51,7 +51,9 @@ input_cds <- reduceDimension(
 )
 ```
 
-### Aggregate nearby cells and run Cicero
+This is the transition from sparse raw accessibility data into the neighborhood structure Cicero needs for co-accessibility inference.
+
+### Aggregate nearby cells and calculate co-accessibility connections
 
 The core Cicero branch groups nearby cells and then computes co-accessibility relationships for genomic windows, using chromosome coordinates as the scaffold.
 
@@ -67,7 +69,9 @@ conns <- run_cicero(
 )
 ```
 
-### Filter connections, build CCANs, and derive gene activity
+The committed tutorial uses a chromosome subset in one branch for demonstration and runtime control, which is worth treating as a tutorial device rather than a default full-genome analysis mode.
+
+### Filter stronger connections, define CCANs, and derive gene activity
 
 After co-accessibility scores are computed, the notebook filters for stronger positive relationships, identifies CCANs, and computes gene activity scores from those networks.
 
@@ -77,10 +81,13 @@ ccan_list <- generate_ccans(positive_conns)
 gene_activity <- build_gene_activity_matrix(cicero_cds, conns)
 ```
 
+The practical handoff from this page is a set of co-accessibility connections, CCAN assignments, and gene-activity summaries that can be interpreted alongside the main scATAC analysis rather than replacing it.
+
 ## Gotchas / notes
 
 - The tutorial is oriented around Cicero's CDS and aggregation model, so it assumes preprocessing has already produced a usable accessibility matrix.
 - The notebook uses a subset of chromosome 18 for demonstration in one branch, which is useful for runtime control but not a full-genome default.
+- The README is broader than the current page in places, but the committed notebook remains the main source for concrete execution order.
 - This folder does not include a committed figure asset set beyond the rendered HTML output.
 
 ---

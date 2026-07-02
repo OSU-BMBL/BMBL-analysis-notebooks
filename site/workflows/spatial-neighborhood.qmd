@@ -8,16 +8,17 @@ workflow:
 
 ## What it does
 
-This workflow focuses on cellular-neighborhood analysis in the immune tumor microenvironment rather than on primary spatial preprocessing. The committed README describes a Python notebook-based method for identifying major components of association between cell types and cellular neighborhoods from an annotated table.
+This workflow focuses on cellular-neighborhood analysis in the immune tumor microenvironment rather than on primary spatial preprocessing. The committed README describes a Python notebook-based method for identifying major components of association between cell types and cellular neighborhoods from an already annotated table.
 
 ## When to use it
 
-Use this workflow when the upstream spatial or imaging data have already been annotated with cell types and neighborhood labels, and the next question is how neighborhoods relate to cell-type composition across samples or patient groups. It is a focused downstream analysis branch rather than a full spatial transcriptomics pipeline.
+Use this workflow when the upstream spatial or imaging data have already been annotated with cell types and neighborhood labels, and the next question is how neighborhoods relate to cell-type composition across samples or patient groups. It is a focused downstream analysis branch rather than a full spatial transcriptomics pipeline, and it assumes the neighborhood annotation step has already happened elsewhere.
 
 ## Prerequisites
 
 - Source folder: [`Spatial_Cellular_neighborhood`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/Spatial_Cellular_neighborhood)
 - Main documentation: [`readme.md`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/Spatial_Cellular_neighborhood/readme.md)
+- Main implementation note in the README: download the Python notebook separately and run it in Jupyter
 - Expected input table columns:
   - `patients`
   - optional `groups`
@@ -28,17 +29,30 @@ Use this workflow when the upstream spatial or imaging data have already been an
 
 ## Steps
 
-### Prepare the annotated input table
+### Prepare an annotated CSV with the required columns
 
 The README makes the input contract explicit: the CSV must already contain sample identifiers, neighborhood labels, and cell-type annotations.
 
-### Open the Python notebook and update the data path
+The required columns listed in the committed source are:
+
+- `patients`
+- optional `groups`
+- `neighborhood10`
+- `ClusterName`
+
+### Open the notebook and point `path_to_data` at the CSV file
 
 The committed instructions say to download the Python code, open it in Jupyter, and change `path_to_data` to point to the CSV file.
 
-### Run the notebook sequentially to summarize neighborhoods
+### Run the notebook sequentially to summarize neighborhood associations
 
 The intended outcome is to identify the main associations between cell types and cellular neighborhoods in the tumor microenvironment.
+
+This page stays concise because the repository only commits the README, not the notebook itself. The source materials make the operational sequence clear even if they do not expose the intermediate code cells on the site.
+
+### Use the sample dataset and cited paper as context, not as in-repo assets
+
+The README links to an external sample file, `CRC_clusters_neighborhoods_markers.csv`, and to the original publication for methodological detail. Those references are useful for understanding the expected input shape and the intended analysis context, but they are external resources rather than committed local assets.
 
 ## Gotchas / notes
 

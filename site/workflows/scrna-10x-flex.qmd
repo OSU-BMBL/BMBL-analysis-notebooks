@@ -8,11 +8,11 @@ workflow:
 
 ## What it does
 
-This workflow covers the preprocessing step for pooled 10x Genomics Flex scRNA-seq libraries. It focuses on turning one multiplexed FASTQ set into per-sample filtered feature-barcode matrices using `cellranger multi`.
+This workflow covers the preprocessing step for pooled 10x Genomics Flex scRNA-seq libraries. It focuses on turning one multiplexed FASTQ set into per-sample filtered feature-barcode matrices using `cellranger multi`, along with the configuration files and OSC batch submission pattern needed to launch the run.
 
 ## When to use it
 
-Use this workflow when your wet-lab setup produced a 10x Flex experiment with multiple samples pooled into the same sequencing files. It is meant for the preprocessing stage only, before clustering or downstream single-cell analysis.
+Use this workflow when your wet-lab setup produced a 10x Flex experiment with multiple samples pooled into the same sequencing files. It is meant for the preprocessing stage only, before clustering or downstream single-cell analysis, and it is most useful when the main challenge is correctly mapping wet-lab sample metadata into the 10x `multi` configuration.
 
 ## Prerequisites
 
@@ -29,13 +29,22 @@ Use this workflow when your wet-lab setup produced a 10x Flex experiment with mu
 
 ## Steps
 
-### Prepare the Flex `multi` configuration
+### Build the `cellranger multi` CSV from the wet-lab sample sheet
 
-The README treats the configuration CSV as the key handoff between the wet-lab sample sheet and Cell Ranger. It maps the raw FASTQ identifier, FASTQ directory, reference, probe set, sample IDs, and probe barcode IDs into one file for `cellranger multi`.
+The README treats the configuration CSV as the key handoff between the wet-lab sample sheet and Cell Ranger. It maps the raw FASTQ identifier, FASTQ directory, reference, probe set, sample IDs, probe barcode IDs, and sample descriptions into one file for `cellranger multi`.
 
-### Submit the Cell Ranger job on OSC
+That mapping step is the core decision point in this workflow: once the CSV is correct, Cell Ranger can demultiplex pooled Flex data and write per-sample outputs without additional custom preprocessing code.
 
-The committed Slurm script is an OSC-style example that sets account, runtime, memory, working directory, and the `cellranger multi` command.
+### Pair the configuration CSV with an OSC batch script
+
+The committed Slurm script is an OSC-style example that sets account, runtime, memory, working directory, and the `cellranger multi` command. In practice, the workflow is driven by two companion files:
+
+- the `multi` configuration CSV
+- a batch script that points `cellranger multi` at that CSV
+
+This keeps the run command simple while making the metadata and demultiplexing settings explicit in the CSV.
+
+### Submit the Flex preprocessing job on OSC
 
 ```bash
 #!/usr/bin/bash
@@ -50,7 +59,9 @@ cd /fs/ess/PAS2505/230801_Grayson_GSL-RH-3496/alignment/alignment_epi_data
 ${CellRanger} multi --id=Y12696_GraysonM_Naive-i_V1G_1 --csv=Y12696_GraysonM_Naive-i_V1G_1.csv --localcores=8 --localmem=64
 ```
 
-### Collect the filtered matrix and alignment summary
+The README also notes that the Slurm output file is the main place to monitor real-time run status after submission.
+
+### Review the per-sample summaries and collect filtered matrices
 
 The documented outputs are per-sample `web_summary.html` reports and filtered feature-barcode matrices suitable for downstream Seurat or Scanpy workflows.
 
@@ -61,11 +72,14 @@ sample_filtered_feature_bc_matrix/
 └── matrix.mtx.gz
 ```
 
+The practical handoff from this page is straightforward: once `cellranger multi` finishes, move from the `web_summary.html` reports into the per-sample filtered matrices for downstream QC, clustering, or format conversion in other workflows.
+
 ## Gotchas / notes
 
 - The CSV content is the critical sample-demultiplexing input; mismatched probe barcode IDs or sample descriptions will propagate into the output.
 - The committed paths are OSC-specific examples and should be adapted to the actual project storage and account.
 - The README includes an externally hosted screenshot of the CSV layout, but there are no committed local figure assets in this workflow folder.
+- This page only covers pooled Flex preprocessing; downstream single-cell analysis happens in other workflow folders.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scRNAseq_10x_Flex_preprocessing)

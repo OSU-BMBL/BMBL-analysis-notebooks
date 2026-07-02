@@ -8,11 +8,11 @@ workflow:
 
 ## What it does
 
-This workflow calculates gene activity scores and peak-gene regulatory scores from a scATAC-seq peak count matrix. It uses MAESTRO-based gene score calculations and returns gene-by-cell plus gene-by-peak summaries for downstream regulatory analysis.
+This workflow calculates gene activity scores and peak-gene regulatory scores from a scATAC-seq peak count matrix. It uses MAESTRO-based gene score calculations to produce both a gene-by-cell activity matrix and a gene-by-peak regulatory potential matrix for downstream regulatory analysis.
 
 ## When to use it
 
-Use this workflow when the input is already a peak-by-cell matrix and the next step is to derive gene-centric summaries from accessibility rather than to cluster cells. It is a focused utility page for turning peak counts into gene activity features.
+Use this workflow when the input is already a peak-by-cell matrix and the next step is to derive gene-centric summaries from accessibility rather than to cluster cells. It is a focused utility page for turning peak counts into gene activity features, not a full Signac preprocessing workflow.
 
 ## Prerequisites
 
@@ -22,10 +22,11 @@ Use this workflow when the input is already a peak-by-cell matrix and the next s
   - [`gene_active_score.Rmd`](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/blob/master/scATACseq_Gene_activity/gene_active_score.Rmd)
 - Required packages include `Seurat`, `MAESTRO`, `reticulate`, and `qs`
 - Input: a peak-by-cell matrix, with the notebook example loading a `.qsave` object
+- Key runtime choice from the source materials: set the organism parameter to `GRCh38` or `GRCm38`
 
 ## Steps
 
-### Load the peak count matrix and Python-backed dependencies
+### Load the peak count matrix and configure the Python-backed environment
 
 The notebook loads a serialized peak matrix, configures the Python environment through `reticulate`, and then computes a gene-by-cell activity matrix.
 
@@ -35,7 +36,13 @@ use_python("~/.local/share/r-miniconda/envs/r-reticulate/bin/python", required =
 pbmc.gene <- ATACCalculateGenescore(atac_matrix)
 ```
 
-### Compute peak-gene regulatory scores
+This first stage is doing two practical things at once: confirming the peak matrix can be read in R and making sure MAESTRO can find the Python environment it needs.
+
+### Calculate the gene-by-cell activity matrix
+
+The main output of the first branch is `pbmc.gene`, which represents gene activity scores for each cell. In the committed notebook, this object is printed directly and an optional `qsave()` line is left commented for users who want to persist the result.
+
+### Derive the gene-by-peak regulatory potential matrix
 
 The second branch defines a helper that passes an identity-style matrix into `ATACCalculateGenescore()` so the result becomes a gene-by-peak regulatory potential matrix instead of a gene-by-cell activity matrix.
 
@@ -53,11 +60,23 @@ CalGenePeakScore <- function(peak_count_matrix, organism = "GRCh38") {
 peak_gene_reg <- CalGenePeakScore(atac_matrix, "GRCh38")
 ```
 
+This is the part of the workflow that makes the page more than a simple format conversion: it reuses the same scoring machinery to summarize regulatory potential at the peak level, not just the cell level.
+
+### Save or hand off the two matrix outputs
+
+The committed materials describe two outputs for downstream use:
+
+- a gene-by-cell activity score matrix
+- a gene-by-peak regulatory matrix
+
+The example notebook prints both objects and includes a commented `qsave()` line for the gene activity matrix, so readers should plan their own output filenames and storage locations explicitly.
+
 ## Gotchas / notes
 
 - The committed notebook uses an absolute example-data path outside the repo, so users will need to replace that with their own matrix location.
 - This workflow is compact and does not include committed figures or a rendered HTML example.
 - The README explicitly calls out species selection (`GRCh38` vs `GRCm38`) as a key input parameter.
+- The source materials describe the outputs clearly, but they leave the final saved filenames mostly up to the user.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/scATACseq_Gene_activity)

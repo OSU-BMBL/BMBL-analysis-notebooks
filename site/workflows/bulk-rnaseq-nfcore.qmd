@@ -12,7 +12,7 @@ This workflow uses `nf-core/rnaseq` to process bulk RNA-seq FASTQ files into ali
 
 ## When to use it
 
-Use this workflow when you want a standardized, container-friendly bulk RNA-seq pipeline rather than a hand-assembled alignment and quantification script. It is most useful when the main goal is to generate reproducible count matrices and QC outputs that can feed directly into downstream DEG workflows.
+Use this workflow when you want a standardized, container-friendly bulk RNA-seq pipeline rather than a hand-assembled alignment and quantification script. It is most useful when the main goal is to generate reproducible count matrices and QC outputs that can feed directly into downstream DEG workflows or the RNA-seq workflow page in this site.
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Use this workflow when you want a standardized, container-friendly bulk RNA-seq 
 
 ## Steps
 
-### Prepare the input samplesheet
+### Build the samplesheet with sample names, read files, and strandedness
 
 The README expects an `nf-core/rnaseq` samplesheet with one row per library and explicit strandedness information.
 
@@ -40,7 +40,7 @@ TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,,reverse
 
 This is the most important workflow-specific contract: the pipeline behavior depends on the samplesheet being formatted correctly before any compute job is launched.
 
-### Run nf-core/rnaseq on the cluster or from an interactive shell
+### Launch `nf-core/rnaseq` either interactively or through Slurm
 
 The committed guide uses `Nextflow` directly and shows both a simple command and a SLURM job script for OSC-style execution.
 
@@ -68,7 +68,9 @@ nextflow run nf-core/rnaseq \
    -profile singularity
 ```
 
-### Review the main outputs for downstream analysis
+The practical choice here is not between different workflow branches but between execution contexts: a direct shell launch for smaller runs or a scheduler submission pattern for longer cluster jobs.
+
+### Start downstream review with MultiQC, then move to merged counts
 
 The README emphasizes the output tree rather than individual intermediate commands. The key directories are `multiqc`, `fastqc`, `star_salmon`, and `trimgalore`, with merged gene counts and DESeq2-ready artifacts under `star_salmon`.
 
@@ -87,12 +89,17 @@ outdir/
 
 For this page, the main operational takeaway is: start with `multiqc`, then move to the merged counts and DESeq2-oriented outputs for downstream analysis.
 
+### Hand off the count outputs to downstream RNA-seq analysis
+
+The committed README stops at pipeline execution and output inspection, not differential expression itself. In practice, the main handoff is from `star_salmon/merged_gene_counts/` and related QC outputs into downstream DEG, PCA, and enrichment workflows.
+
 ## Gotchas / notes
 
 - This folder is README-driven and does not include a committed notebook or figure set, so the page stays concise.
 - The README uses example genomes (`GRCh38`, `GRCm38`); readers need to choose the right reference for their study.
 - Single-end data are allowed, but `fastq_2` must be left empty in the samplesheet.
 - The methods paragraph includes a placeholder version string for `nf-core/rnaseq`, so users should record the real version used in their run.
+- The samplesheet examples mix single-end and paired-end rows, so readers should confirm that their own sheet matches the library structure they actually sequenced.
 
 ---
 [📄 View source on GitHub](https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/RNAseq_nfcore_workflow)

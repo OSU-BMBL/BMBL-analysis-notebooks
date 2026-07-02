@@ -12,7 +12,7 @@ This site turns the repository into a browsable, static reference for bioinforma
 
 The repository is not an introduction to sequencing analysis, so this site focuses on workflow usage, expected inputs and outputs, committed figures, and source links rather than runnable notebooks or beginner lessons.
 
-Today the site includes one internal RNA-seq pilot page and a full catalog of the remaining workflow folders. As Phase 3 expands coverage, those GitHub links can be replaced with additional Quarto pages without changing the site structure.
+The workflow catalog below is now internalized into the site: each entry is presented as a Quarto page built from committed repository materials without re-executing the notebooks.
 :::
 
 ::: {.grid}
@@ -22,21 +22,22 @@ Today the site includes one internal RNA-seq pilot page and a full catalog of th
 The repository contains practical bioinformatics notebooks and companion files for workflows used by the BMBL lab. This website keeps the materials in the same repo and presents them as a display-only reading experience rather than a runnable tutorial environment.
 
 ::: {.callout-note}
-## Current coverage
+## How to use this site
 
-- The RNA-seq pilot is available as a full internal site page: [RNA-seq workflow pilot](rnaseq-workflow.qmd)
-- All other entries currently link to their source folders on GitHub while they wait for full migration
-- Contributor instructions for future site pages live in [How to Add a Workflow](CONTRIBUTING_to_site.md)
+- Browse workflows by assay category using the catalog and left-hand navigation
+- Use each workflow page as a Tier B usage-and-rationale reference, not as a from-scratch training course
+- Follow the GitHub source links on each page when you need the original workflow folder, notebooks, or companion files
+- Contributor instructions for maintaining the site live in [How to Add a Workflow](CONTRIBUTING_to_site.md)
 :::
 :::
 
 ::: {.g-col-12 .g-col-lg-4}
 ::: {.pilot-card}
-### Featured Workflow Page
+### Suggested Starting Page
 
-[RNA-seq workflow pilot](rnaseq-workflow.qmd)
+[RNA-seq Workflow](rnaseq-workflow.qmd)
 
-Browse the current pilot page for prerequisites, step-by-step usage notes, committed images, and links back to the source files on GitHub.
+Start here for a fuller example of the in-site workflow-page format, including prerequisites, structured steps, committed images, and links back to the source materials.
 :::
 :::
 :::
