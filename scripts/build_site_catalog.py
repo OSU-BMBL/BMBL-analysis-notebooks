@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import html
 import re
 import subprocess
 from pathlib import Path
@@ -252,12 +253,28 @@ def build_quarto(template, categories, workflows):
 def build_workflow_catalog_qmd(categories, workflows):
     grouped = workflows_by_category(categories, workflows)
     lines = []
+    lines.append('<div class="catalog-groups">')
     for category in ordered_categories(categories):
-        lines.append(f"### {category['label']}")
-        lines.append("")
+        count = len(grouped[category["id"]])
+        label = "workflow" if count == 1 else "workflows"
+        lines.append(
+            f'<section class="catalog-group catalog-group-{html.escape(category["id"])}">'
+        )
+        lines.append(f"<h3>{html.escape(category['label'])}</h3>")
+        lines.append(
+            f'<p class="catalog-count"><span>{count}</span> {label}</p>'
+        )
+        lines.append('<div class="catalog-links">')
+        lines.append("<ul>")
         for workflow in grouped[category["id"]]:
-            lines.append(f"- [{workflow['label']}]({workflow_href(workflow)})")
+            href = html.escape(workflow_href(workflow), quote=True)
+            workflow_label = html.escape(workflow["label"])
+            lines.append(f'<li><a href="{href}">{workflow_label}</a></li>')
+        lines.append("</ul>")
+        lines.append("</div>")
+        lines.append("</section>")
         lines.append("")
+    lines.append("</div>")
     return "\n".join(lines).rstrip() + "\n"
 
 

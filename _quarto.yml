@@ -183,7 +183,9 @@ website:
         text: "How to Add a Workflow"
 format:
   html:
-    theme: "cosmo"
+    theme:
+      light: "cosmo"
+      dark: "darkly"
     css: "styles.css"
     toc: true
     code-copy: true

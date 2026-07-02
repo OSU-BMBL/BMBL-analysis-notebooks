@@ -1,74 +1,143 @@
-### Single-cell RNA-seq
+<div class="catalog-groups">
+<section class="catalog-group catalog-group-scrna">
+<h3>Single-cell RNA-seq</h3>
+<p class="catalog-count"><span>14</span> workflows</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/scrna-general.qmd">General workflow</a></li>
+<li><a href="site/workflows/scrna-10x-flex.qmd">10x Flex preprocessing</a></li>
+<li><a href="site/workflows/scrna-trajectory.qmd">Trajectory analysis</a></li>
+<li><a href="site/workflows/scrna-cellchat.qmd">Cell-cell communication</a></li>
+<li><a href="site/workflows/scrna-hpv.qmd">HPV branch</a></li>
+<li><a href="site/workflows/scrna-seurat-scanpy.qmd">Seurat to Scanpy</a></li>
+<li><a href="site/workflows/scrna-stomach.qmd">Stomach branch</a></li>
+<li><a href="site/workflows/scrna-shinycell.qmd">ShinyCell portal</a></li>
+<li><a href="site/workflows/scrna-large.qmd">Large dataset analysis</a></li>
+<li><a href="site/workflows/scrna-module.qmd">Module enrichment</a></li>
+<li><a href="site/workflows/scrna-ipsc.qmd">iPSC branch</a></li>
+<li><a href="site/workflows/scrna-immune.qmd">Immune branch</a></li>
+<li><a href="site/workflows/scrna-infercnv.qmd">inferCNV</a></li>
+<li><a href="site/workflows/scrna-label-transfer.qmd">Label transfer</a></li>
+</ul>
+</div>
+</section>
 
-- [General workflow](site/workflows/scrna-general.qmd)
-- [10x Flex preprocessing](site/workflows/scrna-10x-flex.qmd)
-- [Trajectory analysis](site/workflows/scrna-trajectory.qmd)
-- [Cell-cell communication](site/workflows/scrna-cellchat.qmd)
-- [HPV branch](site/workflows/scrna-hpv.qmd)
-- [Seurat to Scanpy](site/workflows/scrna-seurat-scanpy.qmd)
-- [Stomach branch](site/workflows/scrna-stomach.qmd)
-- [ShinyCell portal](site/workflows/scrna-shinycell.qmd)
-- [Large dataset analysis](site/workflows/scrna-large.qmd)
-- [Module enrichment](site/workflows/scrna-module.qmd)
-- [iPSC branch](site/workflows/scrna-ipsc.qmd)
-- [Immune branch](site/workflows/scrna-immune.qmd)
-- [inferCNV](site/workflows/scrna-infercnv.qmd)
-- [Label transfer](site/workflows/scrna-label-transfer.qmd)
+<section class="catalog-group catalog-group-scatac">
+<h3>Single-cell ATAC-seq</h3>
+<p class="catalog-count"><span>6</span> workflows</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/scatac-general.qmd">General workflow</a></li>
+<li><a href="site/workflows/scatac-archr.qmd">ArchR branch</a></li>
+<li><a href="site/workflows/scatac-cicero.qmd">Cicero branch</a></li>
+<li><a href="site/workflows/scatac-cistopic.qmd">cisTopic branch</a></li>
+<li><a href="site/workflows/scatac-chromvar.qmd">ChromVAR motif activity</a></li>
+<li><a href="site/workflows/scatac-gene-activity.qmd">Gene activity score</a></li>
+</ul>
+</div>
+</section>
 
-### Single-cell ATAC-seq
+<section class="catalog-group catalog-group-multiome">
+<h3>Single-cell Multi-omics</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/multiome-ad.qmd">AD branch</a></li>
+</ul>
+</div>
+</section>
 
-- [General workflow](site/workflows/scatac-general.qmd)
-- [ArchR branch](site/workflows/scatac-archr.qmd)
-- [Cicero branch](site/workflows/scatac-cicero.qmd)
-- [cisTopic branch](site/workflows/scatac-cistopic.qmd)
-- [ChromVAR motif activity](site/workflows/scatac-chromvar.qmd)
-- [Gene activity score](site/workflows/scatac-gene-activity.qmd)
+<section class="catalog-group catalog-group-tcr">
+<h3>Single-cell TCR-seq</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/tcr-analysis.qmd">TCR-seq analysis</a></li>
+</ul>
+</div>
+</section>
 
-### Single-cell Multi-omics
+<section class="catalog-group catalog-group-spatial">
+<h3>Spatial Transcriptomics</h3>
+<p class="catalog-count"><span>5</span> workflows</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/spatial-general.qmd">General workflow</a></li>
+<li><a href="site/workflows/spatial-bayesspace.qmd">BayesSpace branch</a></li>
+<li><a href="site/workflows/spatial-giotto.qmd">Giotto branch</a></li>
+<li><a href="site/workflows/spatial-spotlight.qmd">Spotlight branch</a></li>
+<li><a href="site/workflows/spatial-neighborhood.qmd">Cellular neighborhood</a></li>
+</ul>
+</div>
+</section>
 
-- [AD branch](site/workflows/multiome-ad.qmd)
+<section class="catalog-group catalog-group-bulk">
+<h3>Bulk RNA-seq / ATAC-seq / ChIP-seq</h3>
+<p class="catalog-count"><span>7</span> workflows</p>
+<div class="catalog-links">
+<ul>
+<li><a href="rnaseq-workflow.qmd">RNA-seq workflow pilot</a></li>
+<li><a href="site/workflows/bulk-rnaseq-nfcore.qmd">RNA-seq nf-core workflow</a></li>
+<li><a href="site/workflows/bulk-atac-nfcore.qmd">ATAC-seq nf-core workflow</a></li>
+<li><a href="site/workflows/bulk-atac-general.qmd">Bulk ATAC workflow</a></li>
+<li><a href="site/workflows/bulk-chipseq.qmd">ChIP-seq workflow</a></li>
+<li><a href="site/workflows/bulk-chipseq-v2.qmd">ChIP-seq workflow v2</a></li>
+<li><a href="site/workflows/bulk-homer.qmd">HOMER motif analysis</a></li>
+</ul>
+</div>
+</section>
 
-### Single-cell TCR-seq
+<section class="catalog-group catalog-group-bsseq">
+<h3>Bisulfite sequencing</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/bsseq-bismark.qmd">Bismark aligner</a></li>
+</ul>
+</div>
+</section>
 
-- [TCR-seq analysis](site/workflows/tcr-analysis.qmd)
+<section class="catalog-group catalog-group-wgs">
+<h3>Whole Genome Sequencing</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/wgs-karyotyping.qmd">Low-pass karyotyping</a></li>
+</ul>
+</div>
+</section>
 
-### Spatial Transcriptomics
+<section class="catalog-group catalog-group-grn">
+<h3>Gene Regulatory Networks</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/grn-celloracle.qmd">CellOracle workflow</a></li>
+</ul>
+</div>
+</section>
 
-- [General workflow](site/workflows/spatial-general.qmd)
-- [BayesSpace branch](site/workflows/spatial-bayesspace.qmd)
-- [Giotto branch](site/workflows/spatial-giotto.qmd)
-- [Spotlight branch](site/workflows/spatial-spotlight.qmd)
-- [Cellular neighborhood](site/workflows/spatial-neighborhood.qmd)
+<section class="catalog-group catalog-group-enrichment">
+<h3>Enrichment / downstream analysis</h3>
+<p class="catalog-count"><span>1</span> workflow</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/enrichment-pathway.qmd">Pathway enrichment</a></li>
+</ul>
+</div>
+</section>
 
-### Bulk RNA-seq / ATAC-seq / ChIP-seq
+<section class="catalog-group catalog-group-data">
+<h3>Data utilities</h3>
+<p class="catalog-count"><span>4</span> workflows</p>
+<div class="catalog-links">
+<ul>
+<li><a href="site/workflows/data-geo-download.qmd">GEO download</a></li>
+<li><a href="site/workflows/data-geo-submission.qmd">GEO submission</a></li>
+<li><a href="site/workflows/data-h5ad.qmd">H5AD conversion</a></li>
+<li><a href="site/workflows/data-sra.qmd">SRA download</a></li>
+</ul>
+</div>
+</section>
 
-- [RNA-seq workflow pilot](rnaseq-workflow.qmd)
-- [RNA-seq nf-core workflow](site/workflows/bulk-rnaseq-nfcore.qmd)
-- [ATAC-seq nf-core workflow](site/workflows/bulk-atac-nfcore.qmd)
-- [Bulk ATAC workflow](site/workflows/bulk-atac-general.qmd)
-- [ChIP-seq workflow](site/workflows/bulk-chipseq.qmd)
-- [ChIP-seq workflow v2](site/workflows/bulk-chipseq-v2.qmd)
-- [HOMER motif analysis](site/workflows/bulk-homer.qmd)
-
-### Bisulfite sequencing
-
-- [Bismark aligner](site/workflows/bsseq-bismark.qmd)
-
-### Whole Genome Sequencing
-
-- [Low-pass karyotyping](site/workflows/wgs-karyotyping.qmd)
-
-### Gene Regulatory Networks
-
-- [CellOracle workflow](site/workflows/grn-celloracle.qmd)
-
-### Enrichment / downstream analysis
-
-- [Pathway enrichment](site/workflows/enrichment-pathway.qmd)
-
-### Data utilities
-
-- [GEO download](site/workflows/data-geo-download.qmd)
-- [GEO submission](site/workflows/data-geo-submission.qmd)
-- [H5AD conversion](site/workflows/data-h5ad.qmd)
-- [SRA download](site/workflows/data-sra.qmd)
+</div>
