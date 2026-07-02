@@ -3,7 +3,6 @@ project:
   output-dir: "docs"
   resources:
     - "_Archived/RNAseq_workflow/img/*.png"
-    - "styles-v2.css"
   post-render:
     - "bash scripts/ensure-nojekyll.sh"
   render:
@@ -187,7 +186,7 @@ format:
     theme:
       light: "cosmo"
       dark: "darkly"
-    css: "styles-v2.css"
+    css: "styles.css"
     toc: true
     code-copy: true
     code-overflow: "wrap"
