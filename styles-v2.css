@@ -1,0 +1,1343 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap");
+
+:root {
+  --paper: #fafbfa;
+  --panel: #ffffff;
+  --panel-alt: #f4f7f5;
+  --line: #d8dedc;
+  --line-strong: #c6cfcb;
+  --graphite: #1f2528;
+  --graphite-soft: #566169;
+  --muted: #79858c;
+  --scarlet: #ba0c2f;
+  --scarlet-soft: rgba(186, 12, 47, 0.12);
+  --link-underline: rgba(186, 12, 47, 0.25);
+  --surface-hover: rgba(31, 37, 40, 0.03);
+  --surface-active: rgba(186, 12, 47, 0.06);
+  --section-rule: rgba(31, 37, 40, 0.06);
+  --shadow-soft: 0 8px 18px rgba(31, 37, 40, 0.035);
+  --shell-bg: rgba(250, 251, 250, 0.96);
+  --shell-border: rgba(31, 37, 40, 0.06);
+  --sidebar-bg: #fbfcfb;
+  --input-bg: #ffffff;
+  --code-bg: #ffffff;
+  --focus-ring: rgba(186, 12, 47, 0.55);
+  --overlay-scrim: rgba(20, 26, 29, 0.34);
+  --search-shadow: 0 28px 72px rgba(31, 37, 40, 0.16);
+  --mark-bg: rgba(186, 12, 47, 0.12);
+  --mark-text: inherit;
+  --radius-lg: 0.9rem;
+  --radius-md: 0.65rem;
+  --radius-sm: 0.45rem;
+  --content-width: 84rem;
+}
+
+body.quarto-dark,
+body[data-bs-theme="dark"] {
+  --paper: #14191c;
+  --panel: #1c2327;
+  --panel-alt: #222a2f;
+  --line: #313a3f;
+  --line-strong: #414d53;
+  --graphite: #e8ece9;
+  --graphite-soft: #bcc6c1;
+  --muted: #8d9994;
+  --scarlet: #da667f;
+  --scarlet-soft: rgba(218, 102, 127, 0.2);
+  --link-underline: rgba(218, 102, 127, 0.34);
+  --surface-hover: rgba(232, 236, 233, 0.05);
+  --surface-active: rgba(218, 102, 127, 0.12);
+  --section-rule: rgba(232, 236, 233, 0.08);
+  --shadow-soft: 0 12px 24px rgba(0, 0, 0, 0.26);
+  --shell-bg: rgba(20, 25, 28, 0.94);
+  --shell-border: rgba(232, 236, 233, 0.08);
+  --sidebar-bg: #161c1f;
+  --input-bg: #151b1f;
+  --code-bg: #12171a;
+  --focus-ring: rgba(218, 102, 127, 0.45);
+  --overlay-scrim: rgba(5, 8, 10, 0.7);
+  --search-shadow: 0 30px 84px rgba(0, 0, 0, 0.42);
+  --mark-bg: rgba(218, 102, 127, 0.18);
+  --mark-text: #f9d9e2;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--graphite);
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  line-height: 1.62;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--scarlet);
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 0.16em;
+}
+
+a:hover,
+a:focus {
+  color: var(--graphite);
+  text-decoration-color: currentColor;
+}
+
+::selection {
+  background: var(--mark-bg);
+  color: var(--mark-text);
+}
+
+code:not(pre code):not(.sourceCode),
+kbd {
+  border-radius: 0.35rem;
+  background: var(--panel-alt);
+  color: var(--graphite);
+  padding: 0.08rem 0.32rem;
+}
+
+code,
+pre,
+.sourceCode,
+.code-with-copy,
+.code-copy-button,
+.catalog-count,
+.home-kicker {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.navbar {
+  background: var(--shell-bg);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+
+.navbar .navbar-container,
+.quarto-secondary-nav .container-fluid,
+#quarto-content {
+  max-width: none;
+}
+
+.navbar-brand-container {
+  gap: 0.85rem;
+}
+
+.navbar-brand img.navbar-logo {
+  max-height: 1.95rem;
+}
+
+.navbar-brand,
+.navbar .menu-text,
+.sidebar .sidebar-item-text,
+.quarto-page-breadcrumbs,
+.sidebar-title {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+.navbar-title {
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+}
+
+.navbar .nav-link,
+.navbar .menu-text,
+.toc-actions,
+#TOC a {
+  color: var(--graphite-soft);
+  font-size: 0.92rem;
+}
+
+.navbar .nav-link,
+.navbar .menu-text,
+.quarto-search-button,
+.navbar-toggler,
+.quarto-color-scheme-toggle {
+  transition:
+    color 0.16s ease,
+    background-color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: var(--scarlet);
+}
+
+.quarto-secondary-nav {
+  background: var(--shell-bg);
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.quarto-secondary-nav .container-fluid {
+  align-items: center;
+  min-height: 2.5rem;
+}
+
+#quarto-content {
+  background: transparent;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--line);
+}
+
+.sidebar-search {
+  padding: 0.65rem 0.95rem 0.3rem;
+}
+
+.sidebar .search-input,
+.sidebar-search input {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--input-bg);
+}
+
+.sidebar-menu-container {
+  padding: 0.4rem 0.7rem 1rem;
+}
+
+.sidebar-item {
+  margin-bottom: 0.08rem;
+}
+
+.sidebar-item-container {
+  border-radius: var(--radius-sm);
+}
+
+.sidebar-item.sidebar-item-section > .sidebar-item-container {
+  margin-top: 0.65rem;
+  padding-top: 0.48rem;
+  border-top: 1px solid var(--section-rule);
+}
+
+.sidebar-item.sidebar-item-section > .sidebar-item-container > .sidebar-item-text,
+.sidebar-item.sidebar-item-section > .sidebar-item-container > .sidebar-item-toggle {
+  color: var(--muted);
+}
+
+.sidebar-item.sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sidebar .sidebar-link {
+  display: block;
+  padding: 0.38rem 0.58rem;
+  border-radius: var(--radius-sm);
+  color: var(--graphite-soft);
+  font-size: 0.92rem;
+  line-height: 1.32;
+  overflow-wrap: anywhere;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.sidebar .sidebar-item:not(.sidebar-item-section) .sidebar-link:hover,
+.sidebar .sidebar-item:not(.sidebar-item-section) .sidebar-link:focus {
+  background: var(--surface-hover);
+  color: var(--graphite);
+}
+
+.sidebar .sidebar-link.active {
+  background: var(--surface-active);
+  color: var(--scarlet);
+  font-weight: 600;
+}
+
+.quarto-page-breadcrumbs .breadcrumb {
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.quarto-page-breadcrumbs .breadcrumb-item,
+.quarto-page-breadcrumbs .breadcrumb-item a {
+  color: var(--muted);
+  font-size: 0.77rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+main.content {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 1rem 1.6rem 3.2rem;
+}
+
+h1,
+.quarto-title .title,
+.home-band h1 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.06;
+}
+
+h1,
+.quarto-title .title {
+  font-size: clamp(2rem, 3vw, 3.15rem);
+}
+
+h2,
+h3,
+h4 {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-top: 2.2rem;
+  margin-bottom: 0.85rem;
+  font-size: 1.34rem;
+}
+
+h3 {
+  margin-top: 1.65rem;
+  margin-bottom: 0.65rem;
+  font-size: 1.06rem;
+}
+
+body:has(.home-band) #title-block-header {
+  display: none;
+}
+
+.quarto-title-block.default {
+  margin: 0 0 1.2rem;
+  padding: 0.35rem 0 1.15rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.quarto-title-block .title {
+  max-width: 16ch;
+  margin-bottom: 0.35rem;
+}
+
+.quarto-title-block .subtitle,
+.quarto-title-block .description {
+  max-width: 72ch;
+  color: var(--graphite-soft);
+  font-size: 1.03rem;
+}
+
+.quarto-title-block .quarto-title-meta {
+  margin-top: 0.55rem;
+}
+
+.home-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(18rem, 0.95fr);
+  gap: 1.45rem;
+  align-items: start;
+  margin: 0.6rem 0 1.45rem;
+  padding: 1.15rem 0 1.35rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.home-band-main,
+.home-band-side {
+  min-width: 0;
+}
+
+.home-logo {
+  max-width: 10.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.home-kicker {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-band h1 {
+  max-width: 13ch;
+  margin: 0 0 0.75rem;
+}
+
+.home-band-main > p,
+.home-band-side > p,
+.home-band-side li,
+main#quarto-document-content section.level2 > p,
+main#quarto-document-content section.level2 > ul,
+main#quarto-document-content section.level2 > ol,
+main#quarto-document-content section.level3 > p,
+.callout p {
+  max-width: 74ch;
+}
+
+.home-band-side {
+  padding: 0.2rem 0 0 1.2rem;
+  border-left: 1px solid var(--line);
+}
+
+.home-band-side h3 {
+  margin-top: 0;
+  margin-bottom: 0.55rem;
+  color: var(--graphite-soft);
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-band-side ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.home-band-side li + li {
+  margin-top: 0.45rem;
+}
+
+.home-band-side p:first-of-type a {
+  display: inline-block;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.catalog-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 0.95rem;
+  margin-top: 0.85rem;
+}
+
+.catalog-group {
+  min-width: 0;
+  padding: 0.9rem 0.95rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: none;
+}
+
+.catalog-group h3 {
+  margin: 0;
+  color: var(--graphite);
+  font-size: 1rem;
+}
+
+.catalog-count {
+  margin: 0.18rem 0 0.55rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.catalog-count span {
+  color: var(--scarlet);
+}
+
+.catalog-links ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.08rem 0.85rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.catalog-links li {
+  margin: 0;
+  min-width: 0;
+}
+
+.catalog-links a {
+  display: block;
+  padding: 0.24rem 0;
+  color: var(--graphite-soft);
+  font-size: 0.92rem;
+  line-height: 1.3;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.catalog-links a:hover,
+.catalog-links a:focus {
+  color: var(--scarlet);
+}
+
+body:has(#what-it-does):has(#prerequisites) main#quarto-document-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(20rem, 1.05fr);
+  column-gap: 1.5rem;
+  row-gap: 0.8rem;
+  align-items: start;
+}
+
+body:has(#what-it-does):has(#prerequisites) main#quarto-document-content > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#what-it-does,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#when-to-use-it {
+  grid-column: 1;
+  margin: 0;
+  padding: 0.9rem 1rem 0.95rem;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--scarlet-soft);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  margin: 0;
+  padding: 0.9rem 1rem 0.95rem;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--scarlet-soft);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  overflow-wrap: anywhere;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#what-it-does
+  h2,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#when-to-use-it
+  h2,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  h2 {
+  margin: 0 0 0.65rem;
+  color: var(--scarlet);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  ul,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  li,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  a,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#prerequisites
+  code {
+  white-space: normal;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#steps {
+  margin-top: 0.35rem;
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#steps
+  > h2,
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > section#gotchas-notes
+  > h2 {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line);
+}
+
+body:has(#what-it-does):has(#prerequisites)
+  main#quarto-document-content
+  > p:last-child:has(a[href*="github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/"]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin-top: 0.15rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--input-bg);
+  font-size: 0.92rem;
+}
+
+main#quarto-document-content > section.level2 {
+  margin-top: 1.85rem;
+}
+
+main#quarto-document-content > section.level2:first-child {
+  margin-top: 0;
+}
+
+main#quarto-document-content > section.level2 > h2 {
+  margin-top: 0;
+}
+
+main#quarto-document-content section.level3 + section.level3 {
+  margin-top: 1.1rem;
+}
+
+main#quarto-document-content section.level3 > h3 {
+  max-width: 60rem;
+}
+
+main#quarto-document-content p,
+main#quarto-document-content li,
+.callout,
+figcaption,
+.quarto-figure-caption,
+td,
+th {
+  overflow-wrap: break-word;
+}
+
+pre,
+.sourceCode {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--code-bg);
+}
+
+pre code,
+.sourceCode code {
+  background: transparent;
+  color: inherit;
+}
+
+div.code-copy-outer-scaffold {
+  margin: 0.85rem 0 1rem;
+}
+
+.code-copy-button {
+  border-radius: 999px;
+  color: var(--scarlet);
+}
+
+img,
+.figure img {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+figcaption,
+.quarto-figure-caption {
+  color: var(--graphite-soft);
+  font-size: 0.85rem;
+}
+
+.callout {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: none;
+}
+
+.callout.callout-note {
+  border-left: 3px solid var(--scarlet-soft);
+}
+
+.callout.callout-note h2,
+.callout.callout-note .callout-title-container {
+  font-size: 0.86rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.table,
+table {
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.quarto-search-button,
+.navbar-toggler,
+.quarto-color-scheme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.15rem;
+  min-height: 2.15rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--graphite-soft);
+  background: transparent;
+  text-decoration: none;
+}
+
+.quarto-navbar-tools {
+  display: flex;
+  align-items: center;
+  min-height: 1.4rem;
+}
+
+.navbar-toggler {
+  padding: 0;
+  line-height: 1;
+}
+
+.quarto-search-button:hover,
+.quarto-search-button:focus,
+.navbar-toggler:hover,
+.navbar-toggler:focus,
+.quarto-color-scheme-toggle:hover,
+.quarto-color-scheme-toggle:focus {
+  color: var(--graphite);
+  background: var(--panel-alt);
+  border-color: var(--line);
+}
+
+.navbar-toggler {
+  box-shadow: none;
+}
+
+.quarto-color-scheme-toggle .bi,
+.quarto-search-button .bi,
+.navbar-toggler-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.98rem;
+  line-height: 1;
+}
+
+.quarto-navbar-tools .quarto-color-scheme-toggle.quarto-navigation-tool {
+  min-width: auto !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  gap: 0.42rem !important;
+  line-height: 1 !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+.quarto-navbar-tools .quarto-color-scheme-toggle.quarto-navigation-tool .bi {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 1.72rem !important;
+  height: 0.98rem !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  position: relative !important;
+}
+
+.quarto-navbar-tools
+  .quarto-color-scheme-toggle.quarto-navigation-tool
+  .bi::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 0.14rem !important;
+  width: 0.62rem !important;
+  height: 0.62rem !important;
+  border-radius: 50% !important;
+  background: var(--graphite) !important;
+  transform: translateY(-50%) !important;
+  transition: left 0.16s ease !important;
+}
+
+.quarto-navbar-tools
+  .quarto-color-scheme-toggle.quarto-navigation-tool.alternate
+  .bi::before {
+  left: calc(100% - 0.76rem) !important;
+}
+
+.quarto-navbar-tools .quarto-color-scheme-toggle.quarto-navigation-tool::after {
+  content: "Light";
+  color: currentColor;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.quarto-navbar-tools
+  .quarto-color-scheme-toggle.quarto-navigation-tool.alternate::after {
+  content: "Dark";
+}
+
+.quarto-secondary-nav .btn.quarto-search-button,
+.quarto-secondary-nav .quarto-search-button {
+  min-width: auto !important;
+  min-height: auto !important;
+  width: 1.08rem !important;
+  height: 1.08rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+  font-size: 0 !important;
+  color: var(--graphite-soft) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  position: relative !important;
+  align-self: center !important;
+  line-height: 1 !important;
+}
+
+.quarto-secondary-nav .btn.quarto-search-button:hover,
+.quarto-secondary-nav .btn.quarto-search-button:focus,
+.quarto-secondary-nav .btn.quarto-search-button:focus-visible,
+.quarto-secondary-nav .btn.quarto-search-button:active,
+.quarto-secondary-nav .quarto-search-button:hover,
+.quarto-secondary-nav .quarto-search-button:focus,
+.quarto-secondary-nav .quarto-search-button:focus-visible,
+.quarto-secondary-nav .quarto-search-button:active {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  text-decoration: none !important;
+}
+
+.quarto-secondary-nav .btn.quarto-search-button .bi,
+.quarto-secondary-nav .quarto-search-button .bi {
+  display: none !important;
+}
+
+.quarto-secondary-nav .btn.quarto-search-button::before,
+.quarto-secondary-nav .quarto-search-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 1.08rem !important;
+  height: 1.08rem !important;
+  background-color: currentColor !important;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M20 20l-4.2-4.2'/%3E%3C/svg%3E") !important;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M20 20l-4.2-4.2'/%3E%3C/svg%3E") !important;
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+  -webkit-mask-position: center !important;
+  mask-position: center !important;
+  -webkit-mask-size: contain !important;
+  mask-size: contain !important;
+}
+
+#quarto-header #quarto-search {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.4rem;
+}
+
+#quarto-header #quarto-search .aa-Autocomplete {
+  display: flex;
+  align-items: center;
+  width: auto;
+  min-height: 1.4rem;
+  line-height: 1;
+}
+
+#quarto-header #quarto-search .aa-DetachedSearchButton {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--graphite-soft) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  align-self: center !important;
+}
+
+#quarto-header #quarto-search .aa-DetachedSearchButton:hover,
+#quarto-header #quarto-search .aa-DetachedSearchButton:focus,
+#quarto-header #quarto-search .aa-DetachedSearchButton:focus-visible,
+#quarto-header #quarto-search .aa-DetachedSearchButton:active {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--graphite) !important;
+  outline: none !important;
+}
+
+#quarto-header #quarto-search .aa-DetachedSearchButtonPlaceholder,
+#quarto-header #quarto-search .aa-DetachedSearchButtonQuery {
+  display: none !important;
+}
+
+#quarto-header #quarto-search .aa-DetachedSearchButtonIcon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.08rem !important;
+  height: 1.08rem !important;
+  margin: 0 !important;
+  color: inherit !important;
+}
+
+#quarto-header #quarto-search .aa-DetachedSearchButtonIcon svg {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  fill: currentColor !important;
+}
+
+body.aa-Detached {
+  overflow: hidden;
+}
+
+#quarto-search-results {
+  position: relative;
+  z-index: 2100;
+}
+
+.aa-DetachedOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(8px);
+}
+
+.aa-DetachedContainer {
+  position: relative !important;
+  inset: auto !important;
+  display: block !important;
+  width: min(68rem, 100%);
+  max-width: 68rem;
+  height: auto !important;
+  max-height: min(78vh, 44rem);
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-lg) + 0.05rem);
+  background: var(--panel);
+  box-shadow: var(--search-shadow);
+  overflow: hidden;
+}
+
+.aa-DetachedContainer--modal {
+  max-width: min(68rem, calc(100vw - 1rem));
+}
+
+.aa-DetachedFormContainer {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.aa-Form {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+
+.aa-Autocomplete {
+  width: 100%;
+}
+
+.aa-Label,
+.aa-InputWrapperPrefix,
+.aa-InputWrapperSuffix,
+.aa-SubmitButton,
+.aa-ClearButton,
+.aa-DetachedCancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--graphite-soft);
+}
+
+.aa-SubmitButton,
+.aa-ClearButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.aa-InputWrapperPrefix,
+.aa-Label {
+  width: 1.9rem;
+  min-width: 1.9rem;
+  height: 2rem;
+}
+
+.aa-SubmitButton:hover,
+.aa-ClearButton:hover,
+.aa-DetachedCancelButton:hover {
+  color: var(--graphite);
+}
+
+.aa-Input {
+  flex: 1 1 auto;
+  color: var(--graphite);
+  background: transparent;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 1rem;
+}
+
+.aa-Input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.aa-DetachedCancelButton {
+  padding: 0 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.aa-DetachedSearchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.52rem 0.82rem;
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.aa-DetachedSearchButtonIcon,
+.aa-DetachedSearchButtonPlaceholder,
+.aa-DetachedSearchButtonQuery {
+  color: inherit;
+}
+
+.aa-Panel {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  max-height: min(60vh, 38rem) !important;
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: auto;
+}
+
+.aa-PanelLayout,
+.aa-Panel--scrollable {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.aa-GradientBottom {
+  display: none;
+}
+
+.aa-SourceHeader,
+.search-result-header,
+.search-result-header-no-results {
+  padding: 0.7rem 1rem 0.55rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.aa-Item {
+  padding: 0;
+  background: transparent;
+}
+
+.aa-Item + .aa-Item,
+.aa-Source + .aa-Source {
+  border-top: 1px solid var(--line);
+}
+
+.aa-Item[aria-selected="true"] {
+  background: var(--panel-alt);
+}
+
+.aa-SourceNoResults {
+  padding: 0;
+}
+
+.search-result-doc,
+.search-result-doc-section,
+.search-result-more,
+.search-error,
+.quarto-search-no-results {
+  padding: 0.9rem 1rem;
+}
+
+.search-result-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.search-result-link:hover,
+.search-result-link:focus {
+  color: inherit;
+}
+
+.search-result-container,
+.search-result-title-container,
+.search-result-text-container {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.search-result-title-container {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 0.65rem;
+}
+
+.search-result-icon {
+  margin-top: 0.08rem;
+  color: var(--muted);
+}
+
+.search-result-title,
+.search-result-section,
+.search-result-text,
+.search-result-more,
+.search-result-crumbs,
+.quarto-search-no-results,
+.search-error-title,
+.search-error-text {
+  margin: 0;
+}
+
+.search-result-title,
+.search-result-section {
+  color: var(--graphite);
+  font-weight: 600;
+  line-height: 1.32;
+}
+
+.search-result-title,
+.search-result-section,
+.search-result-text,
+.search-result-crumbs,
+.search-error-text,
+.quarto-search-no-results {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.search-result-section,
+.search-result-crumbs {
+  font-size: 0.82rem;
+}
+
+.search-result-crumbs-wrap {
+  white-space: normal;
+}
+
+.search-result-text,
+.search-result-crumbs,
+.quarto-search-no-results,
+.search-error-text {
+  color: var(--graphite-soft);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.search-result-more {
+  color: var(--scarlet);
+  font-weight: 600;
+}
+
+.search-error-icon {
+  color: var(--scarlet);
+}
+
+.search-match {
+  background: var(--mark-bg);
+  color: var(--mark-text);
+  padding: 0.02rem 0.14rem;
+  border-radius: 0.25rem;
+}
+
+.algolia-search-logo {
+  height: 1rem;
+  opacity: 0.8;
+}
+
+#TOC,
+.toc-active {
+  border-left: 1px solid var(--line);
+  padding-left: 0.9rem;
+}
+
+#TOC .nav-link {
+  color: var(--graphite-soft);
+  font-size: 0.88rem;
+  padding: 0.14rem 0;
+}
+
+#TOC .nav-link.active,
+#TOC .nav-link:hover,
+#TOC .nav-link:focus {
+  color: var(--scarlet);
+}
+
+a[href^="https://github.com/OSU-BMBL/BMBL-analysis-notebooks/tree/master/"]::after {
+  content: " ↗";
+  font-size: 0.9em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1279px) {
+  .catalog-groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1199px) {
+  .home-band {
+    grid-template-columns: 1fr;
+  }
+
+  .home-band-side {
+    padding: 0.9rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  body:has(#what-it-does):has(#prerequisites) main#quarto-document-content {
+    grid-template-columns: 1.3fr 0.95fr;
+  }
+}
+
+@media (max-width: 991px) {
+  .navbar-title {
+    font-size: 0.88rem;
+  }
+
+  .quarto-color-scheme-toggle {
+    padding-inline: 0.6rem;
+  }
+
+  .quarto-color-scheme-toggle::after {
+    font-size: 0.72rem;
+  }
+
+  main.content {
+    padding: 1rem 1rem 2.8rem;
+  }
+
+  .home-band {
+    gap: 0.95rem;
+    padding: 0.9rem 0 1.1rem;
+  }
+
+  body:has(#what-it-does):has(#prerequisites) main#quarto-document-content {
+    display: block;
+  }
+
+  body:has(#what-it-does):has(#prerequisites)
+    main#quarto-document-content
+    > section#what-it-does,
+  body:has(#what-it-does):has(#prerequisites)
+    main#quarto-document-content
+    > section#when-to-use-it,
+  body:has(#what-it-does):has(#prerequisites)
+    main#quarto-document-content
+    > section#prerequisites {
+    margin-bottom: 0.85rem;
+  }
+
+  .catalog-links ul {
+    grid-template-columns: 1fr;
+  }
+
+  .aa-DetachedOverlay {
+    padding: 0.75rem;
+  }
+
+  .aa-DetachedContainer {
+    width: 100%;
+  }
+
+  .aa-DetachedCancelButton {
+    padding: 0 0.35rem;
+  }
+
+  .aa-DetachedSearchButton {
+    padding-inline: 0.72rem;
+  }
+
+  #TOC,
+  .toc-active {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
