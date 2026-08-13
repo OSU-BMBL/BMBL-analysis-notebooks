@@ -5,6 +5,10 @@ fail <- function(message, status = 1L) {
   quit(save = "no", status = status)
 }
 
+minimum_reference_subset_barcodes <- 100L
+fixed_pca_dimensions <- 30L
+minimum_fixed_pca_inputs <- fixed_pca_dimensions + 1L
+
 parse_args <- function(args) {
   parsed <- list(
     ctrl = NULL,
@@ -69,6 +73,17 @@ parse_args <- function(args) {
       paste(
         "Missing required arguments:",
         paste(names(missing_required)[missing_required], collapse = ", ")
+      )
+    )
+  }
+  if (!parsed$full_run &&
+      parsed$subset_barcodes_per_sample < minimum_reference_subset_barcodes) {
+    fail(
+      paste0(
+        "--subset-barcodes-per-sample must be at least ",
+        minimum_reference_subset_barcodes,
+        " for the reference_subset branch so the fixed 30-PC workflow has a ",
+        "safe input floor; use --full-run for complete-matrix processing."
       )
     )
   }
@@ -155,15 +170,104 @@ genes_with_min_cells <- function(matrix, min_cells = 3L) {
   rownames(matrix)[Matrix::rowSums(matrix > 0) >= min_cells]
 }
 
-calc_percent_ribo <- function(object) {
-  ribo_genes <- rownames(object)[grep("^RP[SL][[:digit:]]", rownames(object))]
-  if (length(ribo_genes) == 0L) {
-    rep(0, ncol(object))
-  } else {
-    ribo_counts <- Matrix::colSums(LayerData(object[ribo_genes, ], assay = "RNA", layer = "counts"))
-    total_counts <- Matrix::colSums(LayerData(object, assay = "RNA", layer = "counts"))
-    as.numeric(ribo_counts / total_counts * 100)
+require_human_qc_features <- function(object, sample_label) {
+  feature_names <- rownames(object)
+  mito_genes <- feature_names[grep("^MT-", feature_names)]
+  ribo_genes <- feature_names[grep("^RP[SL][[:digit:]]", feature_names)]
+  missing <- c(
+    if (length(mito_genes) == 0L) "mitochondrial features matching ^MT-",
+    if (length(ribo_genes) == 0L) "ribosomal features matching ^RP[SL][[:digit:]]"
+  )
+  if (length(missing) > 0L) {
+    fail(
+      paste0(
+        "Sample '", sample_label, "' has no ", paste(missing, collapse = " or "),
+        ". scrna-seurat-preprocess requires committed human-style gene symbols ",
+        "(for example MT-CO1 and RPL3) for QC; mouse-style or ID-keyed features ",
+        "are not supported."
+      )
+    )
   }
+  list(mito_genes = mito_genes, ribo_genes = ribo_genes)
+}
+
+calc_percent_ribo <- function(object, ribo_genes) {
+  ribo_counts <- Matrix::colSums(LayerData(object[ribo_genes, ], assay = "RNA", layer = "counts"))
+  total_counts <- Matrix::colSums(LayerData(object, assay = "RNA", layer = "counts"))
+  as.numeric(ribo_counts / total_counts * 100)
+}
+
+require_fixed_pca_cell_count <- function(object) {
+  qc_cell_count <- ncol(object)
+  if (qc_cell_count < minimum_fixed_pca_inputs) {
+    fail(
+      paste0(
+        "Fixed ", fixed_pca_dimensions, "-PC preprocessing requires at least ",
+        minimum_fixed_pca_inputs, " QC-passing cells after filtering; found ",
+        qc_cell_count, ". Increase the selected barcodes or use inputs that retain ",
+        "enough cells under the documented QC policy."
+      )
+    )
+  }
+}
+
+require_fixed_pca_features <- function(object) {
+  normalized_data <- LayerData(object, assay = "RNA", layer = "data")
+  feature_means <- Matrix::rowMeans(normalized_data)
+  feature_variances <- pmax(
+    Matrix::rowSums(normalized_data * normalized_data) / ncol(normalized_data) - feature_means^2,
+    0
+  )
+  usable_feature_count <- sum(feature_variances > 1e-12)
+  if (usable_feature_count < minimum_fixed_pca_inputs) {
+    fail(
+      paste0(
+        "Fixed ", fixed_pca_dimensions, "-PC preprocessing requires at least ",
+        minimum_fixed_pca_inputs, " normalized RNA features with nonzero variance; found ",
+        usable_feature_count, ". This skill does not adapt PCA dimensions for low-information inputs."
+      )
+    )
+  }
+}
+
+require_fixed_pca_variable_features <- function(object) {
+  variable_feature_count <- length(VariableFeatures(object, assay = "RNA"))
+  if (variable_feature_count < minimum_fixed_pca_inputs) {
+    fail(
+      paste0(
+        "Fixed ", fixed_pca_dimensions, "-PC preprocessing requires at least ",
+        minimum_fixed_pca_inputs, " variable RNA features; found ",
+        variable_feature_count, ". This skill does not adapt PCA dimensions for low-information inputs."
+      )
+    )
+  }
+}
+
+run_fixed_pca <- function(object, seed) {
+  pca_object <- tryCatch(
+    RunPCA(object, npcs = fixed_pca_dimensions, verbose = FALSE, seed.use = seed),
+    error = function(error) {
+      fail(
+        paste0(
+          "Fixed ", fixed_pca_dimensions,
+          "-PC preprocessing could not compute the required PCA reduction after QC: ",
+          conditionMessage(error),
+          ". This skill does not adapt dimensions for low-information inputs."
+        )
+      )
+    }
+  )
+  pca_dimensions <- ncol(Embeddings(pca_object, reduction = "pca"))
+  if (pca_dimensions < fixed_pca_dimensions) {
+    fail(
+      paste0(
+        "Fixed ", fixed_pca_dimensions, "-PC preprocessing produced only ",
+        pca_dimensions, " PCA dimensions after QC. This skill does not adapt dimensions ",
+        "for low-information inputs."
+      )
+    )
+  }
+  pca_object
 }
 
 ensure_package_versions <- function() {
@@ -260,7 +364,8 @@ for (sample_name in names(sample_specs)) {
   # holds the sub-threshold barcodes CreateSeuratObject has just dropped.
   reference_gene_sets[[sample_name]] <- rownames(object)
 
-  object$percent.ribo <- calc_percent_ribo(object)
+  qc_features <- require_human_qc_features(object, spec$label)
+  object$percent.ribo <- calc_percent_ribo(object, qc_features$ribo_genes)
   object <- PercentageFeatureSet(object, "^MT-", col.name = "percent.mito")
 
   sample_objects[[sample_name]] <- object
@@ -283,6 +388,9 @@ combined <- merge(
   add.cell.ids = vapply(sample_specs, function(spec) spec$label, character(1)),
   merge.data = TRUE
 )
+# Match the recorded source workflow: preprocessing starts from one RNA layer,
+# rather than per-sample layers with Seurat v5 layer-wise feature ranking.
+combined <- JoinLayers(combined)
 gene_universe_summary <- lapply(names(sample_specs), function(sample_name) {
   reference_gene_universe <- length(reference_gene_sets[[sample_name]])
   full_input_gene_universe <- length(full_input_gene_sets[[sample_name]])
@@ -319,18 +427,19 @@ combined_qc <- subset(
     nCount_RNA < qc_thresholds$nCount_RNA_max
 )
 
+require_fixed_pca_cell_count(combined_qc)
 DefaultAssay(combined_qc) <- "RNA"
 combined_qc <- NormalizeData(combined_qc, verbose = FALSE)
+require_fixed_pca_features(combined_qc)
 combined_qc <- FindVariableFeatures(combined_qc, nfeatures = 2000, verbose = FALSE)
+require_fixed_pca_variable_features(combined_qc)
 combined_qc <- ScaleData(combined_qc, verbose = FALSE)
-combined_qc <- RunPCA(combined_qc, npcs = 30, verbose = FALSE, seed.use = args$seed)
-combined_qc <- FindNeighbors(combined_qc, dims = 1:30, verbose = FALSE)
+combined_qc <- run_fixed_pca(combined_qc, seed = args$seed)
+combined_qc <- FindNeighbors(combined_qc, dims = seq_len(fixed_pca_dimensions), verbose = FALSE)
 combined_qc <- FindClusters(combined_qc, resolution = 0.8, verbose = FALSE, random.seed = args$seed)
-combined_qc <- RunUMAP(combined_qc, dims = 1:30, verbose = FALSE, seed.use = args$seed)
+combined_qc <- RunUMAP(combined_qc, dims = seq_len(fixed_pca_dimensions), verbose = FALSE, seed.use = args$seed)
 
-# Seurat v5 marker finding needs joined layers after preprocessing and before
-# FindAllMarkers(), or marker output can fail or be incomplete.
-combined_qc <- JoinLayers(combined_qc)
+# Layers were joined immediately after merge to match the source workflow.
 markers <- FindAllMarkers(combined_qc, only.pos = TRUE, min.pct = 0.25, verbose = FALSE)
 # FindAllMarkers() already carries the symbol in `gene`. Its rownames are
 # make.unique()d, so a gene marking several clusters appears there as GENE.1,
@@ -372,6 +481,7 @@ manifest_lines <- c(
   paste("stim_dir:", stim_dir),
   paste("out_dir:", out_dir),
   paste("execution_branch:", if (args$full_run) "full_data" else "reference_subset"),
+  paste("layer_policy:", "joined_immediately_after_merge"),
   paste(
     "completion_criterion:",
     if (args$full_run) {

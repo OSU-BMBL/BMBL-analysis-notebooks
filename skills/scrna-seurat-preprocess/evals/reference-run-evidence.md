@@ -8,32 +8,40 @@ RDS and CSV artifacts remain ignored under `results/`.
     Rscript skills/scrna-seurat-preprocess/scripts/run.R \
       --ctrl scRNAseq_general_workflow/data/ctrl_raw_feature_bc_matrix \
       --stim scRNAseq_general_workflow/data/stim_raw_feature_bc_matrix \
-      --out results/scrna-seurat-preprocess-pi-reference-v8
+      --out results/scrna-seurat-preprocess-issue33-pca-preflight-v2
 
 ## Validation command and exact log
 
     Rscript skills/scrna-seurat-preprocess/scripts/validate_output.R \
-      --out results/scrna-seurat-preprocess-pi-reference-v8
+      --out results/scrna-seurat-preprocess-issue33-pca-preflight-v2
 
-    Validation passed for /Users/jonathanyang/Documents/BMBL-analysis-notebooks-phase2/results/scrna-seurat-preprocess-pi-reference-v8 (branch=reference_subset; ctrl selected/input=20000/737280; ctrl post-QC=14957; stim selected/input=20000/737280; stim post-QC=14983; clusters=21)
+    Validation passed for /Users/jonathanyang/Documents/BMBL-analysis-notebooks-phase2/results/scrna-seurat-preprocess-issue33-pca-preflight-v2 (branch=reference_subset; ctrl selected/input=20000/737280; ctrl post-QC=14957; stim selected/input=20000/737280; stim post-QC=14983; clusters=21)
 
 The branch-specific result is complete as a validated deterministic reference run: it
 demonstrates that the procedure works and its required artifacts are internally valid.
+Its manifest records `layer_policy: joined_immediately_after_merge`, matching the
+recorded source workflow before normalization.
 For these committed inputs, the subset cut is not binding: the `20000`-barcode cap
 captures all 15,325 control and 15,277 stimulation barcodes with at least 200 detected
 features. Because the cut is not binding, both branches build the object from the
 same barcodes and therefore share one `min.cells = 3` gene universe: 15,397 genes for
 control and 15,153 for stimulation, a branch delta of 0.
 
-The run recorded above predates that correction. It was produced while the runner
-measured the full-input gene universe across all 737,280 raw barcodes, which counted
-genes detected only in empty droplets and reported the branch delta as 60 (control)
-and 111 (stimulation). Its barcode, post-QC, and cluster counts are unaffected.
-
 The validated output retains 14,957 control and 14,983 stimulation post-QC cells in
 21 clusters. The manifest records `ctrl_subset_cut_binding: FALSE` and
 `stim_subset_cut_binding: FALSE`; future inputs that exceed the real-cell subset
 capacity emit `TRUE` and a runner warning.
+
+## Fixed-dimension readiness check
+
+A disposable human-symbol 10x fixture supplied the minimum 100 input barcodes but
+retained only 15 QC-passing cells per sample. The runner exited before normalization,
+variable-feature selection, or PCA with:
+
+    ERROR: Fixed 30-PC preprocessing requires at least 31 QC-passing cells after filtering; found 30. Increase the selected barcodes or use inputs that retain enough cells under the documented QC policy.
+
+This confirms that `100` is an input floor rather than a claim of post-QC dimensional
+readiness. The fixture was temporary and is not tracked.
 
 ## sessionInfo.txt contents
 

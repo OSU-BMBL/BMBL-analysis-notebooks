@@ -27,18 +27,22 @@ create `cell_type` labels or run per-cell-type DEG here.
 ## Inputs and outputs
 
 - **Inputs:** two raw integer 10x directories, each with `barcodes.tsv.gz`,
-  `features.tsv.gz`, and `matrix.mtx.gz`; no upstream object is required.
+  `features.tsv.gz`, and `matrix.mtx.gz`; features must use committed human-style
+  gene symbols containing mitochondrial `MT-` and ribosomal `RP[SL][0-9]` names.
+  Mouse-style or ID-keyed feature annotations are not supported by this skill's QC.
 - **Example inputs:** `scRNAseq_general_workflow/data/ctrl_raw_feature_bc_matrix/` and
   `scRNAseq_general_workflow/data/stim_raw_feature_bc_matrix/`.
 - **Pilot boundary:** this runner accepts exactly one `ctrl` and one `stim` directory;
   it does not generalize to additional samples or conditions.
+- **Layer policy:** the runner joins the merged RNA layers before normalization so the
+  Seurat v5 preprocessing path matches `scRNAseq_general_workflow/1_preprocess.rmd`.
 
 | Artifact | Contents |
 |---|---|
-| `combined_qc.rds` | QC-filtered Seurat object with RNA counts, PCA, UMAP, and `seurat_clusters` |
+| `combined_qc.rds` | QC-filtered Seurat object with post-merge joined RNA counts, PCA, UMAP, and `seurat_clusters` |
 | `qc_summary.csv` | Per-sample and total input, selected, and QC-passing cell counts |
-| `markers.csv` | Positive per-cluster markers from `FindAllMarkers()` after `JoinLayers()` |
-| `run_manifest.txt` | Input paths, branch, selected/input counts, QC thresholds, and seed |
+| `markers.csv` | Positive per-cluster markers from `FindAllMarkers()` after post-merge `JoinLayers()` |
+| `run_manifest.txt` | Input paths, branch, post-merge layer policy, selected/input counts, QC thresholds, and seed |
 | `sessionInfo.txt` | Exact R and package versions used for the run |
 
 ## Choose a branch
@@ -62,6 +66,11 @@ Rscript skills/scrna-seurat-preprocess/scripts/run.R \
 
 `--out` must name a new or empty directory; the runner rejects non-empty
 directories so validation cannot mix a failed run with stale artifacts.
+The `reference_subset` branch rejects `--subset-barcodes-per-sample` values below
+`100` before reading either matrix. This is only an input floor: after QC, the runner
+also requires at least `31` cells and `31` usable/variable RNA features before the
+fixed 30-PC procedure and confirms that PCA produced all 30 dimensions. It fails with
+an actionable error rather than adapting dimensions for low-information inputs.
 
 Run the bundled validator; its successful internal checks are the completion evidence:
 
@@ -102,3 +111,5 @@ some barcodes with at least 200 detected features.
 | Gotcha | What happens / fix |
 |---|---|
 | `Warning: Some cell names are duplicated across objects provided. Renaming to enforce unique cell names.` | Observed when control and stimulation inputs reused barcode names. `run.R` assigns the fixed role labels `ctrl` and `stim` to `project`, `orig.ident`, and merge `add.cell.ids`, so names remain unique even when both directories are named `raw_feature_bc_matrix`. |
+| `ERROR: Sample 'ctrl' has no mitochondrial features matching ^MT-. ... mouse-style or ID-keyed features are not supported.` | Observed with a disposable 10x fixture lacking `MT-` names. The runner fails before QC instead of silently assigning zero mitochondrial or ribosomal percentages; provide human-style gene symbols containing both required patterns. |
+| `ERROR: Fixed 30-PC preprocessing requires at least 31 QC-passing cells after filtering; found 30.` | Observed with a disposable 100-barcode fixture that retained only 15 cells per sample after filtering. The `100`-barcode input floor does not guarantee post-QC PCA readiness; provide inputs that retain at least 31 cells and 31 usable/variable RNA features, because this skill intentionally does not adapt its fixed 30-PC procedure. |

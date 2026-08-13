@@ -174,6 +174,26 @@ if (!is.null(markers)) {
   if (nrow(markers) == 0L) {
     record_failure("markers.csv has no rows")
   }
+  if (inherits(combined, "Seurat") && "gene" %in% colnames(markers)) {
+    marker_genes <- trimws(as.character(markers$gene))
+    marker_genes <- unique(marker_genes[!is.na(marker_genes) & nzchar(marker_genes)])
+    rna_features <- tryCatch(
+      Features(combined, assay = "RNA"),
+      error = function(error) {
+        record_failure(paste("Saved Seurat object RNA feature names are unavailable:", conditionMessage(error)))
+        character()
+      }
+    )
+    unknown_marker_genes <- setdiff(marker_genes, rna_features)
+    if (length(unknown_marker_genes) > 0L) {
+      record_failure(
+        paste(
+          "markers.csv contains non-empty gene values absent from the saved RNA assay:",
+          paste(utils::head(unknown_marker_genes, 10L), collapse = ", ")
+        )
+      )
+    }
+  }
 }
 
 manifest_lines <- readLines(file.path(args, "run_manifest.txt"), warn = FALSE)
